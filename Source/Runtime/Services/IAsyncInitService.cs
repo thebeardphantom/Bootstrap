@@ -1,6 +1,6 @@
 ﻿using RSG;
 
-namespace ASFUnity.Core.Runtime
+namespace ASF.Core.Runtime
 {
     public interface IAsyncInitService
     {

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ASFUnity.Core.Runtime
+namespace ASF.Core.Runtime
 {
     public sealed class ServiceKernel : IDisposable
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ASFUnity.Core.Runtime
+namespace ASF.Core.Runtime
 {
     /// <summary>
     /// A simple service container

@@ -2,7 +2,7 @@
 using System;
 using UnityEngine.Assertions;
 
-namespace ASFUnity.Core.Runtime
+namespace ASF.Core.Runtime
 {
     public static class ServiceLocation
     {
