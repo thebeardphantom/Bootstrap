@@ -1,7 +1,8 @@
-﻿using System;
+﻿using RSG;
+using System;
 using UnityEngine.Assertions;
 
-namespace BeardPhantom.UCL.Services
+namespace ASFUnity.Core.Runtime
 {
     public static class ServiceLocation
     {
@@ -20,6 +21,8 @@ namespace BeardPhantom.UCL.Services
         /// Guid used for tracking changes to the ServiceKernel
         /// </summary>
         public static Guid KernelGuid { get; private set; }
+
+        public static IPromise BindKernelPromise { get; private set; } = Promise.Resolved();
 
         #endregion
 
@@ -72,14 +75,18 @@ namespace BeardPhantom.UCL.Services
             field4 = Get<T4>();
         }
 
-        public static void SetKernel(ServiceKernel kernel)
+        public static IPromise SetKernel(ServiceKernel kernel)
         {
             Assert.IsNotNull(kernel);
-
-            _kernel?.Dispose();
-            _kernel = kernel;
-            KernelGuid = Guid.NewGuid();
-            kernel.BindAllModules();
+            return BindKernelPromise.Then(
+                () =>
+                {
+                    _kernel?.Dispose();
+                    _kernel = kernel;
+                    KernelGuid = Guid.NewGuid();
+                    BindKernelPromise = kernel.BindAllModules();
+                    return BindKernelPromise;
+                });
         }
 
         public static T Get<T>() where T : class

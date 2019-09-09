@@ -1,9 +1,10 @@
-﻿using System;
+﻿using RSG;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace BeardPhantom.UCL
+namespace ASFUnity.Core.Runtime
 {
     /// <summary>
     /// A simple service container
@@ -52,12 +53,9 @@ namespace BeardPhantom.UCL
         /// <summary>
         /// Creates a new instance of type TP and binds it to type TS
         /// </summary>
-        /// <typeparam name="TS"></typeparam>
-        /// <typeparam name="TP"></typeparam>
-        /// <returns></returns>
         protected TS Bind<TS, TP>() where TS : class where TP : TS
         {
-            object tpInstance = null;
+            object tpInstance;
 
             if (typeof(ScriptableObject).IsAssignableFrom(typeof(TP)))
             {
@@ -65,31 +63,28 @@ namespace BeardPhantom.UCL
             }
             else if (typeof(Component).IsAssignableFrom(typeof(TP)))
             {
-                tpInstance =
-                    new GameObject(typeof(TP).Name).AddComponent(typeof(TP));
-
-                Object.DontDestroyOnLoad(tpInstance as Object);
+                tpInstance = new GameObject(typeof(TP).Name).AddComponent(typeof(TP));
             }
             else
             {
                 tpInstance = Activator.CreateInstance<TP>();
             }
 
-            return BindInstance<TS>((TP) tpInstance);
+            return Bind<TS>((TP) tpInstance);
         }
 
         /// <summary>
         /// Binds an existing provider instance to a service.
         /// </summary>
-        protected TS BindInstance<TS>(TS provider) where TS : class
+        protected TS Bind<TS>(TS provider) where TS : class
         {
-            return (TS) BindInstance(typeof(TS), provider);
+            return (TS) Bind(typeof(TS), provider);
         }
 
         /// <summary>
         /// Registers a provider
         /// </summary>
-        protected object BindInstance(Type type, object provider)
+        protected object Bind(Type type, object provider)
         {
             if (Bindings.ContainsKey(type))
             {
@@ -106,6 +101,21 @@ namespace BeardPhantom.UCL
             }
 
             return provider;
+        }
+
+        internal IPromise BindAllServices()
+        {
+            BindServices();
+            var promises = new List<IPromise>();
+            foreach (var service in Bindings.Values)
+            {
+                if (service is IAsyncInitService asyncInitService)
+                {
+                    promises.Add(asyncInitService.InitPromise.WithName($"Init {service.GetType()}"));
+                }
+            }
+
+            return Promise.All(promises).WithName($"Bind {GetType()}");
         }
 
         #endregion

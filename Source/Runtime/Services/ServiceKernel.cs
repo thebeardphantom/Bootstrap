@@ -1,9 +1,10 @@
-﻿using System;
+﻿using RSG;
+using System;
 using System.Collections.Generic;
 
-namespace BeardPhantom.UCL.Services
+namespace ASFUnity.Core.Runtime
 {
-    public class ServiceKernel : IDisposable
+    public sealed class ServiceKernel : IDisposable
     {
         #region Fields
 
@@ -46,23 +47,16 @@ namespace BeardPhantom.UCL.Services
             _modules.Clear();
         }
 
-        public void BindAllModules()
+        public IPromise BindAllModules()
         {
-            foreach (var module in _modules)
-            {
-                module.BindServices();
-            }
+            var promises = new List<IPromise>();
 
             foreach (var module in _modules)
             {
-                foreach (var binding in module.Bindings.Values)
-                {
-                    if (binding is IPostServicesBound postServicesBound)
-                    {
-                        postServicesBound.OnServicesBound();
-                    }
-                }
+                promises.Add(module.BindAllServices());
             }
+
+            return Promise.All(promises).WithName($"Bind {nameof(ServiceKernel)}");
         }
 
         #endregion

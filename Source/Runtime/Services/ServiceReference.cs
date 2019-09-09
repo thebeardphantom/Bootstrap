@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace BeardPhantom.UCL.Services
+namespace ASFUnity.Core.Runtime
 {
     /// <summary>
     /// Wrapper around a reference to a service.
