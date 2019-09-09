@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 #endif
 
-namespace ASFUnity.Core.Runtime
+namespace ASF.Core.Runtime
 {
     public abstract class Bootstrapper : MonoBehaviour
     {

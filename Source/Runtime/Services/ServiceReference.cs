@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace ASFUnity.Core.Runtime
+namespace ASF.Core.Runtime
 {
     /// <summary>
     /// Wrapper around a reference to a service.
