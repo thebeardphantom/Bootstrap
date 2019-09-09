@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using RSG;
+﻿using RSG;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
-using UnityEngine.SceneManagement;
-#if UNITY_EDITOR
-using UnityEngine;
-
 #endif
 
 namespace ASFUnity.Core.Runtime
