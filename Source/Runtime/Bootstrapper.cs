@@ -43,7 +43,7 @@ namespace ASF.Core.Runtime
         {
 #if UNITY_EDITOR
             var desiredScenesStr = SessionState.GetString(LOADED_SCENES_KEY, null);
-            if (desiredScenesStr == null)
+            if (string.IsNullOrWhiteSpace(desiredScenesStr))
             {
                 SceneManager.LoadScene(1);
             }
