@@ -1,7 +1,6 @@
 ﻿using RSG;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -24,11 +23,7 @@ namespace ASF.Core.Runtime
 
         #region Fields
 
-        private const string BOOTSTRAPPER_LOADED_SCENES = "BOOTSTRAPPER_LOADED_SCENES";
-
-        [Min(0)]
-        [SerializeField]
-        private int _bootstrapSceneBuildIndex;
+        public const string LOADED_SCENES_KEY = "BOOTSTRAPPER_LOADED_SCENES";
 
         #endregion
 
@@ -43,6 +38,30 @@ namespace ASF.Core.Runtime
         #endregion
 
         #region Methods
+
+        private static void RestoreDesiredScenes()
+        {
+#if UNITY_EDITOR
+            var desiredScenesStr = SessionState.GetString(LOADED_SCENES_KEY, null);
+            if (desiredScenesStr == null)
+            {
+                SceneManager.LoadScene(1);
+            }
+            else
+            {
+                var desiredScenePaths = desiredScenesStr.Split('\n');
+                for (var i = 0; i < desiredScenePaths.Length; i++)
+                {
+                    var path = desiredScenePaths[i];
+                    EditorSceneManager.LoadSceneInPlayMode(
+                        path,
+                        new LoadSceneParameters(i == 0 ? LoadSceneMode.Single : LoadSceneMode.Additive));
+                }
+            }
+#else
+            SceneManager.LoadScene(1);
+#endif
+        }
 
         protected abstract IPromise GetBootstrapTasks();
 
@@ -65,22 +84,18 @@ namespace ASF.Core.Runtime
 
         protected virtual void Awake()
         {
-            if (EnsureInstance())
-            {
-                StoreDesiredScenes();
-                SceneManager.LoadScene(_bootstrapSceneBuildIndex);
-            }
+            EnsureSingleInstance();
         }
 
         protected virtual void Start()
         {
-            if (EnsureInstance())
+            if (EnsureSingleInstance())
             {
                 BeginBootstrapping();
             }
         }
 
-        protected void OnValidate()
+        protected virtual void OnValidate()
         {
             transform.parent = null;
             transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
@@ -93,9 +108,14 @@ namespace ASF.Core.Runtime
             OnValidate();
         }
 
-        private bool EnsureInstance()
+        protected bool ShouldDestroySelf()
         {
-            if (Instance != null && Instance != this)
+            return Instance != null && Instance != this;
+        }
+
+        private bool EnsureSingleInstance()
+        {
+            if (ShouldDestroySelf())
             {
                 Destroy(gameObject);
                 return false;
@@ -104,48 +124,6 @@ namespace ASF.Core.Runtime
             Instance = this;
             DontDestroyOnLoad(this);
             return true;
-        }
-
-        private void StoreDesiredScenes()
-        {
-#if UNITY_EDITOR
-            var scenePaths = new List<string>();
-            for (var i = 0; i < SceneManager.sceneCount; i++)
-            {
-                var scene = SceneManager.GetSceneAt(i);
-                if (scene.buildIndex != _bootstrapSceneBuildIndex)
-                {
-                    scenePaths.Add(scene.path);
-                }
-            }
-
-            var scenesString = string.Join("\n", scenePaths);
-            SessionState.SetString(BOOTSTRAPPER_LOADED_SCENES, scenesString);
-#endif
-        }
-
-        private void RestoreDesiredScenes()
-        {
-#if UNITY_EDITOR
-            var desiredScenesStr = SessionState.GetString(BOOTSTRAPPER_LOADED_SCENES, null);
-            if (desiredScenesStr == null)
-            {
-                SceneManager.LoadScene(_bootstrapSceneBuildIndex + 1);
-            }
-            else
-            {
-                var desiredScenePaths = desiredScenesStr.Split('\n');
-                for (var i = 0; i < desiredScenePaths.Length; i++)
-                {
-                    var path = desiredScenePaths[i];
-                    EditorSceneManager.LoadSceneInPlayMode(
-                        path,
-                        new LoadSceneParameters(i == 0 ? LoadSceneMode.Single : LoadSceneMode.Additive));
-                }
-            }
-#else
-            SceneManager.LoadScene(_bootstrapSceneBuildIndex + 1);
-#endif
         }
 
         #endregion
