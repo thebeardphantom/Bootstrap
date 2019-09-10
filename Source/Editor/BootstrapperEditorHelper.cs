@@ -35,6 +35,7 @@ namespace ASF.Core.Editor
                 return;
             }
 
+            SessionState.EraseString(Bootstrapper.LOADED_SCENES_KEY);
             EditorSceneManager.playModeStartScene = null;
 
             var bootstrapper = Object.FindObjectOfType<Bootstrapper>();
