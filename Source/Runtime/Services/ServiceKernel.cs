@@ -59,6 +59,14 @@ namespace ASF.Core.Runtime
             return Promise.All(promises).WithName($"Bind {nameof(ServiceKernel)}");
         }
 
+        public void FireKernelReady()
+        {
+            foreach (var module in _modules)
+            {
+                module.FireKernelReady();
+            }
+        }
+
         #endregion
     }
 }

@@ -41,6 +41,17 @@ namespace ASF.Core.Runtime
             Bindings.Clear();
         }
 
+        public void FireKernelReady()
+        {
+            foreach (var service in Bindings.Values)
+            {
+                if (service is IPostKernelReady postKernelReady)
+                {
+                    postKernelReady.OnKernelReady();
+                }
+            }
+        }
+
         /// <summary>
         /// Retrieves a service by generic StateType.
         /// </summary>
