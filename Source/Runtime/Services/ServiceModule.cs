@@ -41,13 +41,13 @@ namespace ASF.Core.Runtime
             Bindings.Clear();
         }
 
-        public void FireKernelReady()
+        public void FireServicesBound()
         {
             foreach (var service in Bindings.Values)
             {
-                if (service is IPostKernelReady postKernelReady)
+                if (service is IPostKernelServicesBound postKernelServicesBound)
                 {
-                    postKernelReady.OnKernelReady();
+                    postKernelServicesBound.OnServicesBound();
                 }
             }
         }

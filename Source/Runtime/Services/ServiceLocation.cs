@@ -87,12 +87,7 @@ namespace ASF.Core.Runtime
                     KernelGuid = Guid.NewGuid();
                     BindKernelPromise = kernel.BindAllModules();
                     return BindKernelPromise;
-                })
-                .Then(
-                    () =>
-                    {
-                        _kernel.FireKernelReady();
-                    });
+                });
         }
 
         public static T Get<T>() where T : class
