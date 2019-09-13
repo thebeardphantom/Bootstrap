@@ -22,7 +22,7 @@ namespace ASF.Core.Runtime
         /// </summary>
         public static Guid KernelGuid { get; private set; }
 
-        public static IPromise BindKernelPromise { get; private set; } = Promise.Resolved();
+        public static IPromise BindKernelPromise { get; private set; }
 
         #endregion
 
@@ -78,6 +78,7 @@ namespace ASF.Core.Runtime
         public static IPromise SetKernel(ServiceKernel kernel)
         {
             Assert.IsNotNull(kernel);
+            BindKernelPromise = BindKernelPromise ?? Promise.Resolved();
             return BindKernelPromise.Then(
                 () =>
                 {
@@ -86,7 +87,12 @@ namespace ASF.Core.Runtime
                     KernelGuid = Guid.NewGuid();
                     BindKernelPromise = kernel.BindAllModules();
                     return BindKernelPromise;
-                });
+                })
+                .Then(
+                    () =>
+                    {
+                        _kernel.FireKernelReady();
+                    });
         }
 
         public static T Get<T>() where T : class
