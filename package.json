@@ -1,7 +1,7 @@
 {
 	"name": "com.beardphantom.asf-core",
 	"displayName": "ASF Core",
-	"version": "2.0.0",
+	"version": "2.1.0",
 	"unity": "2019.2",
 	"description": "The core library for Async Structural Foundations for Unity (ASF Unity).",
 	"keywords": [
@@ -9,7 +9,10 @@
 		"ASF"
 	],
 	"category": "Systems",
-	"dependencies": {},
+	"dependencies":
+	{
+		"com.unity.addressables": "1.2.3"
+	},
 	"src": "Assets/",
 	"repository": {
 		"type": "git",
