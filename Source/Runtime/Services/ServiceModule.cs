@@ -114,7 +114,7 @@ namespace ASF.Core.Runtime
             return provider;
         }
 
-        internal async Task BindAllServices()
+        internal async Task BindAllServicesAsync()
         {
             BindServices();
             var tasks = new List<Task>();
@@ -122,8 +122,6 @@ namespace ASF.Core.Runtime
             {
                 if (service is IAsyncInitService asyncService)
                 {
-                    //var task = asyncService.InitTask.WithName($"Init {service.GetType()}");
-                    //tasks.Add(task);
                     tasks.Add(asyncService.InitAsync());
                 }
             }

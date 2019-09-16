@@ -73,13 +73,13 @@ namespace ASF.Core.Runtime
             field4 = Get<T4>();
         }
 
-        public static async Task SetKernel(ServiceKernel kernel)
+        public static async Task SetKernelAsync(ServiceKernel kernel)
         {
             Assert.IsNotNull(kernel);
             _kernel?.Dispose();
             _kernel = kernel;
             KernelGuid = Guid.NewGuid();
-            await kernel.BindAllModules();
+            await kernel.BindAllModulesAsync();
         }
 
         public static T Get<T>() where T : class
