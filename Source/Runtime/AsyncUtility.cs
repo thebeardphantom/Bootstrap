@@ -23,7 +23,14 @@ namespace ASF.Core.Runtime
             var taskCompletion = new TaskCompletionSource<AsyncOperationHandle<T>>();
             asyncOp.Completed += operation =>
             {
-                taskCompletion.SetResult(operation);
+                if(operation.Status == AsyncOperationStatus.Succeeded)
+                {
+                    taskCompletion.SetResult(operation);
+                }
+                else
+                {
+                    taskCompletion.SetException(operation.OperationException);
+                }
             };
             return taskCompletion.Task;
         }
