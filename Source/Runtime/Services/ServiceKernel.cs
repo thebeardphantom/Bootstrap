@@ -1,6 +1,6 @@
-﻿using RSG;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ASF.Core.Runtime
 {
@@ -47,13 +47,13 @@ namespace ASF.Core.Runtime
             _modules.Clear();
         }
 
-        public IPromise BindAllModules()
+        public async Task BindAllModules()
         {
-            var promises = new List<IPromise>();
+            var tasks = new List<Task>();
 
             foreach (var module in _modules)
             {
-                promises.Add(module.BindAllServices());
+                tasks.Add(module.BindAllServices());
             }
 
             foreach (var module in _modules)
@@ -61,7 +61,7 @@ namespace ASF.Core.Runtime
                 module.FireServicesBound();
             }
 
-            return Promise.All(promises).WithName($"Bind {nameof(ServiceKernel)}");
+            await Task.WhenAll(tasks);
         }
 
         #endregion

@@ -1,6 +1,6 @@
-﻿using RSG;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -114,19 +114,21 @@ namespace ASF.Core.Runtime
             return provider;
         }
 
-        internal IPromise BindAllServices()
+        internal async Task BindAllServices()
         {
             BindServices();
-            var promises = new List<IPromise>();
+            var tasks = new List<Task>();
             foreach (var service in Bindings.Values)
             {
-                if (service is IAsyncInitService asyncInitService)
+                if (service is IAsyncInitService asyncService)
                 {
-                    promises.Add(asyncInitService.InitPromise.WithName($"Init {service.GetType()}"));
+                    //var task = asyncService.InitTask.WithName($"Init {service.GetType()}");
+                    //tasks.Add(task);
+                    tasks.Add(asyncService.InitAsync());
                 }
             }
 
-            return Promise.All(promises).WithName($"Bind {GetType()}");
+            await Task.WhenAll(tasks);
         }
 
         #endregion

@@ -1,6 +1,6 @@
-﻿using RSG;
-using UnityEngine.SceneManagement;
+﻿using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -30,8 +30,6 @@ namespace ASF.Core.Runtime
         #region Properties
 
         public static Bootstrapper Instance { get; private set; }
-
-        public IPromise BootstrapPromise { get; private set; }
 
         public BootstrapperState State { get; private set; } = BootstrapperState.Complete;
 
@@ -63,9 +61,7 @@ namespace ASF.Core.Runtime
 #endif
         }
 
-        protected abstract IPromise GetBootstrapTasks();
-
-        public void BeginBootstrapping()
+        public async void BeginBootstrapping()
         {
             if (State != BootstrapperState.Complete)
             {
@@ -73,13 +69,14 @@ namespace ASF.Core.Runtime
             }
 
             State = BootstrapperState.WaitingOnBootstrap;
-            BootstrapPromise = GetBootstrapTasks();
-            BootstrapPromise.Done(
-                () =>
-                {
-                    State = BootstrapperState.Complete;
-                    RestoreDesiredScenes();
-                });
+            await GetBootstrapTasks();
+            State = BootstrapperState.Complete;
+            RestoreDesiredScenes();
+        }
+
+        protected virtual async Task GetBootstrapTasks()
+        {
+            await Task.CompletedTask;
         }
 
         protected virtual void Awake()

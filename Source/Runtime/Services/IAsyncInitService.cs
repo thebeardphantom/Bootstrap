@@ -1,12 +1,12 @@
-﻿using RSG;
+﻿using System.Threading.Tasks;
 
 namespace ASF.Core.Runtime
 {
     public interface IAsyncInitService
     {
-        #region Properties
+        #region Methods
 
-        IPromise InitPromise { get; }
+        Task InitAsync();
 
         #endregion
     }

@@ -1,5 +1,5 @@
-﻿using RSG;
-using System;
+﻿using System;
+using System.Threading.Tasks;
 using UnityEngine.Assertions;
 
 namespace ASF.Core.Runtime
@@ -21,8 +21,6 @@ namespace ASF.Core.Runtime
         /// Guid used for tracking changes to the ServiceKernel
         /// </summary>
         public static Guid KernelGuid { get; private set; }
-
-        public static IPromise BindKernelPromise { get; private set; }
 
         #endregion
 
@@ -75,19 +73,13 @@ namespace ASF.Core.Runtime
             field4 = Get<T4>();
         }
 
-        public static IPromise SetKernel(ServiceKernel kernel)
+        public static async Task SetKernel(ServiceKernel kernel)
         {
             Assert.IsNotNull(kernel);
-            BindKernelPromise = BindKernelPromise ?? Promise.Resolved();
-            return BindKernelPromise.Then(
-                () =>
-                {
-                    _kernel?.Dispose();
-                    _kernel = kernel;
-                    KernelGuid = Guid.NewGuid();
-                    BindKernelPromise = kernel.BindAllModules();
-                    return BindKernelPromise;
-                });
+            _kernel?.Dispose();
+            _kernel = kernel;
+            KernelGuid = Guid.NewGuid();
+            await kernel.BindAllModules();
         }
 
         public static T Get<T>() where T : class
