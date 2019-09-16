@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace ASF.Core.Runtime
@@ -7,6 +8,12 @@ namespace ASF.Core.Runtime
     public static class AsyncUtility
     {
         #region Methods
+
+        public static async Task WaitForFrames(int frames = 1)
+        {
+            Assert.IsTrue(frames > 0, "Frames must be > 0");
+            await PlayerLoopHook.GetWaitForFramesTask(frames);
+        }
 
         public static Task<AsyncOperation> ToTask(this AsyncOperation asyncOp)
         {
@@ -23,7 +30,7 @@ namespace ASF.Core.Runtime
             var taskCompletion = new TaskCompletionSource<AsyncOperationHandle<T>>();
             asyncOp.Completed += operation =>
             {
-                if(operation.Status == AsyncOperationStatus.Succeeded)
+                if (operation.Status == AsyncOperationStatus.Succeeded)
                 {
                     taskCompletion.SetResult(operation);
                 }
