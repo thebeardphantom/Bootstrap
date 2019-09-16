@@ -47,13 +47,13 @@ namespace ASF.Core.Runtime
             _modules.Clear();
         }
 
-        public async Task BindAllModules()
+        public async Task BindAllModulesAsync()
         {
             var tasks = new List<Task>();
 
             foreach (var module in _modules)
             {
-                tasks.Add(module.BindAllServices());
+                tasks.Add(module.BindAllServicesAsync());
             }
 
             foreach (var module in _modules)

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -61,7 +61,9 @@ namespace ASF.Core.Runtime
 #endif
         }
 
-        public async void BeginBootstrapping()
+        protected abstract Task BootstrapAppAsync();
+
+        public async Task StartBootstrapAsync()
         {
             if (State != BootstrapperState.Complete)
             {
@@ -69,14 +71,10 @@ namespace ASF.Core.Runtime
             }
 
             State = BootstrapperState.WaitingOnBootstrap;
-            await GetBootstrapTasks();
+            await BootstrapAppAsync();
+
             State = BootstrapperState.Complete;
             RestoreDesiredScenes();
-        }
-
-        protected virtual async Task GetBootstrapTasks()
-        {
-            await Task.CompletedTask;
         }
 
         protected virtual void Awake()
@@ -84,11 +82,11 @@ namespace ASF.Core.Runtime
             EnsureSingleInstance();
         }
 
-        protected virtual void Start()
+        protected virtual async void Start()
         {
             if (EnsureSingleInstance())
             {
-                BeginBootstrapping();
+                await StartBootstrapAsync();
             }
         }
 
