@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using UniRx.Async;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 
@@ -64,9 +65,9 @@ namespace ASF.Core.Runtime
 
         public abstract string GetConfigurationAsJson();
 
-        protected abstract Task BootstrapAppAsync();
+        protected abstract UniTask BootstrapAppAsync();
 
-        public async Task StartBootstrapAsync()
+        public async UniTask StartBootstrapAsync()
         {
             if (State != BootstrapperState.Complete)
             {
