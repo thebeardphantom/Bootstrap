@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using UniRx.Async;
 
 namespace ASF.Core.Runtime
 {
@@ -22,11 +22,16 @@ namespace ASF.Core.Runtime
         /// <summary>
         /// Retrieves a service by generic StateType.
         /// </summary>
-        public TS Get<TS>() where TS : class
+        internal T Get<T>() where T : class
+        {
+            return Get(typeof(T)) as T;
+        }
+
+        internal object Get(Type serviceType)
         {
             foreach (var module in _modules)
             {
-                var instance = module.Get<TS>();
+                var instance = module.Get(serviceType);
                 if (instance != null)
                 {
                     return instance;
@@ -47,13 +52,11 @@ namespace ASF.Core.Runtime
             _modules.Clear();
         }
 
-        public async Task BindAllModulesAsync()
+        internal async UniTask SetupAsync()
         {
-            var tasks = new List<Task>();
-
             foreach (var module in _modules)
             {
-                tasks.Add(module.BindAllServicesAsync());
+                module.BindServices();
             }
 
             foreach (var module in _modules)
@@ -61,7 +64,13 @@ namespace ASF.Core.Runtime
                 module.FireServicesBound();
             }
 
-            await Task.WhenAll(tasks);
+            var tasks = new List<UniTask>();
+            foreach (var module in _modules)
+            {
+                tasks.Add(module.InitAsyncServicesAsync());
+            }
+
+            await UniTask.WhenAll(tasks);
         }
 
         #endregion

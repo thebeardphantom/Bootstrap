@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using UniRx.Async;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -41,24 +41,21 @@ namespace ASF.Core.Runtime
             Bindings.Clear();
         }
 
-        public void FireServicesBound()
+        /// <summary>
+        /// Retrieves a service by generic StateType.
+        /// </summary>
+        protected internal T Get<T>() where T : class
         {
-            foreach (var service in Bindings.Values)
-            {
-                if (service is IPostKernelServicesBound postKernelServicesBound)
-                {
-                    postKernelServicesBound.OnServicesBound();
-                }
-            }
+            return Get(typeof(T)) as T;
         }
 
         /// <summary>
         /// Retrieves a service by generic StateType.
         /// </summary>
-        protected internal TS Get<TS>() where TS : class
+        protected internal object Get(Type serviceType)
         {
-            Bindings.TryGetValue(typeof(TS), out var service);
-            return (TS) service;
+            Bindings.TryGetValue(serviceType, out var service);
+            return service;
         }
 
         /// <summary>
@@ -114,10 +111,20 @@ namespace ASF.Core.Runtime
             return provider;
         }
 
-        internal async Task BindAllServicesAsync()
+        internal void FireServicesBound()
         {
-            BindServices();
-            var tasks = new List<Task>();
+            foreach (var service in Bindings.Values)
+            {
+                if (service is IPostKernelServicesBound postKernelServicesBound)
+                {
+                    postKernelServicesBound.OnServicesBound();
+                }
+            }
+        }
+
+        internal async UniTask InitAsyncServicesAsync()
+        {
+            var tasks = new List<UniTask>();
             foreach (var service in Bindings.Values)
             {
                 if (service is IAsyncInitService asyncService)
@@ -126,7 +133,7 @@ namespace ASF.Core.Runtime
                 }
             }
 
-            await Task.WhenAll(tasks);
+            await UniTask.WhenAll(tasks);
         }
 
         #endregion

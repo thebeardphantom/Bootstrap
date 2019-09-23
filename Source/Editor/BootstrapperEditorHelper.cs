@@ -36,6 +36,7 @@ namespace ASF.Core.Editor
             }
 
             SessionState.EraseString(Bootstrapper.LOADED_SCENES_KEY);
+            SessionState.EraseString(Bootstrapper.CONFIGURATION_KEY);
             EditorSceneManager.playModeStartScene = null;
 
             var bootstrapper = Object.FindObjectOfType<Bootstrapper>();
@@ -45,7 +46,6 @@ namespace ASF.Core.Editor
             {
                 return;
             }
-
             ASFCore.Logger.Log("ASF", "Running bootstrap helper...");
 
             var bootstrapScene = EditorBuildSettings.scenes
@@ -71,6 +71,12 @@ namespace ASF.Core.Editor
 
                 var scenesString = string.Join("\n", scenePaths);
                 SessionState.SetString(Bootstrapper.LOADED_SCENES_KEY, scenesString);
+
+                var configuration = bootstrapper.GetConfigurationAsJson();
+                if (!string.IsNullOrWhiteSpace(configuration))
+                {
+                    SessionState.SetString(Bootstrapper.CONFIGURATION_KEY, configuration);
+                }
             }
         }
 

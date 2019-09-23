@@ -2,11 +2,6 @@
 using UnityEngine.SceneManagement;
 using UnityEngine;
 
-#if UNITY_EDITOR
-using UnityEditor;
-using UnityEditor.SceneManagement;
-#endif
-
 namespace ASF.Core.Runtime
 {
     public abstract class Bootstrapper : MonoBehaviour
@@ -25,11 +20,13 @@ namespace ASF.Core.Runtime
 
         public const string LOADED_SCENES_KEY = "BOOTSTRAPPER_LOADED_SCENES";
 
+        public const string CONFIGURATION_KEY = "BOOTSTRAPPER_CONFIGURATION";
+
+        protected static Bootstrapper Instance;
+
         #endregion
 
         #region Properties
-
-        public static Bootstrapper Instance { get; private set; }
 
         public BootstrapperState State { get; private set; } = BootstrapperState.Complete;
 
@@ -40,7 +37,7 @@ namespace ASF.Core.Runtime
         private static void RestoreDesiredScenes()
         {
 #if UNITY_EDITOR
-            var desiredScenesStr = SessionState.GetString(LOADED_SCENES_KEY, null);
+            var desiredScenesStr = UnityEditor.SessionState.GetString(LOADED_SCENES_KEY, null);
             if (string.IsNullOrWhiteSpace(desiredScenesStr))
             {
                 SceneManager.LoadScene(1);
@@ -51,15 +48,21 @@ namespace ASF.Core.Runtime
                 for (var i = 0; i < desiredScenePaths.Length; i++)
                 {
                     var path = desiredScenePaths[i];
-                    EditorSceneManager.LoadSceneInPlayMode(
+                    UnityEditor.SceneManagement.EditorSceneManager.LoadSceneInPlayMode(
                         path,
-                        new LoadSceneParameters(i == 0 ? LoadSceneMode.Single : LoadSceneMode.Additive));
+                        new LoadSceneParameters(i == 0 
+                            ? LoadSceneMode.Single 
+                            : LoadSceneMode.Additive));
                 }
             }
 #else
             SceneManager.LoadScene(1);
 #endif
         }
+
+        public abstract void SetConfigurationFromJson(string json);
+
+        public abstract string GetConfigurationAsJson();
 
         protected abstract Task BootstrapAppAsync();
 
@@ -71,6 +74,13 @@ namespace ASF.Core.Runtime
             }
 
             State = BootstrapperState.WaitingOnBootstrap;
+#if UNITY_EDITOR
+            var jsonConfig = UnityEditor.SessionState.GetString(CONFIGURATION_KEY, null);
+            if (!string.IsNullOrWhiteSpace(jsonConfig))
+            {
+                SetConfigurationFromJson(jsonConfig);
+            }
+#endif
             await BootstrapAppAsync();
 
             State = BootstrapperState.Complete;

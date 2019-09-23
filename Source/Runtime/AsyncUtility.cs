@@ -1,6 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using UniRx.Async;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace ASF.Core.Runtime
@@ -9,34 +8,28 @@ namespace ASF.Core.Runtime
     {
         #region Methods
 
-        public static async Task WaitForFrames(int frames = 1)
+        public static UniTask<AsyncOperation> ToTask(this AsyncOperation asyncOp)
         {
-            Assert.IsTrue(frames > 0, "Frames must be > 0");
-            await PlayerLoopHook.GetWaitForFramesTask(frames);
-        }
-
-        public static Task<AsyncOperation> ToTask(this AsyncOperation asyncOp)
-        {
-            var taskCompletion = new TaskCompletionSource<AsyncOperation>();
+            var taskCompletion = new UniTaskCompletionSource<AsyncOperation>();
             asyncOp.completed += operation =>
             {
-                taskCompletion.SetResult(operation);
+                taskCompletion.TrySetResult(operation);
             };
             return taskCompletion.Task;
         }
 
-        public static Task<AsyncOperationHandle<T>> ToTask<T>(this AsyncOperationHandle<T> asyncOp)
+        public static UniTask<AsyncOperationHandle<T>> ToTask<T>(this AsyncOperationHandle<T> asyncOp)
         {
-            var taskCompletion = new TaskCompletionSource<AsyncOperationHandle<T>>();
+            var taskCompletion = new UniTaskCompletionSource<AsyncOperationHandle<T>>();
             asyncOp.Completed += operation =>
             {
                 if (operation.Status == AsyncOperationStatus.Succeeded)
                 {
-                    taskCompletion.SetResult(operation);
+                    taskCompletion.TrySetResult(operation);
                 }
                 else
                 {
-                    taskCompletion.SetException(operation.OperationException);
+                    taskCompletion.TrySetException(operation.OperationException);
                 }
             };
             return taskCompletion.Task;

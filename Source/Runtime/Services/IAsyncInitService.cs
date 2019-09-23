@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using UniRx.Async;
 
 namespace ASF.Core.Runtime
 {
@@ -6,7 +7,7 @@ namespace ASF.Core.Runtime
     {
         #region Methods
 
-        Task InitAsync();
+        UniTask InitAsync();
 
         #endregion
     }
