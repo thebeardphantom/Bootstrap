@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using UniRx.Async;
+﻿using UniRx.Async;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 
@@ -35,32 +34,6 @@ namespace ASF.Core.Runtime
 
         #region Methods
 
-        private static void RestoreDesiredScenes()
-        {
-#if UNITY_EDITOR
-            var desiredScenesStr = UnityEditor.SessionState.GetString(LOADED_SCENES_KEY, null);
-            if (string.IsNullOrWhiteSpace(desiredScenesStr))
-            {
-                SceneManager.LoadScene(1);
-            }
-            else
-            {
-                var desiredScenePaths = desiredScenesStr.Split('\n');
-                for (var i = 0; i < desiredScenePaths.Length; i++)
-                {
-                    var path = desiredScenePaths[i];
-                    UnityEditor.SceneManagement.EditorSceneManager.LoadSceneInPlayMode(
-                        path,
-                        new LoadSceneParameters(i == 0 
-                            ? LoadSceneMode.Single 
-                            : LoadSceneMode.Additive));
-                }
-            }
-#else
-            SceneManager.LoadScene(1);
-#endif
-        }
-
         public abstract void SetConfigurationFromJson(string json);
 
         public abstract string GetConfigurationAsJson();
@@ -75,6 +48,7 @@ namespace ASF.Core.Runtime
             }
 
             State = BootstrapperState.WaitingOnBootstrap;
+
 #if UNITY_EDITOR
             var jsonConfig = UnityEditor.SessionState.GetString(CONFIGURATION_KEY, null);
             if (!string.IsNullOrWhiteSpace(jsonConfig))
@@ -82,18 +56,23 @@ namespace ASF.Core.Runtime
                 SetConfigurationFromJson(jsonConfig);
             }
 #endif
+
             await BootstrapAppAsync();
 
             State = BootstrapperState.Complete;
-            RestoreDesiredScenes();
+
+            string[] desiredScenePaths = null;
+#if UNITY_EDITOR
+            var desiredScenesStr = UnityEditor.SessionState.GetString(LOADED_SCENES_KEY, null);
+            if (!string.IsNullOrWhiteSpace(desiredScenesStr))
+            {
+                desiredScenePaths = desiredScenesStr.Split('\n');
+            }
+#endif
+            LoadIntoNextScenes(desiredScenePaths);
         }
 
-        protected virtual void Awake()
-        {
-            EnsureSingleInstance();
-        }
-
-        protected virtual async void Start()
+        protected virtual async void Awake()
         {
             if (EnsureSingleInstance())
             {
@@ -114,6 +93,26 @@ namespace ASF.Core.Runtime
             OnValidate();
         }
 
+        protected virtual void LoadIntoNextScenes(string[] editModeScenes)
+        {
+            if (editModeScenes == null)
+            {
+                SceneManager.LoadScene(1);
+            }
+            else
+            {
+                for (var i = 0; i < editModeScenes.Length; i++)
+                {
+                    var path = editModeScenes[i];
+                    UnityEditor.SceneManagement.EditorSceneManager.LoadSceneInPlayMode(
+                        path,
+                        new LoadSceneParameters(i == 0
+                            ? LoadSceneMode.Single
+                            : LoadSceneMode.Additive));
+                }
+            }
+        }
+
         protected bool ShouldDestroySelf()
         {
             return Instance != null && Instance != this;
@@ -132,6 +131,6 @@ namespace ASF.Core.Runtime
             return true;
         }
 
-        #endregion
+#endregion
     }
 }
