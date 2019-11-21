@@ -18,6 +18,8 @@ namespace ASF.Core.Runtime
         /// </summary>
         internal readonly Dictionary<Type, object> Bindings = new Dictionary<Type, object>();
 
+        private readonly HashSet<object> _visitorSet = new HashSet<object>();
+
         #endregion
 
         #region Methods
@@ -61,7 +63,7 @@ namespace ASF.Core.Runtime
         /// <summary>
         /// Creates a new instance of type TP and binds it to type TS
         /// </summary>
-        protected TS Bind<TS, TP>() where TS : class where TP : TS
+        protected TP Bind<TS, TP>() where TS : class where TP : TS
         {
             object tpInstance;
 
@@ -78,7 +80,7 @@ namespace ASF.Core.Runtime
                 tpInstance = Activator.CreateInstance<TP>();
             }
 
-            return Bind<TS>((TP) tpInstance);
+            return (TP) Bind<TS>((TP) tpInstance);
         }
 
         /// <summary>
@@ -115,11 +117,15 @@ namespace ASF.Core.Runtime
         {
             foreach (var service in Bindings.Values)
             {
-                if (service is IPostKernelServicesBound postKernelServicesBound)
+                if (service is IPostKernelServicesBound postKernelServicesBound
+                    && !_visitorSet.Contains(service))
                 {
+                    _visitorSet.Add(service);
                     postKernelServicesBound.OnServicesBound();
                 }
             }
+
+            _visitorSet.Clear();
         }
 
         internal async UniTask InitAsyncServicesAsync()
@@ -127,12 +133,15 @@ namespace ASF.Core.Runtime
             var tasks = new List<UniTask>();
             foreach (var service in Bindings.Values)
             {
-                if (service is IAsyncInitService asyncService)
+                if (service is IAsyncInitService asyncService
+                    && !_visitorSet.Contains(service))
                 {
+                    _visitorSet.Add(service);
                     tasks.Add(asyncService.InitAsync());
                 }
             }
 
+            _visitorSet.Clear();
             await UniTask.WhenAll(tasks);
         }
 
