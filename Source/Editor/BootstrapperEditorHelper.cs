@@ -35,8 +35,8 @@ namespace ASF.Core.Editor
                 return;
             }
 
-            SessionState.EraseString(Bootstrapper.LOADED_SCENES_KEY);
-            SessionState.EraseString(Bootstrapper.CONFIGURATION_KEY);
+            SessionState.EraseString(EditorBootstrapHandler.LOADED_SCENES_KEY);
+            SessionState.EraseString(EditorBootstrapHandler.CONFIGURATION_KEY);
             EditorSceneManager.playModeStartScene = null;
 
             var bootstrapper = Object.FindObjectOfType<Bootstrapper>();
@@ -70,12 +70,12 @@ namespace ASF.Core.Editor
                 }
 
                 var scenesString = string.Join("\n", scenePaths);
-                SessionState.SetString(Bootstrapper.LOADED_SCENES_KEY, scenesString);
+                SessionState.SetString(EditorBootstrapHandler.LOADED_SCENES_KEY, scenesString);
 
-                var configuration = bootstrapper.GetConfigurationAsJson();
+                var configuration = EditorJsonUtility.ToJson(bootstrapper);
                 if (!string.IsNullOrWhiteSpace(configuration))
                 {
-                    SessionState.SetString(Bootstrapper.CONFIGURATION_KEY, configuration);
+                    SessionState.SetString(EditorBootstrapHandler.CONFIGURATION_KEY, configuration);
                 }
             }
         }
