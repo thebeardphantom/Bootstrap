@@ -36,7 +36,7 @@ namespace ASF.Core.Runtime
             }
         }
 
-        public static string[] GetEditModeScenePaths()
+        public static List<string> GetEditModeScenePaths()
         {
             var editModeScenesStr = SessionState.GetString(LOADED_SCENES_KEY, null);
             if (string.IsNullOrWhiteSpace(editModeScenesStr))
@@ -47,15 +47,25 @@ namespace ASF.Core.Runtime
             var editModeScenePaths = editModeScenesStr.Split(
                 LoadedScenesSeparators,
                 StringSplitOptions.RemoveEmptyEntries);
-            return editModeScenePaths.Length == 0 ? null : editModeScenePaths;
+            return editModeScenePaths.Length == 0 ? null : new List<string>(editModeScenePaths);
         }
 
         public static void LoadScenesInPlayMode(IReadOnlyList<string> scenePaths)
         {
-            Assert.IsNotNull(scenePaths, "editModeScenePaths != null");
-            Assert.IsTrue(scenePaths.Count > 0, "editModeScenePaths.Length > 0");
+            Assert.IsNotNull(scenePaths, "scenePaths != null");
+            Assert.IsTrue(scenePaths.Count > 0, "scenePaths.Length > 0");
 
-            var loadFirstAsSingle = SceneManager.sceneCount <= 1;
+            var loadFirstAsSingle = true;
+            for (var i = 0; i < SceneManager.sceneCount; i++)
+            {
+                var scene = SceneManager.GetSceneAt(i);
+                if (scene.buildIndex != 0)
+                {
+                    loadFirstAsSingle = false;
+                    break;
+                }
+            }
+
             for (var i = 0; i < scenePaths.Count; i++)
             {
                 var path = scenePaths[i];
