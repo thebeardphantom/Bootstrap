@@ -1,7 +1,7 @@
 {
 	"name": "com.beardphantom.asf-core",
 	"displayName": "ASF Core",
-	"version": "3.3.0",
+	"version": "3.4.0",
 	"unity": "2019.2",
 	"description": "The core library for Async Structural Foundations for Unity (ASF Unity).",
 	"keywords": [

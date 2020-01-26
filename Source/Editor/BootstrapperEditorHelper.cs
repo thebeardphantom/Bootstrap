@@ -36,16 +36,17 @@ namespace ASF.Core.Editor
             }
 
             SessionState.EraseString(EditorBootstrapHandler.LOADED_SCENES_KEY);
-            SessionState.EraseString(EditorBootstrapHandler.CONFIGURATION_KEY);
+            SessionState.EraseString(EditorBootstrapHandler.SERIALIZED_BOOTSTRAPPER_JSON_KEY);
             EditorSceneManager.playModeStartScene = null;
 
             var bootstrapper = Object.FindObjectOfType<Bootstrapper>();
-            if (bootstrapper == null 
+            if (bootstrapper == null
                 || !bootstrapper.isActiveAndEnabled
                 || mode != PlayModeStateChange.ExitingEditMode)
             {
                 return;
             }
+
             ASFCore.Logger.Log("ASF", "Running bootstrap helper...");
 
             var bootstrapScene = EditorBuildSettings.scenes
@@ -69,13 +70,17 @@ namespace ASF.Core.Editor
                     }
                 }
 
-                var scenesString = string.Join("\n", scenePaths);
+                var scenesString = string.Join(
+                    EditorBootstrapHandler.LOADED_SCENES_SEPARATOR.ToString(),
+                    scenePaths);
                 SessionState.SetString(EditorBootstrapHandler.LOADED_SCENES_KEY, scenesString);
 
-                var configuration = EditorJsonUtility.ToJson(bootstrapper);
-                if (!string.IsNullOrWhiteSpace(configuration))
+                var serializedBootstrapperJson = EditorJsonUtility.ToJson(bootstrapper);
+                if (!string.IsNullOrWhiteSpace(serializedBootstrapperJson))
                 {
-                    SessionState.SetString(EditorBootstrapHandler.CONFIGURATION_KEY, configuration);
+                    SessionState.SetString(
+                        EditorBootstrapHandler.SERIALIZED_BOOTSTRAPPER_JSON_KEY, 
+                        serializedBootstrapperJson);
                 }
             }
         }
