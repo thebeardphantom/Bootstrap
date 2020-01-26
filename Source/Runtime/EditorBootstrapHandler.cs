@@ -1,9 +1,10 @@
 ﻿#if UNITY_EDITOR
-using UnityEditor.SceneManagement;
 using System;
-using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
+using UnityEditor;
 
 namespace ASF.Core.Runtime
 {
@@ -49,20 +50,20 @@ namespace ASF.Core.Runtime
             return editModeScenePaths.Length == 0 ? null : editModeScenePaths;
         }
 
-        public static void LoadScenesInPlayMode(string[] editModeScenePaths)
+        public static void LoadScenesInPlayMode(IReadOnlyList<string> scenePaths)
         {
-            Assert.IsNotNull(editModeScenePaths, "editModeScenePaths != null");
-            Assert.IsTrue(editModeScenePaths.Length > 0, "editModeScenePaths.Length > 0");
+            Assert.IsNotNull(scenePaths, "editModeScenePaths != null");
+            Assert.IsTrue(scenePaths.Count > 0, "editModeScenePaths.Length > 0");
 
-            for (var i = 0; i < editModeScenePaths.Length; i++)
+            var loadFirstAsSingle = SceneManager.sceneCount <= 1;
+            for (var i = 0; i < scenePaths.Count; i++)
             {
-                var path = editModeScenePaths[i];
-                EditorSceneManager.LoadSceneInPlayMode(
-                    path,
-                    new LoadSceneParameters(
-                        i == 0
-                            ? LoadSceneMode.Single
-                            : LoadSceneMode.Additive));
+                var path = scenePaths[i];
+                var loadSceneParameters = new LoadSceneParameters(
+                    loadFirstAsSingle && i == 0
+                        ? LoadSceneMode.Single
+                        : LoadSceneMode.Additive);
+                EditorSceneManager.LoadSceneInPlayMode(path, loadSceneParameters);
             }
         }
 
