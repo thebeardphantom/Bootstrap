@@ -58,16 +58,25 @@ namespace ASF.Core.Runtime
                 return;
             }
 
+            AssignBootstrapHandlers(out PreHandler, out PostHandler);
+            await StartBootstrapAsync();
+        }
+
+        protected virtual void AssignBootstrapHandlers(
+            out IPreBootstrapHandler preHandler,
+            out IPostBootstrapHandler postHandler)
+        {
 #if UNITY_EDITOR
             var editorBootstrapHandler = new EditorBootstrapHandler();
-            PostHandler = editorBootstrapHandler;
-            PreHandler = editorBootstrapHandler;
+
+            preHandler = editorBootstrapHandler;
+            postHandler = editorBootstrapHandler;
 #else
             var bootstrapHandler = new BuildBootstrapHandler();
-            PostHandler = bootstrapHandler;
-            PreHandler = bootstrapHandler;
+            
+            preHandler = bootstrapHandler;
+            postHandler = bootstrapHandler;
 #endif
-            await StartBootstrapAsync();
         }
 
         protected virtual void OnValidate()
