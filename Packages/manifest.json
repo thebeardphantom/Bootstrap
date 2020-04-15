@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.cysharp.unitask": "https://github.com/thebeardphantom/UniTask.git#upm",
     "com.unity.addressables": "1.1.10",
     "com.unity.test-framework": "1.1.13",
     "com.unity.modules.ai": "1.0.0",
@@ -33,5 +34,11 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
+  },
+  "lock": {
+    "com.cysharp.unitask": {
+      "revision": "upm",
+      "hash": "fa678e31ce88ce0611d7f68d1d17692962cd6b51"
+    }
   }
 }
