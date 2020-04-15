@@ -11,7 +11,8 @@
 	"category": "Systems",
 	"dependencies":
 	{
-		"com.unity.addressables": "1.2.4"
+		"com.unity.addressables": "1.1.10",
+		"com.cysharp.unitask": "1.2.0"
 	},
 	"repository": {
 		"type": "git",
