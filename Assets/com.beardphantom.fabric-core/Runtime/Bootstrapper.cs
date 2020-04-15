@@ -1,7 +1,7 @@
 ﻿using UniRx.Async;
 using UnityEngine;
 
-namespace ASF.Core.Runtime
+namespace Fabric.Core.Runtime
 {
     public abstract class Bootstrapper : MonoBehaviour
     {

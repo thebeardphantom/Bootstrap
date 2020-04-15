@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace ASF.Core.Runtime
+namespace Fabric.Core.Runtime
 {
-    public static class ASFCore
+    public static class FabricLog
     {
         #region Fields
 
@@ -12,7 +12,7 @@ namespace ASF.Core.Runtime
 
         #region Constructors
 
-        static ASFCore()
+        static FabricLog()
         {
             RestoreDefaultLogger();
         }

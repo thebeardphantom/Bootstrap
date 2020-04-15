@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using UniRx.Async;
 using UnityEngine.Assertions;
 
-namespace ASF.Core.Runtime
+namespace Fabric.Core.Runtime
 {
     public static class ServiceLocation
     {

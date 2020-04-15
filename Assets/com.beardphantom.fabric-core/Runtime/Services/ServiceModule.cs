@@ -4,7 +4,7 @@ using UniRx.Async;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ASF.Core.Runtime
+namespace Fabric.Core.Runtime
 {
     /// <summary>
     /// A simple service container

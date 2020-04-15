@@ -1,4 +1,4 @@
-﻿using ASF.Core.Runtime;
+﻿using Fabric.Core.Runtime;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -6,7 +6,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace ASF.Core.Editor
+namespace Fabric.Core.Editor
 {
     [InitializeOnLoad]
     public static class BootstrapperEditorHelper
@@ -47,13 +47,13 @@ namespace ASF.Core.Editor
                 return;
             }
 
-            ASFCore.Logger.Log("ASF", "Running bootstrap helper...");
+            FabricLog.Logger.Log("Fabric.Core", "Running bootstrap helper...");
 
             var bootstrapScene = EditorBuildSettings.scenes
                 .FirstOrDefault(s => AssetDatabase.LoadAssetAtPath<SceneAsset>(s.path) != null);
             if (bootstrapScene == null)
             {
-                ASFCore.Logger.LogWarning("ASF", "No valid first scene in EditorBuildSettings");
+                FabricLog.Logger.LogWarning("Fabric.Core", "No valid first scene in EditorBuildSettings");
             }
             else
             {
