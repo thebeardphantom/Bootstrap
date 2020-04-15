@@ -1,6 +1,6 @@
 {
 	"name": "com.beardphantom.fabric-core",
-	"displayName": "Fabric Core",
+	"displayName": "Fabric.Core",
 	"version": "5.0.0",
 	"unity": "2019.2",
 	"description": "The core library for Fabric.*.",
