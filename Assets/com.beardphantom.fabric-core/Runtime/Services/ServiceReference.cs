@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace ASF.Core.Runtime
+namespace Fabric.Core.Runtime
 {
     /// <summary>
     /// Wrapper around a reference to a service.

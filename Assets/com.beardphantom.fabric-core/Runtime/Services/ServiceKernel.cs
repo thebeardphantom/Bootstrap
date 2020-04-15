@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UniRx.Async;
 
-namespace ASF.Core.Runtime
+namespace Fabric.Core.Runtime
 {
     public sealed class ServiceKernel : IDisposable
     {

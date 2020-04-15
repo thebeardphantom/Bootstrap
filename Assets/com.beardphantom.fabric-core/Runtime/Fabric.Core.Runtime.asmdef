@@ -1,16 +1,17 @@
 {
-    "name": "ASF.Core.Editor",
+    "name": "Fabric.Core.Runtime",
     "references": [
-        "GUID:b9853a2b6bad9cc4c9ad4d8907949464"
+        "UniRx.Async",
+        "Unity.Addressables",
+        "Unity.ResourceManager"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }

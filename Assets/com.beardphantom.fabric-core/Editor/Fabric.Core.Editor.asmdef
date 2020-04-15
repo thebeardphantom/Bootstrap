@@ -1,11 +1,11 @@
 {
-    "name": "ASF.Core.Runtime",
+    "name": "Fabric.Core.Editor",
     "references": [
-        "UniRx.Async",
-        "Unity.Addressables",
-        "Unity.ResourceManager"
+        "GUID:b9853a2b6bad9cc4c9ad4d8907949464"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

@@ -1,4 +1,4 @@
-﻿namespace ASF.Core.Runtime
+﻿namespace Fabric.Core.Runtime
 {
     public interface IPostBootstrapHandler
     {

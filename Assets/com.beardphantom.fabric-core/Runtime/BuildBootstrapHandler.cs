@@ -1,6 +1,6 @@
 ﻿using UnityEngine.SceneManagement;
 
-namespace ASF.Core.Runtime
+namespace Fabric.Core.Runtime
 {
     public class BuildBootstrapHandler : IPreBootstrapHandler, IPostBootstrapHandler
     {

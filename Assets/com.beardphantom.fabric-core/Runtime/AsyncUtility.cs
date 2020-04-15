@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-namespace ASF.Core.Runtime
+namespace Fabric.Core.Runtime
 {
     public static class AsyncUtility
     {

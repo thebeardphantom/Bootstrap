@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using UniRx.Async;
 
-namespace ASF.Core.Runtime
+namespace Fabric.Core.Runtime
 {
     public interface IAsyncInitService
     {
