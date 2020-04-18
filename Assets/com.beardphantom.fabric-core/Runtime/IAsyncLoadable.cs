@@ -1,6 +1,6 @@
 ﻿using UniRx.Async;
 
-namespace Fabric.PersistSim.Runtime
+namespace Fabric.Core.Runtime
 {
     public interface IAsyncLoadable
     {
