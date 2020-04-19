@@ -1,3 +1,5 @@
+![Publish_UPM](https://github.com/thebeardphantom/Fabric.Core/workflows/Publish_UPM/badge.svg)
+
 # Fabric.Core
 The base of the Fabric.* packages.
 
