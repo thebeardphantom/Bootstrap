@@ -87,7 +87,11 @@ namespace Fabric.Core.Runtime
         public void OnPostBootstrap(Bootstrapper bootstrapper)
         {
             var editModeScenePaths = GetEditModeScenePaths();
-            if (editModeScenePaths != null)
+            if (editModeScenePaths == null)
+            {
+                SceneManager.LoadScene(1);
+            }
+            else
             {
                 LoadScenesInPlayMode(editModeScenePaths);
             }
