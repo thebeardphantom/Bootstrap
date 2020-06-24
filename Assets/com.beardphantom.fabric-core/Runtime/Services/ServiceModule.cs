@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
-using UniRx.Async;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -24,11 +24,6 @@ namespace Fabric.Core.Runtime
 
         #region Methods
 
-        /// <summary>
-        /// Function for subclasses to override to register services
-        /// </summary>
-        protected internal abstract void BindServices();
-
         /// <inheritdoc />
         public void Dispose()
         {
@@ -42,6 +37,11 @@ namespace Fabric.Core.Runtime
 
             Bindings.Clear();
         }
+
+        /// <summary>
+        /// Function for subclasses to override to register services
+        /// </summary>
+        protected internal abstract void BindServices();
 
         /// <summary>
         /// Retrieves a service by generic StateType.

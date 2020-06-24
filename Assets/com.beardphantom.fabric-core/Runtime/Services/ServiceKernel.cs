@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
-using UniRx.Async;
 
 namespace Fabric.Core.Runtime
 {
@@ -17,6 +17,17 @@ namespace Fabric.Core.Runtime
         public void RegisterModule(ServiceModule module)
         {
             _modules.Add(module);
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            foreach (var module in _modules)
+            {
+                module.Dispose();
+            }
+
+            _modules.Clear();
         }
 
         /// <summary>
@@ -39,17 +50,6 @@ namespace Fabric.Core.Runtime
             }
 
             return null;
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            foreach (var module in _modules)
-            {
-                module.Dispose();
-            }
-
-            _modules.Clear();
         }
 
         internal async UniTask SetupAsync()
