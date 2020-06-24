@@ -2,6 +2,10 @@
 {
     public interface IPostKernelServicesBound
     {
+        #region Methods
+
         void OnServicesBound();
+
+        #endregion
     }
 }

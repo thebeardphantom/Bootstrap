@@ -1,4 +1,4 @@
-﻿using UniRx.Async;
+﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Fabric.Core.Runtime
@@ -33,8 +33,6 @@ namespace Fabric.Core.Runtime
 
         #region Methods
 
-        protected abstract UniTask BootstrapAppAsync();
-
         public async UniTask StartBootstrapAsync()
         {
             if (State != BootstrapperState.Complete)
@@ -50,6 +48,8 @@ namespace Fabric.Core.Runtime
             State = BootstrapperState.Complete;
             PostHandler.OnPostBootstrap(this);
         }
+
+        protected abstract UniTask BootstrapAppAsync();
 
         protected virtual async void Awake()
         {
@@ -74,8 +74,10 @@ namespace Fabric.Core.Runtime
 #else
             var bootstrapHandler = new BuildBootstrapHandler();
             
-            preHandler = bootstrapHandler;
-            postHandler = bootstrapHandler;
+            preHandler
+ = bootstrapHandler;
+            postHandler
+ = bootstrapHandler;
 #endif
         }
 

@@ -1,6 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
-using UniRx.Async;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using UnityEngine.Assertions;
 
 namespace Fabric.Core.Runtime
@@ -85,7 +84,7 @@ namespace Fabric.Core.Runtime
 
         public static T Get<T>() where T : class
         {
-            return (T)Get(typeof(T));
+            return (T) Get(typeof(T));
         }
 
         public static object Get(Type serviceType)

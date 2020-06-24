@@ -1,10 +1,10 @@
 ﻿#if UNITY_EDITOR
 using System;
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
-using System.Collections.Generic;
-using UnityEditor;
 
 namespace Fabric.Core.Runtime
 {

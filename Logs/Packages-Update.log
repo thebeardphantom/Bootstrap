@@ -43,3 +43,14 @@ The following packages were added:
   com.unity.textmeshpro@2.0.1
   com.unity.timeline@1.2.14
   com.unity.ugui@1.0.0
+
+=== Tue Jun 23 21:11:46 2020
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were added:
+  com.unity.ide.visualstudio@2.0.1
+The following packages were updated:
+  com.unity.addressables from version 1.1.10 to 1.8.4
+  com.unity.test-framework from version 1.1.13 to 1.1.14

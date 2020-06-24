@@ -1,4 +1,4 @@
-﻿using UniRx.Async;
+﻿using Cysharp.Threading.Tasks;
 
 namespace Fabric.Core.Runtime
 {
