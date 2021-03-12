@@ -1,6 +1,6 @@
 ﻿using UnityEngine.SceneManagement;
 
-namespace Fabric.Core.Runtime
+namespace BeardPhantom.Fabric.Core
 {
     public class BuildBootstrapHandler : IPreBootstrapHandler, IPostBootstrapHandler
     {

@@ -2,11 +2,11 @@
 
 namespace BeardPhantom.Fabric.Core
 {
-    public interface IInitable
+    public interface ISelfBindable<in T> : IBindable<T>
     {
         #region Methods
 
-        UniTask InitAsync();
+        UniTask SelfBindAsync();
 
         #endregion
     }

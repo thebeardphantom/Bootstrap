@@ -1,6 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 
-namespace Fabric.Core.Runtime
+namespace BeardPhantom.Fabric.Core
 {
     public interface IAsyncLoadable
     {
