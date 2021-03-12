@@ -1,4 +1,4 @@
-![Publish_UPM](https://github.com/thebeardphantom/Fabric.Core/workflows/Publish_UPM/badge.svg)
+[![openupm](https://img.shields.io/npm/v/com.beardphantom.fabric-core?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.beardphantom.fabric-core/)
 
 # Fabric.Core
 The base of the Fabric.* packages.
