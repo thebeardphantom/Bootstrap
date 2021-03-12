@@ -28,9 +28,9 @@
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/Services/ServiceLocation.cs" />
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/Services/ServiceLocator.cs" />
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/ListPool.cs" />
-      <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/package.json" />
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Editor/BootstrapperEditorHelper.cs" />
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/LogTags.cs" />
+      <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/package.json" />
     </changedPaths>
   </component>
   <component name="ProjectId" id="1pePIjht16j0TUSsIbeUdk7AZ0E" />
@@ -72,7 +72,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1615540508220</updated>
-      <workItem from="1615540513828" duration="2683000" />
+      <workItem from="1615540513828" duration="3266000" />
     </task>
     <servers />
   </component>
