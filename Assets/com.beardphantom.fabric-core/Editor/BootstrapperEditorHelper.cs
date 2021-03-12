@@ -1,12 +1,11 @@
-﻿using BeardPhantom.Fabric.Core;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Fabric.Core.Editor
+namespace BeardPhantom.Fabric.Core.Editor
 {
     [InitializeOnLoad]
     public static class BootstrapperEditorHelper
@@ -47,13 +46,13 @@ namespace Fabric.Core.Editor
                 return;
             }
 
-            FabricLog.Logger.Log("Fabric.Core", "Running bootstrap helper...");
+            FabricLog.Logger.Log(LogTags.FABRIC_CORE, "Running bootstrap helper...");
 
-            var bootstrapScene = EditorBuildSettings.scenes
-                .FirstOrDefault(s => AssetDatabase.LoadAssetAtPath<SceneAsset>(s.path) != null);
+            var bootstrapScene = EditorBuildSettings.scenes.FirstOrDefault(
+                s => AssetDatabase.LoadAssetAtPath<SceneAsset>(s.path) != null);
             if (bootstrapScene == null)
             {
-                FabricLog.Logger.LogWarning("Fabric.Core", "No valid first scene in EditorBuildSettings");
+                FabricLog.Logger.LogWarning(LogTags.FABRIC_CORE, "No valid first scene in EditorBuildSettings");
             }
             else
             {
@@ -79,7 +78,7 @@ namespace Fabric.Core.Editor
                 if (!string.IsNullOrWhiteSpace(serializedBootstrapperJson))
                 {
                     SessionState.SetString(
-                        EditorBootstrapHandler.SERIALIZED_BOOTSTRAPPER_JSON_KEY, 
+                        EditorBootstrapHandler.SERIALIZED_BOOTSTRAPPER_JSON_KEY,
                         serializedBootstrapperJson);
                 }
             }

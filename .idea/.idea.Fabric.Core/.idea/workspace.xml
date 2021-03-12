@@ -8,6 +8,8 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A1AC446D-F41C-4A67-BECF-2F8317DC1792/67/ffacc1d8/ILogger.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A1AC446D-F41C-4A67-BECF-2F8317DC1792/3e/686c8756/Logger.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/ListPool.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
@@ -27,6 +29,8 @@
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/Services/ServiceLocator.cs" />
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/ListPool.cs" />
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/package.json" />
+      <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Editor/BootstrapperEditorHelper.cs" />
+      <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/LogTags.cs" />
     </changedPaths>
   </component>
   <component name="ProjectId" id="1pePIjht16j0TUSsIbeUdk7AZ0E" />
@@ -68,7 +72,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1615540508220</updated>
-      <workItem from="1615540513828" duration="1702000" />
+      <workItem from="1615540513828" duration="2683000" />
     </task>
     <servers />
   </component>
