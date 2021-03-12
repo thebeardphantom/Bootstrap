@@ -4,21 +4,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Fabric.Core.Runtime
+namespace BeardPhantom.Fabric.Core
 {
     /// <summary>
     /// A simple service container
     /// </summary>
-    public abstract class ServiceModule : IDisposable
+    public abstract class ServiceModule : IDisposable, IInitable
     {
         #region Fields
 
         /// <summary>
         /// Cached service instances
         /// </summary>
-        internal readonly Dictionary<Type, object> Bindings = new Dictionary<Type, object>();
-
-        private readonly HashSet<object> _visitorSet = new HashSet<object>();
+        private readonly Dictionary<Type, object> _bindings = new Dictionary<Type, object>();
 
         #endregion
 
@@ -27,7 +25,7 @@ namespace Fabric.Core.Runtime
         /// <inheritdoc />
         public void Dispose()
         {
-            foreach (var binding in Bindings.Values)
+            foreach (var binding in _bindings.Values)
             {
                 if (binding is IDisposable disposable)
                 {
@@ -35,7 +33,23 @@ namespace Fabric.Core.Runtime
                 }
             }
 
-            Bindings.Clear();
+            _bindings.Clear();
+        }
+
+        public async UniTask InitAsync()
+        {
+            using (ListPool<UniTask>.Get(out var tasks, _bindings.Count))
+            {
+                foreach (var service in _bindings.Values)
+                {
+                    if (service is IInitable initable)
+                    {
+                        tasks.Add(initable.InitAsync());
+                    }
+                }
+
+                await UniTask.WhenAll(tasks);
+            }
         }
 
         /// <summary>
@@ -56,7 +70,7 @@ namespace Fabric.Core.Runtime
         /// </summary>
         protected internal object Get(Type serviceType)
         {
-            Bindings.TryGetValue(serviceType, out var service);
+            _bindings.TryGetValue(serviceType, out var service);
             return service;
         }
 
@@ -96,13 +110,13 @@ namespace Fabric.Core.Runtime
         /// </summary>
         protected object Bind(Type type, object provider)
         {
-            if (Bindings.ContainsKey(type))
+            if (_bindings.ContainsKey(type))
             {
-                Bindings[type] = provider;
+                _bindings[type] = provider;
             }
             else
             {
-                Bindings.Add(type, provider);
+                _bindings.Add(type, provider);
             }
 
             if (provider is Object obj)
@@ -111,38 +125,6 @@ namespace Fabric.Core.Runtime
             }
 
             return provider;
-        }
-
-        internal void FireServicesBound()
-        {
-            foreach (var service in Bindings.Values)
-            {
-                if (service is IPostKernelServicesBound postKernelServicesBound
-                    && !_visitorSet.Contains(service))
-                {
-                    _visitorSet.Add(service);
-                    postKernelServicesBound.OnServicesBound();
-                }
-            }
-
-            _visitorSet.Clear();
-        }
-
-        internal async UniTask InitAsyncServicesAsync()
-        {
-            var tasks = new List<UniTask>();
-            foreach (var service in Bindings.Values)
-            {
-                if (service is IAsyncInitService asyncService
-                    && !_visitorSet.Contains(service))
-                {
-                    _visitorSet.Add(service);
-                    tasks.Add(asyncService.InitAsync());
-                }
-            }
-
-            _visitorSet.Clear();
-            await UniTask.WhenAll(tasks);
         }
 
         #endregion

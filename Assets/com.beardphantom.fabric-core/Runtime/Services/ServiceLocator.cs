@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Fabric.Core.Runtime
+namespace BeardPhantom.Fabric.Core
 {
-    public sealed class ServiceKernel : IDisposable
+    public sealed class ServiceLocator : IDisposable, IInitable
     {
         #region Fields
 
@@ -17,6 +17,7 @@ namespace Fabric.Core.Runtime
         public void RegisterModule(ServiceModule module)
         {
             _modules.Add(module);
+            module.BindServices();
         }
 
         /// <inheritdoc />
@@ -30,15 +31,28 @@ namespace Fabric.Core.Runtime
             _modules.Clear();
         }
 
+        public async UniTask InitAsync()
+        {
+            using (ListPool<UniTask>.Get(out var tasks, _modules.Count))
+            {
+                foreach (var module in _modules)
+                {
+                    tasks.Add(module.InitAsync());
+                }
+
+                await UniTask.WhenAll(tasks);
+            }
+        }
+
         /// <summary>
         /// Retrieves a service by generic StateType.
         /// </summary>
-        internal T Get<T>() where T : class
+        internal T Locate<T>() where T : class
         {
-            return Get(typeof(T)) as T;
+            return (T) Locate(typeof(T));
         }
 
-        internal object Get(Type serviceType)
+        internal object Locate(Type serviceType)
         {
             foreach (var module in _modules)
             {
@@ -50,27 +64,6 @@ namespace Fabric.Core.Runtime
             }
 
             return null;
-        }
-
-        internal async UniTask SetupAsync()
-        {
-            foreach (var module in _modules)
-            {
-                module.BindServices();
-            }
-
-            foreach (var module in _modules)
-            {
-                module.FireServicesBound();
-            }
-
-            var tasks = new List<UniTask>();
-            foreach (var module in _modules)
-            {
-                tasks.Add(module.InitAsyncServicesAsync());
-            }
-
-            await UniTask.WhenAll(tasks);
         }
 
         #endregion

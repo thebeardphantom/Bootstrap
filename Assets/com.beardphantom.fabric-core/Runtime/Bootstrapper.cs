@@ -1,23 +1,11 @@
 ﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace Fabric.Core.Runtime
+namespace BeardPhantom.Fabric.Core
 {
     public abstract class Bootstrapper : MonoBehaviour
     {
-        #region Types
-
-        public enum BootstrapperState
-        {
-            WaitingOnBootstrap,
-            Complete
-        }
-
-        #endregion
-
         #region Fields
-
-        protected static Bootstrapper Instance;
 
         protected IPreBootstrapHandler PreHandler;
 
@@ -25,42 +13,9 @@ namespace Fabric.Core.Runtime
 
         #endregion
 
-        #region Properties
-
-        public BootstrapperState State { get; private set; } = BootstrapperState.Complete;
-
-        #endregion
-
         #region Methods
 
-        public async UniTask StartBootstrapAsync()
-        {
-            if (State != BootstrapperState.Complete)
-            {
-                return;
-            }
-
-            State = BootstrapperState.WaitingOnBootstrap;
-            PreHandler.OnPreBootstrap(this);
-
-            await BootstrapAppAsync();
-
-            State = BootstrapperState.Complete;
-            PostHandler.OnPostBootstrap(this);
-        }
-
         protected abstract UniTask BootstrapAppAsync();
-
-        protected virtual async void Awake()
-        {
-            if (!EnsureSingleInstance())
-            {
-                return;
-            }
-
-            AssignBootstrapHandlers(out PreHandler, out PostHandler);
-            await StartBootstrapAsync();
-        }
 
         protected virtual void AssignBootstrapHandlers(
             out IPreBootstrapHandler preHandler,
@@ -68,20 +23,21 @@ namespace Fabric.Core.Runtime
         {
 #if UNITY_EDITOR
             var editorBootstrapHandler = new EditorBootstrapHandler();
-
             preHandler = editorBootstrapHandler;
             postHandler = editorBootstrapHandler;
 #else
             var bootstrapHandler = new BuildBootstrapHandler();
-            
-            preHandler
- = bootstrapHandler;
-            postHandler
- = bootstrapHandler;
+            preHandler = bootstrapHandler;
+            postHandler = bootstrapHandler;
 #endif
         }
 
-        protected virtual void OnValidate()
+        protected void Reset()
+        {
+            OnValidate();
+        }
+
+        private void OnValidate()
         {
             transform.parent = null;
             transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
@@ -89,27 +45,12 @@ namespace Fabric.Core.Runtime
             name = "--BOOTSTRAP--";
         }
 
-        protected virtual void Reset()
+        private async UniTaskVoid Start()
         {
-            OnValidate();
-        }
-
-        protected bool ShouldDestroySelf()
-        {
-            return Instance != null && Instance != this;
-        }
-
-        private bool EnsureSingleInstance()
-        {
-            if (ShouldDestroySelf())
-            {
-                Destroy(gameObject);
-                return false;
-            }
-
-            Instance = this;
-            DontDestroyOnLoad(this);
-            return true;
+            AssignBootstrapHandlers(out PreHandler, out PostHandler);
+            PreHandler.OnPreBootstrap(this);
+            await BootstrapAppAsync();
+            PostHandler.OnPostBootstrap(this);
         }
 
         #endregion
