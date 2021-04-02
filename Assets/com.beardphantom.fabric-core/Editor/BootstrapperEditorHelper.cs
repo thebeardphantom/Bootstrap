@@ -29,19 +29,33 @@ namespace BeardPhantom.Fabric.Core.Editor
 
         private static void OnPlayModeStateChanged(PlayModeStateChange mode)
         {
-            if (!EnableSceneManagement || mode == PlayModeStateChange.EnteredPlayMode)
+            switch (mode)
             {
-                return;
-            }
+                case PlayModeStateChange.ExitingEditMode:
+                {
+                    if (EnableSceneManagement)
+                    {
+                        PrepareForEnteringPlayMode();
+                    }
 
+                    break;
+                }
+                case PlayModeStateChange.ExitingPlayMode:
+                {
+                    App.CleanupEditorOnly();
+                    break;
+                }
+            }
+        }
+
+        private static void PrepareForEnteringPlayMode()
+        {
             SessionState.EraseString(EditorBootstrapHandler.LOADED_SCENES_KEY);
             SessionState.EraseString(EditorBootstrapHandler.SERIALIZED_BOOTSTRAPPER_JSON_KEY);
             EditorSceneManager.playModeStartScene = null;
 
             var bootstrapper = Object.FindObjectOfType<Bootstrapper>();
-            if (bootstrapper == null
-                || !bootstrapper.isActiveAndEnabled
-                || mode != PlayModeStateChange.ExitingEditMode)
+            if (bootstrapper == null || !bootstrapper.isActiveAndEnabled)
             {
                 return;
             }
