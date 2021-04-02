@@ -47,10 +47,17 @@ namespace BeardPhantom.Fabric.Core
 
         private async UniTaskVoid Start()
         {
-            AssignBootstrapHandlers(out PreHandler, out PostHandler);
-            PreHandler.OnPreBootstrap(this);
-            await BootstrapAppAsync();
-            PostHandler.OnPostBootstrap(this);
+            if (gameObject.scene.buildIndex != 0)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                AssignBootstrapHandlers(out PreHandler, out PostHandler);
+                PreHandler.OnPreBootstrap(this);
+                await BootstrapAppAsync();
+                PostHandler.OnPostBootstrap(this);
+            }
         }
 
         #endregion

@@ -32,6 +32,7 @@ namespace BeardPhantom.Fabric.Core
         [Conditional("UNITY_EDITOR")]
         public static void CleanupEditorOnly()
         {
+            FabricLog.Logger.Log("App Cleanup");
             _instance?.Dispose();
             _instance = null;
         }
