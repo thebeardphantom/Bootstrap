@@ -17,12 +17,10 @@
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/AsyncUtility.cs" />
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/IPostBootstrapHandler.cs" />
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/ISelfInitable.cs" />
-      <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/App.cs" />
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/IBindable.cs" />
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/ISelfBindable.cs" />
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/IInitable.cs" />
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/Bootstrapper.cs" />
-      <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/App.Static.cs" />
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/Services/ServiceKernel.cs" />
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/Services/ServiceModule.cs" />
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/Services/ServiceLocation.cs" />
@@ -31,6 +29,8 @@
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Editor/BootstrapperEditorHelper.cs" />
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/LogTags.cs" />
       <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/package.json" />
+      <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/App.Static.cs" />
+      <option value="$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/App.cs" />
     </changedPaths>
   </component>
   <component name="ProjectId" id="1pePIjht16j0TUSsIbeUdk7AZ0E" />
@@ -73,6 +73,8 @@
       <option name="presentableId" value="Default" />
       <updated>1615540508220</updated>
       <workItem from="1615540513828" duration="3266000" />
+      <workItem from="1615842853522" duration="1190000" />
+      <workItem from="1617324169700" duration="351000" />
     </task>
     <servers />
   </component>

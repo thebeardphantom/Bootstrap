@@ -2,7 +2,7 @@
 
 namespace BeardPhantom.Fabric.Core
 {
-    public partial class App
+    public sealed partial class App
     {
         #region Fields
 
@@ -38,7 +38,7 @@ namespace BeardPhantom.Fabric.Core
 
         public static T GetService<T>() where T : class
         {
-            return Instance._serviceLocator.Locate<T>();
+            return Instance.ServiceLocator.Locate<T>();
         }
 
         #endregion
