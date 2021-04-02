@@ -2,11 +2,11 @@
 
 namespace BeardPhantom.Fabric.Core
 {
-    public partial class App : IDisposable
+    public sealed partial class App : IDisposable
     {
         #region Fields
 
-        private readonly ServiceLocator _serviceLocator = new ServiceLocator();
+        public readonly ServiceLocator ServiceLocator = new ServiceLocator();
 
         #endregion
 
@@ -15,7 +15,7 @@ namespace BeardPhantom.Fabric.Core
         /// <inheritdoc />
         public void Dispose()
         {
-            _serviceLocator?.Dispose();
+            ServiceLocator?.Dispose();
         }
 
         #endregion
