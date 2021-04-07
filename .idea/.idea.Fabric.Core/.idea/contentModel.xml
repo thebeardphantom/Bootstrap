@@ -18,11 +18,9 @@
             <e p="EditorBootstrapHandler.cs" t="Include" />
             <e p="Fabric.Core.Runtime.asmdef" t="Include" />
             <e p="FabricLog.cs" t="Include" />
-            <e p="IBindable.cs" t="Include" />
             <e p="IInitable.cs" t="Include" />
             <e p="IPostBootstrapHandler.cs" t="Include" />
             <e p="IPreBootstrapHandler.cs" t="Include" />
-            <e p="ISelfBindable.cs" t="Include" />
             <e p="ListPool.cs" t="Include" />
             <e p="LogTags.cs" t="Include" />
             <e p="Services" t="Include">
