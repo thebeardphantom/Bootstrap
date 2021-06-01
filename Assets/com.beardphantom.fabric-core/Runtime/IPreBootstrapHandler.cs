@@ -1,4 +1,4 @@
-﻿namespace BeardPhantom.Fabric.Core
+﻿namespace Fabric.Core.Runtime
 {
     public interface IPreBootstrapHandler
     {

@@ -1,6 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 
-namespace BeardPhantom.Fabric.Core
+namespace Fabric.Core.Runtime
 {
     public interface IInitable
     {

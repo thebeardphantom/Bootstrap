@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace BeardPhantom.Fabric.Core
+namespace Fabric.Core.Runtime
 {
     public sealed class ServiceLocator : IDisposable, IInitable
     {

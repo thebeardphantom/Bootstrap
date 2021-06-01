@@ -1,7 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace BeardPhantom.Fabric.Core
+namespace Fabric.Core.Runtime
 {
     public abstract class Bootstrapper : MonoBehaviour
     {

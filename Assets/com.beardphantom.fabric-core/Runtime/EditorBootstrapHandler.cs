@@ -6,7 +6,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 
-namespace BeardPhantom.Fabric.Core
+namespace Fabric.Core.Runtime
 {
     public class EditorBootstrapHandler : IPreBootstrapHandler, IPostBootstrapHandler
     {

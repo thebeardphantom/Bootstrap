@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace BeardPhantom.Fabric.Core
+namespace Fabric.Core.Runtime
 {
     public sealed partial class App
     {
