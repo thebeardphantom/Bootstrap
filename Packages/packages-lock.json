@@ -1,11 +1,11 @@
 {
   "dependencies": {
     "com.cysharp.unitask": {
-      "version": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
+      "version": "2.2.5",
       "depth": 0,
-      "source": "git",
+      "source": "registry",
       "dependencies": {},
-      "hash": "18f2746f0d30a1b870d9835f2f16d15b56476a33"
+      "url": "https://package.openupm.com"
     },
     "com.unity.ext.nunit": {
       "version": "1.0.6",
