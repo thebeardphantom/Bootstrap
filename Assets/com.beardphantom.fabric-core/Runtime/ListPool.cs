@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Fabric.Core.Runtime
 {
-    public static class ListPool<T>
+    internal static class ListPool<T>
     {
         #region Types
 
-        public class PooledList : IDisposable
+        internal class PooledList : IDisposable
         {
             #region Fields
 
@@ -46,7 +46,7 @@ namespace Fabric.Core.Runtime
 
         #region Methods
 
-        public static PooledList Get(out List<T> list, int capacity = -1)
+        internal static PooledList Get(out List<T> list, int capacity = -1)
         {
             if (_pool.Count == 0)
             {
@@ -66,7 +66,7 @@ namespace Fabric.Core.Runtime
             return pooledList;
         }
 
-        public static void Return(PooledList pooledList)
+        private static void Return(PooledList pooledList)
         {
             _pool.Add(pooledList);
         }
