@@ -2,11 +2,13 @@
 
 namespace Fabric.Core.Runtime
 {
-    public interface IInitable
+    public interface IFabricService
     {
         #region Methods
 
-        UniTask InitAsync();
+        UniTask OnCreateServiceAsync();
+
+        UniTask OnAllServicesCreatedAsync();
 
         #endregion
     }

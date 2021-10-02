@@ -33,13 +33,17 @@ namespace Fabric.Core.Runtime
         public static void CleanupEditorOnly()
         {
             FabricLog.Logger.Log("App Cleanup");
-            _instance?.Dispose();
             _instance = null;
         }
 
-        public static T GetService<T>() where T : class
+        public static bool TryLocate<T>(out T service) where T : class
         {
-            return Instance.ServiceLocator.Locate<T>();
+            return Instance.ServiceLocator.TryLocateService(out service);
+        }
+
+        public static T Locate<T>() where T : class
+        {
+            return Instance.ServiceLocator.LocateService<T>();
         }
 
         #endregion

@@ -1,4 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 namespace Fabric.Core.Runtime
@@ -13,9 +15,19 @@ namespace Fabric.Core.Runtime
 
         #endregion
 
+        #region Properties
+
+        [field: SerializeField]
+        private GameObject ServicesPrefab { get; set; }
+
+        #endregion
+
         #region Methods
 
-        protected abstract UniTask BootstrapAppAsync();
+        protected virtual void GetBootstrapSteps(List<IBootstrapStep> stepList)
+        {
+            stepList.Add(new CreateServiceLocatorBootstrapStep(ServicesPrefab));
+        }
 
         protected virtual void AssignBootstrapHandlers(
             out IPreBootstrapHandler preHandler,
@@ -34,10 +46,15 @@ namespace Fabric.Core.Runtime
 
         protected void Reset()
         {
-            OnValidate();
+            ResetGameObjectInHierarchy();
         }
 
-        private void OnValidate()
+        protected void OnValidate()
+        {
+            ResetGameObjectInHierarchy();
+        }
+
+        protected void ResetGameObjectInHierarchy()
         {
             transform.parent = null;
             transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
@@ -45,6 +62,7 @@ namespace Fabric.Core.Runtime
             name = "--BOOTSTRAP--";
         }
 
+        [SuppressMessage("ReSharper", "Unity.IncorrectMethodSignature")]
         private async UniTaskVoid Start()
         {
             if (gameObject.scene.buildIndex != 0)
@@ -57,6 +75,19 @@ namespace Fabric.Core.Runtime
                 PreHandler.OnPreBootstrap(this);
                 await BootstrapAppAsync();
                 PostHandler.OnPostBootstrap(this);
+            }
+        }
+
+        private async UniTask BootstrapAppAsync()
+        {
+            using (ListPool<IBootstrapStep>.Get(out var stepList))
+            {
+                GetBootstrapSteps(stepList);
+                foreach (var step in stepList)
+                {
+                    FabricLog.Logger.Log($"Executing bootstrap step {step.GetType()}");
+                    await step.ExecuteAsync();
+                }
             }
         }
 
