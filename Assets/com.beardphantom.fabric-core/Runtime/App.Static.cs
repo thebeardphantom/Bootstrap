@@ -33,6 +33,7 @@ namespace Fabric.Core.Runtime
         public static void CleanupEditorOnly()
         {
             FabricLog.Logger.Log("App Cleanup");
+            _instance?.Dispose();
             _instance = null;
         }
 
