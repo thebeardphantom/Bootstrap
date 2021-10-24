@@ -41,7 +41,7 @@ namespace Fabric.Core.Editor
 
                     break;
                 }
-                case PlayModeStateChange.ExitingPlayMode:
+                case PlayModeStateChange.EnteredEditMode:
                 {
                     App.CleanupEditorOnly();
                     break;

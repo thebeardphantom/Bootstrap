@@ -71,3 +71,11 @@ Update Mode: updateDependencies
 
 The following packages were updated:
   com.unity.test-framework from version 1.1.24 to 1.1.27
+
+=== Sun Oct 24 00:23:33 2021
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.test-framework from version 1.1.27 to 1.1.29

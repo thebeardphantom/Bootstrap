@@ -32,11 +32,11 @@ namespace Fabric.Core.Runtime
                 {
                     var serviceType = service.GetType();
                     _services.Add(serviceType, service);
-                    if (service is IBindableService bindableService)
+                    if (service is IFabricService fabricService)
                     {
                         using (ListPool<Type>.Get(out var extraBindableTypes))
                         {
-                            bindableService.GetExtraBindableTypes(extraBindableTypes);
+                            fabricService.GetExtraBindableTypes(extraBindableTypes);
                             foreach (var extraType in extraBindableTypes)
                             {
                                 _services.Add(extraType, service);
@@ -73,7 +73,7 @@ namespace Fabric.Core.Runtime
 
                 await UniTask.WhenAll(tasks);
             }
-            
+
             services.SetActive(true);
         }
 

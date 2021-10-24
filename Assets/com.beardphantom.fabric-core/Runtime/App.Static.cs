@@ -32,7 +32,7 @@ namespace Fabric.Core.Runtime
         [Conditional("UNITY_EDITOR")]
         public static void CleanupEditorOnly()
         {
-            FabricLog.Logger.Log("App Cleanup");
+            FabricLog.Logger.Log("App CleanupEditorOnly");
             _instance?.Dispose();
             _instance = null;
         }
