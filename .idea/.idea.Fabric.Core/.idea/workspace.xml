@@ -44,6 +44,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="Attach to Unity Editor &amp; Play" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="UNITY_ATTACH_AND_PLAY" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
@@ -80,7 +81,9 @@
       <workItem from="1617324169700" duration="2238000" />
       <workItem from="1622532106193" duration="1021000" />
       <workItem from="1633208604646" duration="46000" />
-      <workItem from="1633208683205" duration="3734000" />
+      <workItem from="1633208683205" duration="4469000" />
+      <workItem from="1633279999450" duration="623000" />
+      <workItem from="1635060252288" duration="228000" />
     </task>
     <servers />
   </component>

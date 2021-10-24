@@ -1,4 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 
 namespace Fabric.Core.Runtime
 {
@@ -9,6 +11,8 @@ namespace Fabric.Core.Runtime
         UniTask OnCreateServiceAsync();
 
         UniTask OnAllServicesCreatedAsync();
+
+        void GetExtraBindableTypes(List<Type> extraTypes);
 
         #endregion
     }
