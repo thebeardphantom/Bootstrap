@@ -1,0 +1,15 @@
+{
+  "name": "com.beardphantom.fabric-core",
+  "displayName": "Fabric.Core",
+  "version": "1.10.0",
+  "unity": "2020.3",
+  "description": "The core library for Fabric.*.",
+  "keywords": [
+    "Fabric",
+    "Core"
+  ],
+  "category": "Framework",
+  "dependencies": {
+    "com.cysharp.unitask": "2.2.5"
+  }
+}

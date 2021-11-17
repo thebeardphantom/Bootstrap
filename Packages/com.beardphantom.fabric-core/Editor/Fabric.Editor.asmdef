@@ -1,10 +1,12 @@
 {
-    "name": "Fabric.Core.Runtime",
-    "rootNamespace": "Fabric.Core.Runtime",
+    "name": "BeardPhantom.Fabric.Core.Editor",
+    "rootNamespace": "BeardPhantom.Fabric.Core.Editor",
     "references": [
-        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+        "GUID:b9853a2b6bad9cc4c9ad4d8907949464"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

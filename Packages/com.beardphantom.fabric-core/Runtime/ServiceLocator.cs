@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Fabric.Core.Runtime
+namespace BeardPhantom.Fabric.Core
 {
     public class ServiceLocator : IServiceLocator
     {

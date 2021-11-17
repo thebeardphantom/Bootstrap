@@ -1,6 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
-namespace Fabric.Core.Runtime
+namespace BeardPhantom.Fabric.Core
 {
     public sealed partial class App
     {
@@ -12,18 +13,9 @@ namespace Fabric.Core.Runtime
 
         #region Properties
 
-        public static App Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new App();
-                }
+        public static App Instance => _instance ??= new App();
 
-                return _instance;
-            }
-        }
+        public static Guid SessionGuid => _instance.IsNull() ? Guid.Empty : _instance._sessionGuid;
 
         #endregion
 

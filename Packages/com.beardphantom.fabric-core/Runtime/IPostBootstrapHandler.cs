@@ -1,4 +1,4 @@
-﻿namespace Fabric.Core.Runtime
+﻿namespace BeardPhantom.Fabric.Core
 {
     public interface IPostBootstrapHandler
     {

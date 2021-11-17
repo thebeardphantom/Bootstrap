@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Fabric.Core.Runtime
+namespace BeardPhantom.Fabric.Core
 {
     public interface IFabricService
     {
