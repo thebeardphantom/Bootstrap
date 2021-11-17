@@ -1,5 +1,13 @@
 {
   "dependencies": {
+    "com.beardphantom.fabric-core": {
+      "version": "file:com.beardphantom.fabric-core",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.cysharp.unitask": "2.2.5"
+      }
+    },
     "com.cysharp.unitask": {
       "version": "2.2.5",
       "depth": 0,

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Fabric.Core.Runtime
+namespace BeardPhantom.Fabric.Core
 {
     public static class FabricLog
     {

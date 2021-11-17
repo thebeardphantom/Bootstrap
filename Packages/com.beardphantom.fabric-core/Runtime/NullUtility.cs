@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace Fabric.Core.Runtime
+namespace BeardPhantom.Fabric.Core
 {
-    public static class UnityObjectUtility
+    public static class NullUtility
     {
         #region Methods
 

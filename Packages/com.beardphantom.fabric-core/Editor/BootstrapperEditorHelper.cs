@@ -1,12 +1,11 @@
-﻿using Fabric.Core.Runtime;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Fabric.Core.Editor
+namespace BeardPhantom.Fabric.Core.Editor
 {
     [InitializeOnLoad]
     public static class BootstrapperEditorHelper
