@@ -1,65 +1,53 @@
 ﻿using Cysharp.Threading.Tasks;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 namespace BeardPhantom.Fabric.Core
 {
-    public abstract class Bootstrapper : MonoBehaviour
+    public sealed class Bootstrapper : MonoBehaviour
     {
         #region Fields
 
-        protected IPreBootstrapHandler PreHandler;
+        [SerializeField]
+        private GameObject _servicesPrefab;
 
-        protected IPostBootstrapHandler PostHandler;
+        private IPreBootstrapHandler _preHandler;
 
-        #endregion
-
-        #region Properties
-
-        [field: SerializeField]
-        private GameObject ServicesPrefab { get; set; }
+        private IPostBootstrapHandler _postHandler;
 
         #endregion
 
         #region Methods
 
-        protected virtual void GetBootstrapSteps(List<IBootstrapStep> stepList)
-        {
-            stepList.Add(new CreateServiceLocatorBootstrapStep(ServicesPrefab));
-        }
-
-        protected virtual void AssignBootstrapHandlers(
-            out IPreBootstrapHandler preHandler,
-            out IPostBootstrapHandler postHandler)
-        {
-#if UNITY_EDITOR
-            var editorBootstrapHandler = new EditorBootstrapHandler();
-            preHandler = editorBootstrapHandler;
-            postHandler = editorBootstrapHandler;
-#else
-            var bootstrapHandler = new BuildBootstrapHandler();
-            preHandler = bootstrapHandler;
-            postHandler = bootstrapHandler;
-#endif
-        }
-
-        protected void Reset()
+        private void Reset()
         {
             ResetGameObjectInHierarchy();
         }
 
-        protected void OnValidate()
+        private void OnValidate()
         {
             ResetGameObjectInHierarchy();
         }
 
-        protected void ResetGameObjectInHierarchy()
+        private void ResetGameObjectInHierarchy()
         {
             transform.parent = null;
             transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             transform.SetAsFirstSibling();
             name = "--BOOTSTRAP--";
+        }
+
+        private void AssignBootstrapHandlers()
+        {
+#if UNITY_EDITOR
+            var editorBootstrapHandler = new EditorBootstrapHandler();
+            _preHandler = editorBootstrapHandler;
+            _postHandler = editorBootstrapHandler;
+#else
+            var bootstrapHandler = new BuildBootstrapHandler();
+            _preHandler = bootstrapHandler;
+            _postHandler = bootstrapHandler;
+#endif
         }
 
         [SuppressMessage("ReSharper", "Unity.IncorrectMethodSignature")]
@@ -71,23 +59,10 @@ namespace BeardPhantom.Fabric.Core
             }
             else
             {
-                AssignBootstrapHandlers(out PreHandler, out PostHandler);
-                PreHandler.OnPreBootstrap(this);
-                await BootstrapAppAsync();
-                PostHandler.OnPostBootstrap(this);
-            }
-        }
-
-        private async UniTask BootstrapAppAsync()
-        {
-            using (ListPool<IBootstrapStep>.Get(out var stepList))
-            {
-                GetBootstrapSteps(stepList);
-                foreach (var step in stepList)
-                {
-                    FabricLog.Logger.Log($"Executing bootstrap step {step.GetType()}");
-                    await step.ExecuteAsync();
-                }
+                AssignBootstrapHandlers();
+                _preHandler.OnPreBootstrap(this);
+                await App.Instance.ServiceLocator.CreateAsync(_servicesPrefab);
+                _postHandler.OnPostBootstrap(this);
             }
         }
 
