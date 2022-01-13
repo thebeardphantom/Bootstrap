@@ -25,22 +25,19 @@ namespace BeardPhantom.Fabric.Core
             Object.DontDestroyOnLoad(services);
 
             // Bind all services
-            using (ListPool<MonoBehaviour>.Get(out var foundServices))
+            using (ListPool<IFabricService>.Get(out var foundServices))
             {
                 services.GetComponentsInChildren(true, foundServices);
                 foreach (var service in foundServices)
                 {
                     var serviceType = service.GetType();
                     _services.Add(serviceType, service);
-                    if (service is IFabricService fabricService)
+                    using (ListPool<Type>.Get(out var extraBindableTypes))
                     {
-                        using (ListPool<Type>.Get(out var extraBindableTypes))
+                        service.GetExtraBindableTypes(extraBindableTypes);
+                        foreach (var extraType in extraBindableTypes)
                         {
-                            fabricService.GetExtraBindableTypes(extraBindableTypes);
-                            foreach (var extraType in extraBindableTypes)
-                            {
-                                _services.Add(extraType, service);
-                            }
+                            _services.Add(extraType, service);
                         }
                     }
                 }
@@ -53,10 +50,11 @@ namespace BeardPhantom.Fabric.Core
                 {
                     if (service is IFabricService fabricService)
                     {
-                        tasks.Add(fabricService.OnCreateServiceAsync());
+                        tasks.Add(fabricService.InitServiceAsync());
                     }
                 }
 
+                // Wait for all
                 await UniTask.WhenAll(tasks);
             }
 
@@ -67,10 +65,11 @@ namespace BeardPhantom.Fabric.Core
                 {
                     if (service is IFabricService fabricService)
                     {
-                        tasks.Add(fabricService.OnAllServicesCreatedAsync());
+                        tasks.Add(fabricService.PostInitAllServicesAsync());
                     }
                 }
 
+                // Wait for all
                 await UniTask.WhenAll(tasks);
             }
 

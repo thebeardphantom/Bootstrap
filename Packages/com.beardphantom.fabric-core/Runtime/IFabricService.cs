@@ -8,10 +8,22 @@ namespace BeardPhantom.Fabric.Core
     {
         #region Methods
 
-        UniTask OnCreateServiceAsync();
+        /// <summary>
+        /// Called when this service should do "non-cooperative" work. There is no guarantee that any other services
+        /// are ready by this point.
+        /// </summary>
+        UniTask InitServiceAsync();
 
-        UniTask OnAllServicesCreatedAsync();
+        /// <summary>
+        /// Called when all services have been initalized. At this point all services are considered ready for
+        /// "cooperative" work. By this point all services should be considered ready"
+        /// </summary>
+        /// <returns></returns>
+        UniTask PostInitAllServicesAsync();
 
+        /// <summary>
+        /// For services that want to be locatable via multiple types.
+        /// </summary>
         void GetExtraBindableTypes(List<Type> extraTypes);
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace BeardPhantom.Fabric.Core
 {
@@ -17,6 +18,14 @@ namespace BeardPhantom.Fabric.Core
         private App()
         {
             _sessionGuid = Guid.NewGuid();
+
+            void OnApplicationQuitting()
+            {
+                IsQuitting = true;
+                Application.quitting -= OnApplicationQuitting;
+            }
+
+            Application.quitting += OnApplicationQuitting;
         }
 
         #endregion

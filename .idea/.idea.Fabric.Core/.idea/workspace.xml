@@ -9,7 +9,6 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A1AC446D-F41C-4A67-BECF-2F8317DC1792/3e/686c8756/Logger.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/com.beardphantom.fabric-core/Runtime/ListPool.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A1AC446D-F41C-4A67-BECF-2F8317DC1792/67/ffacc1d8/ILogger.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
@@ -84,7 +83,8 @@
       <workItem from="1633208683205" duration="4469000" />
       <workItem from="1633279999450" duration="623000" />
       <workItem from="1635060252288" duration="228000" />
-      <workItem from="1637141262941" duration="540000" />
+      <workItem from="1637141262941" duration="668000" />
+      <workItem from="1642069666402" duration="893000" />
     </task>
     <servers />
   </component>
