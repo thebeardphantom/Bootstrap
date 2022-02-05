@@ -76,18 +76,9 @@ namespace BeardPhantom.Fabric.Core
             services.SetActive(true);
         }
 
-        public bool TryLocateService<T>(out T service) where T : class
+        public bool TryLocateService(Type serviceType, out object service)
         {
-            if (_services.TryGetValue(typeof(T), out var rawObject))
-            {
-                service = rawObject as T;
-            }
-            else
-            {
-                service = default;
-            }
-
-            return service.IsNotNull();
+            return _services.TryGetValue(serviceType, out service);
         }
 
         /// <inheritdoc />
