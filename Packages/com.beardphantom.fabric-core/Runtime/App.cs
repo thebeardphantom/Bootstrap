@@ -39,9 +39,9 @@ namespace BeardPhantom.Fabric.Core
         }
 
         /// <inheritdoc />
-        public bool TryLocateService<T>(out T service) where T : class
+        public bool TryLocateService(Type serviceType, out object service)
         {
-            return ServiceLocator.TryLocateService(out service);
+            return ServiceLocator.TryLocateService(serviceType, out service);
         }
 
         #endregion
