@@ -54,6 +54,8 @@ namespace BeardPhantom.Fabric.Core
         public static void CleanupEditorOnly()
         {
             FabricLog.Logger.Log("App CleanupEditorOnly");
+            IsQuitting = false;
+            IsPlaying = false;
             _instance?.Dispose();
             _instance = null;
         }
