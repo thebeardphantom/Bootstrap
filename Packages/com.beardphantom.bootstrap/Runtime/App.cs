@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace BeardPhantom.Fabric.Core
+namespace BeardPhantom.Bootstrap
 {
     public sealed partial class App : IServiceLocator
     {

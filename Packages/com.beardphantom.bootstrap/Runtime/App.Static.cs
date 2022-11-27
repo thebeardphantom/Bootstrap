@@ -1,6 +1,7 @@
 ﻿using System;
+using UnityEngine;
 
-namespace BeardPhantom.Fabric.Core
+namespace BeardPhantom.Bootstrap
 {
     public sealed partial class App
     {
@@ -53,7 +54,7 @@ namespace BeardPhantom.Fabric.Core
 #if UNITY_EDITOR
         public static void CleanupEditorOnly()
         {
-            FabricLog.Logger.Log("App CleanupEditorOnly");
+            Debug.Log("[Bootstrapper] App CleanupEditorOnly");
             IsQuitting = false;
             IsPlaying = false;
             _instance?.Dispose();

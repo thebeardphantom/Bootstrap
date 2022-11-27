@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
-namespace BeardPhantom.Fabric.Core
+namespace BeardPhantom.Bootstrap
 {
     public sealed class Bootstrapper : MonoBehaviour
     {
@@ -60,9 +60,9 @@ namespace BeardPhantom.Fabric.Core
             else
             {
                 AssignBootstrapHandlers();
-                _preHandler.OnPreBootstrap(this);
+                await _preHandler.OnPreBootstrapAsync(this);
                 await App.Instance.ServiceLocator.CreateAsync(_servicesPrefab);
-                _postHandler.OnPostBootstrap(this);
+                await _postHandler.OnPostBootstrap(this);
             }
         }
 

@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e805add9-549d-4a41-926f-de3478837083" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Fabric.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Fabric.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/com.beardphantom.fabric-core/Runtime/App.Static.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/com.beardphantom.fabric-core/Runtime/App.Static.cs" afterDir="false" />
-    </list>
+    <list default="true" id="e805add9-549d-4a41-926f-de3478837083" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -90,7 +87,7 @@
       <workItem from="1637141262941" duration="668000" />
       <workItem from="1642069666402" duration="1077000" />
       <workItem from="1644101978547" duration="1361000" />
-      <workItem from="1644307283535" duration="51000" />
+      <workItem from="1644307283535" duration="147000" />
     </task>
     <servers />
   </component>

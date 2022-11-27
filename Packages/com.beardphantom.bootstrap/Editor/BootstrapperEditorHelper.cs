@@ -5,14 +5,14 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace BeardPhantom.Fabric.Core.Editor
+namespace BeardPhantom.Bootstrap.Editor
 {
     [InitializeOnLoad]
     public static class BootstrapperEditorHelper
     {
         #region Fields
 
-        public static bool EnableSceneManagement = true;
+        public static bool EnableSceneManagement { get; set; } = true;
 
         #endregion
 
@@ -50,8 +50,7 @@ namespace BeardPhantom.Fabric.Core.Editor
 
         private static void PrepareForEnteringPlayMode()
         {
-            SessionState.EraseString(EditorBootstrapHandler.LOADED_SCENES_KEY);
-            SessionState.EraseString(EditorBootstrapHandler.SERIALIZED_BOOTSTRAPPER_JSON_KEY);
+            SessionState.EraseString(EditorBootstrapHandler.EDIT_MODE_STATE);
             EditorSceneManager.playModeStartScene = null;
 
             var bootstrapper = Object.FindObjectOfType<Bootstrapper>();
@@ -60,13 +59,13 @@ namespace BeardPhantom.Fabric.Core.Editor
                 return;
             }
 
-            FabricLog.Logger.Log(LogTags.FABRIC_CORE, "Running bootstrap helper...");
+            Debug.Log("Running bootstrap helper...");
 
             var bootstrapScene = EditorBuildSettings.scenes.FirstOrDefault(
                 s => AssetDatabase.LoadAssetAtPath<SceneAsset>(s.path) != null);
             if (bootstrapScene == null)
             {
-                FabricLog.Logger.LogWarning(LogTags.FABRIC_CORE, "No valid first scene in EditorBuildSettings");
+                Debug.Log("[Bootstrapper] No valid first scene in EditorBuildSettings");
             }
             else
             {
@@ -83,17 +82,21 @@ namespace BeardPhantom.Fabric.Core.Editor
                     }
                 }
 
-                var scenesString = string.Join(
-                    EditorBootstrapHandler.LOADED_SCENES_SEPARATOR.ToString(),
-                    scenePaths);
-                SessionState.SetString(EditorBootstrapHandler.LOADED_SCENES_KEY, scenesString);
-
-                var serializedBootstrapperJson = EditorJsonUtility.ToJson(bootstrapper);
-                if (!string.IsNullOrWhiteSpace(serializedBootstrapperJson))
+                var bootstrapperJson = EditorJsonUtility.ToJson(bootstrapper);
+                if (!string.IsNullOrWhiteSpace(bootstrapperJson))
                 {
-                    SessionState.SetString(
-                        EditorBootstrapHandler.SERIALIZED_BOOTSTRAPPER_JSON_KEY,
-                        serializedBootstrapperJson);
+                    var selectedObjectPaths = Selection.gameObjects
+                        .Where(g => g != null && g.scene.IsValid())
+                        .Select(SelectedObjectPath.CreateInstance)
+                        .ToArray();
+                    var editModeState = new EditModeState
+                    {
+                        BootstrapperJson = bootstrapperJson,
+                        LoadedScenes = scenePaths.ToArray(),
+                        SelectedObjects = selectedObjectPaths
+                    };
+                    var editModeStateJson = EditorJsonUtility.ToJson(editModeState);
+                    SessionState.SetString(EditorBootstrapHandler.EDIT_MODE_STATE, editModeStateJson);
                 }
             }
         }

@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace BeardPhantom.Fabric.Core
+namespace BeardPhantom.Bootstrap
 {
-    public interface IFabricService
+    public interface IBootstrapService
     {
         #region Methods
 

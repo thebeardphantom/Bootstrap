@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BeardPhantom.Fabric.Core
+namespace BeardPhantom.Bootstrap
 {
     public class ServiceRef<T> where T : class
     {
