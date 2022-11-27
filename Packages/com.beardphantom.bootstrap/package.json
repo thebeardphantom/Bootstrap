@@ -1,9 +1,9 @@
 {
-  "name": "com.beardphantom.fabric-core",
-  "displayName": "Fabric.Core",
-  "version": "1.12.1",
+  "name": "com.beardphantom.bootstrap",
+  "displayName": "Bootstrap",
+  "version": "2.0.0",
   "unity": "2020.3",
-  "description": "The core library for Fabric.*.",
+  "description": "An async-first bootstrapping framework for Unity projects.",
   "keywords": [
     "Fabric",
     "Core"

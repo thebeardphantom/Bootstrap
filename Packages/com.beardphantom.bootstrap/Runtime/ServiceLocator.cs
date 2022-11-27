@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace BeardPhantom.Fabric.Core
+namespace BeardPhantom.Bootstrap
 {
     public class ServiceLocator : IServiceLocator
     {
@@ -25,7 +25,7 @@ namespace BeardPhantom.Fabric.Core
             Object.DontDestroyOnLoad(services);
 
             // Bind all services
-            using (ListPool<IFabricService>.Get(out var foundServices))
+            using (ListPool<IBootstrapService>.Get(out var foundServices))
             {
                 services.GetComponentsInChildren(true, foundServices);
                 foreach (var service in foundServices)
@@ -48,7 +48,7 @@ namespace BeardPhantom.Fabric.Core
             {
                 foreach (var service in _services.Values)
                 {
-                    if (service is IFabricService fabricService)
+                    if (service is IBootstrapService fabricService)
                     {
                         tasks.Add(fabricService.InitServiceAsync());
                     }
@@ -63,7 +63,7 @@ namespace BeardPhantom.Fabric.Core
             {
                 foreach (var service in _services.Values)
                 {
-                    if (service is IFabricService fabricService)
+                    if (service is IBootstrapService fabricService)
                     {
                         tasks.Add(fabricService.PostInitAllServicesAsync());
                     }

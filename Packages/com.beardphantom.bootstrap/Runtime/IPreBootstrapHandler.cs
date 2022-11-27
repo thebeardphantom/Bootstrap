@@ -1,0 +1,13 @@
+﻿using Cysharp.Threading.Tasks;
+
+namespace BeardPhantom.Bootstrap
+{
+    public interface IPreBootstrapHandler
+    {
+        #region Methods
+
+        UniTask OnPreBootstrapAsync(Bootstrapper bootstrapper);
+
+        #endregion
+    }
+}

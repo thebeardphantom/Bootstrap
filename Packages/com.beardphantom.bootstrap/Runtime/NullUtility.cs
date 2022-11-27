@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace BeardPhantom.Fabric.Core
+namespace BeardPhantom.Bootstrap
 {
-    public static class NullUtility
+    internal static class NullUtility
     {
         #region Methods
 

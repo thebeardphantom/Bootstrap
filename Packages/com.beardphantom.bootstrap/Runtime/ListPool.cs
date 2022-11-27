@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace BeardPhantom.Fabric.Core
+namespace BeardPhantom.Bootstrap
 {
     internal static class ListPool<T>
     {
