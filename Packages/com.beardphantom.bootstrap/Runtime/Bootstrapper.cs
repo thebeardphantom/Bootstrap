@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BeardPhantom.Bootstrap
 {
-    public sealed class Bootstrapper : MonoBehaviour
+    public sealed partial class Bootstrapper : MonoBehaviour
     {
         #region Fields
 
@@ -18,24 +18,6 @@ namespace BeardPhantom.Bootstrap
         #endregion
 
         #region Methods
-
-        private void Reset()
-        {
-            ResetGameObjectInHierarchy();
-        }
-
-        private void OnValidate()
-        {
-            ResetGameObjectInHierarchy();
-        }
-
-        private void ResetGameObjectInHierarchy()
-        {
-            transform.parent = null;
-            transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-            transform.SetAsFirstSibling();
-            name = "--BOOTSTRAP--";
-        }
 
         private void AssignBootstrapHandlers()
         {
