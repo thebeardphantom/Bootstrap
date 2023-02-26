@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "com.beardphantom.fabric-core": {
-      "version": "file:com.beardphantom.fabric-core",
+    "com.beardphantom.bootstrap": {
+      "version": "file:com.beardphantom.bootstrap",
       "depth": 0,
       "source": "embedded",
       "dependencies": {
@@ -23,16 +23,16 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "2.0.7",
+      "version": "3.0.18",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.test-framework": "1.1.1"
+        "com.unity.ext.nunit": "1.0.6"
       },
       "url": "https://packages.unity.com"
     },
     "com.unity.test-framework": {
-      "version": "1.1.29",
+      "version": "1.1.33",
       "depth": 0,
       "source": "registry",
       "dependencies": {
