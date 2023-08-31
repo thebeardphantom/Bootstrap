@@ -53,7 +53,7 @@ namespace BeardPhantom.Bootstrap
 #if UNITY_EDITOR
         public static void CleanupEditorOnly()
         {
-            Debug.Log("App CleanupEditorOnly");
+            Log.Info("App CleanupEditorOnly");
             IsQuitting = false;
             IsPlaying = false;
             _instance?.Dispose();

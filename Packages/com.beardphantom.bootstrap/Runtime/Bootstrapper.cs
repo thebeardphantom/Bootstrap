@@ -34,8 +34,8 @@ namespace BeardPhantom.Bootstrap
             _postHandler = foundPost ? _postHandler : bootstrapHandler;
 #endif
 
-            Debug.LogVerbose($"Selected IPreBootstrapHandler {_preHandler}.", this);
-            Debug.LogVerbose($"Selected IPostBootstrapHandler {_postHandler}.", this);
+            Log.Verbose($"Selected IPreBootstrapHandler {_preHandler}.", this);
+            Log.Verbose($"Selected IPostBootstrapHandler {_postHandler}.", this);
         }
 
         [SuppressMessage("ReSharper", "Unity.IncorrectMethodSignature")]
@@ -43,19 +43,19 @@ namespace BeardPhantom.Bootstrap
         {
             if (gameObject.scene.buildIndex == 0)
             {
-                Debug.Log("Bootstrapping application.", this);
+                Log.Info("Bootstrapping application.", this);
                 AssignBootstrapHandlers();
-                Debug.LogVerbose("Beginning pre-bootstrapping.", this);
+                Log.Verbose("Beginning pre-bootstrapping.", this);
                 await _preHandler.OnPreBootstrapAsync(this);
-                Debug.LogVerbose("Creating services.", this);
+                Log.Verbose("Creating services.", this);
                 await App.Instance.ServiceLocator.CreateAsync(_servicesPrefab);
-                Debug.LogVerbose("Beginning post-boostrapping.", this);
+                Log.Verbose("Beginning post-boostrapping.", this);
                 await _postHandler.OnPostBootstrap(this);
-                Debug.LogVerbose("Bootstrapping complete.", this);
+                Log.Info("Bootstrapping complete.", this);
             }
             else
             {
-                Debug.LogVerbose("Destroying Bootstrapper from non-zero indexed scene.", this);
+                Log.Verbose("Destroying Bootstrapper from non-zero indexed scene.", this);
                 Destroy(gameObject);
             }
         }

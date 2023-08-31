@@ -18,7 +18,7 @@ namespace BeardPhantom.Bootstrap
         private App()
         {
             _sessionGuid = Guid.NewGuid();
-            Debug.LogVerbose($"Created App session {_sessionGuid}.");
+            Log.Verbose($"Created App session {_sessionGuid}.");
 
             void OnApplicationQuitting()
             {
@@ -36,7 +36,7 @@ namespace BeardPhantom.Bootstrap
         /// <inheritdoc />
         public void Dispose()
         {
-            Debug.LogVerbose("Disposing App.");
+            Log.Info("Disposing App.");
             ServiceLocator?.Dispose();
         }
 

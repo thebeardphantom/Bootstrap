@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace BeardPhantom.Bootstrap
 {
-    public static class Debug
+    public static class Log
     {
         #region Methods
 
         [Conditional("BOOTSTRAPPER_LOG_VERBOSE")]
-        public static void LogVerbose(object message, Object context = default)
+        public static void Verbose(object message, Object context = default)
         {
             UnityEngine.Debug.unityLogger.Log("Bootstrapper", message, context);
         }
@@ -16,7 +16,7 @@ namespace BeardPhantom.Bootstrap
 #if BOOTSTRAPPER_LOG_DISABLE
         [Conditional("FALSE")]
 #endif
-        public static void Log(object message, Object context = default)
+        public static void Info(object message, Object context = default)
         {
             UnityEngine.Debug.unityLogger.Log("Bootstrapper", message, context);
         }
