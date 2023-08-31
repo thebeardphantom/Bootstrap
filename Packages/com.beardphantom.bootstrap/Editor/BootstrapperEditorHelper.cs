@@ -59,12 +59,12 @@ namespace BeardPhantom.Bootstrap.Editor
                 return;
             }
 
-            Debug.LogVerbose("BootstrapEditorHelper prepping for playmode.");
+            Log.Verbose("BootstrapEditorHelper prepping for playmode.");
             var bootstrapScene = EditorBuildSettings.scenes.FirstOrDefault(
                 s => AssetDatabase.LoadAssetAtPath<SceneAsset>(s.path) != default);
             if (bootstrapScene == default)
             {
-                Debug.Log("No valid first scene in EditorBuildSettings");
+                Log.Info("No valid first scene in EditorBuildSettings");
             }
             else
             {

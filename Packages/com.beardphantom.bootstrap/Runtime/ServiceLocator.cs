@@ -32,7 +32,7 @@ namespace BeardPhantom.Bootstrap
                 servicesInstance.GetComponentsInChildren(true, foundServices);
                 foreach (var service in foundServices)
                 {
-                    Debug.LogVerbose($"Found service {service.GetType()}.");
+                    Log.Verbose($"Found service {service.GetType()}.");
                     var serviceType = service.GetType();
                     _services.Add(serviceType, service);
                     using (ListPool<Type>.Get(out var extraBindableTypes))
@@ -47,14 +47,14 @@ namespace BeardPhantom.Bootstrap
             }
 
             // Call InitServiceAsync on each service
-            Debug.LogVerbose("Initializing services.");
+            Log.Verbose("Initializing services.");
             using (ListPool<UniTask>.Get(out var tasks))
             {
                 foreach (var service in _services.Values)
                 {
                     if (service is IBootstrapService fabricService)
                     {
-                        Debug.LogVerbose($"Initializing service {service.GetType()}.");
+                        Log.Verbose($"Initializing service {service.GetType()}.");
                         tasks.Add(fabricService.InitServiceAsync());
                     }
                 }
@@ -64,14 +64,14 @@ namespace BeardPhantom.Bootstrap
             }
 
             // Call PostInitAllServicesAsync on each service
-            Debug.LogVerbose("Post-initializing services.");
+            Log.Verbose("Post-initializing services.");
             using (ListPool<UniTask>.Get(out var tasks))
             {
                 foreach (var service in _services.Values)
                 {
                     if (service is IBootstrapService fabricService)
                     {
-                        Debug.LogVerbose($"Post-initializing service {service.GetType()}.");
+                        Log.Verbose($"Post-initializing service {service.GetType()}.");
                         tasks.Add(fabricService.PostInitAllServicesAsync());
                     }
                 }
@@ -80,7 +80,7 @@ namespace BeardPhantom.Bootstrap
                 await UniTask.WhenAll(tasks);
             }
 
-            Debug.LogVerbose("Activating services.");
+            Log.Verbose("Activating services.");
             servicesInstance.SetActive(true);
         }
 
@@ -92,12 +92,12 @@ namespace BeardPhantom.Bootstrap
         /// <inheritdoc />
         public void Dispose()
         {
-            Debug.LogVerbose("Disposing ServiceLocator.");
+            Log.Verbose("Disposing ServiceLocator.");
             foreach (var service in _services.Values)
             {
                 if (service is IDisposable disposable)
                 {
-                    Debug.LogVerbose($"Disposing service {service.GetType()}.");
+                    Log.Verbose($"Disposing service {service.GetType()}.");
                     disposable.Dispose();
                 }
             }
