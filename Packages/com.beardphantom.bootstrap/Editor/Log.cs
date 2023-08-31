@@ -2,7 +2,7 @@
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace BeardPhantom.Bootstrap
+namespace BeardPhantom.Bootstrap.Editor
 {
     internal static class Log
     {
