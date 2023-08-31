@@ -77,7 +77,7 @@ namespace BeardPhantom.Bootstrap
         public async UniTask OnPostBootstrap(Bootstrapper bootstrapper)
         {
             var editModeScenePaths = _editModeState?.LoadedScenes;
-            if (editModeScenePaths == null || editModeScenePaths.Length == 0)
+            if (editModeScenePaths == null || editModeScenePaths.Count == 0)
             {
                 SceneManager.LoadScene(1);
             }

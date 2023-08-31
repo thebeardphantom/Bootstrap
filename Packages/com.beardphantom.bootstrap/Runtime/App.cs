@@ -7,7 +7,7 @@ namespace BeardPhantom.Bootstrap
     {
         #region Fields
 
-        public readonly ServiceLocator ServiceLocator = new ServiceLocator();
+        public readonly ServiceLocator ServiceLocator = new();
 
         private readonly Guid _sessionGuid;
 
@@ -18,6 +18,7 @@ namespace BeardPhantom.Bootstrap
         private App()
         {
             _sessionGuid = Guid.NewGuid();
+            Debug.LogVerbose($"Created App session {_sessionGuid}.");
 
             void OnApplicationQuitting()
             {
@@ -35,6 +36,7 @@ namespace BeardPhantom.Bootstrap
         /// <inheritdoc />
         public void Dispose()
         {
+            Debug.LogVerbose("Disposing App.");
             ServiceLocator?.Dispose();
         }
 

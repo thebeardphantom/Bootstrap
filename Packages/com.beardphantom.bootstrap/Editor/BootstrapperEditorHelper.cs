@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Pool;
 using UnityEngine.SceneManagement;
 
 namespace BeardPhantom.Bootstrap.Editor
@@ -10,7 +10,7 @@ namespace BeardPhantom.Bootstrap.Editor
     [InitializeOnLoad]
     public static class BootstrapperEditorHelper
     {
-        #region Fields
+        #region Properties
 
         public static bool EnableSceneManagement { get; set; } = true;
 
@@ -51,7 +51,7 @@ namespace BeardPhantom.Bootstrap.Editor
         private static void PrepareForEnteringPlayMode()
         {
             SessionState.EraseString(EditorBootstrapHandler.EDIT_MODE_STATE);
-            EditorSceneManager.playModeStartScene = null;
+            EditorSceneManager.playModeStartScene = default;
 
             var bootstrapper = Object.FindObjectOfType<Bootstrapper>();
             if (bootstrapper == null || !bootstrapper.isActiveAndEnabled)
@@ -59,32 +59,30 @@ namespace BeardPhantom.Bootstrap.Editor
                 return;
             }
 
-            Debug.Log("Running bootstrap helper...");
-
+            Debug.LogVerbose("BootstrapEditorHelper prepping for playmode.");
             var bootstrapScene = EditorBuildSettings.scenes.FirstOrDefault(
-                s => AssetDatabase.LoadAssetAtPath<SceneAsset>(s.path) != null);
-            if (bootstrapScene == null)
+                s => AssetDatabase.LoadAssetAtPath<SceneAsset>(s.path) != default);
+            if (bootstrapScene == default)
             {
-                Debug.Log("[Bootstrapper] No valid first scene in EditorBuildSettings");
+                Debug.Log("No valid first scene in EditorBuildSettings");
             }
             else
             {
                 var sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(bootstrapScene.path);
                 EditorSceneManager.playModeStartScene = sceneAsset;
 
-                var scenePaths = new List<string>();
-                for (var i = 0; i < SceneManager.sceneCount; i++)
+                using (ListPool<string>.Get(out var scenePaths))
                 {
-                    var scene = SceneManager.GetSceneAt(i);
-                    if (scene.buildIndex != 0)
+                    for (var i = 0; i < SceneManager.sceneCount; i++)
                     {
-                        scenePaths.Add(scene.path);
+                        var scene = SceneManager.GetSceneAt(i);
+                        if (scene.buildIndex != 0)
+                        {
+                            scenePaths.Add(scene.path);
+                        }
                     }
-                }
 
-                var bootstrapperJson = EditorJsonUtility.ToJson(bootstrapper);
-                if (!string.IsNullOrWhiteSpace(bootstrapperJson))
-                {
+                    var bootstrapperJson = EditorJsonUtility.ToJson(bootstrapper);
                     var selectedObjectPaths = Selection.gameObjects
                         .Where(g => g != null && g.scene.IsValid())
                         .Select(SelectedObjectPath.CreateInstance)
@@ -92,7 +90,7 @@ namespace BeardPhantom.Bootstrap.Editor
                     var editModeState = new EditModeState
                     {
                         BootstrapperJson = bootstrapperJson,
-                        LoadedScenes = scenePaths.ToArray(),
+                        LoadedScenes = scenePaths,
                         SelectedObjects = selectedObjectPaths
                     };
                     var editModeStateJson = EditorJsonUtility.ToJson(editModeState);

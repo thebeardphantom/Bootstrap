@@ -31,9 +31,11 @@ namespace BeardPhantom.Bootstrap
                 return;
             }
 
-            transform.parent = null;
-            transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-            transform.SetAsFirstSibling();
+            var tform = transform;
+            tform.parent = null;
+            tform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+            tform.SetAsFirstSibling();
+            tform.hideFlags = HideFlags.HideInInspector;
             name = "--BOOTSTRAP--";
         }
 
