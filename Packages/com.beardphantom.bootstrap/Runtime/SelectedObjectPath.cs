@@ -34,31 +34,9 @@ namespace BeardPhantom.Bootstrap
             var scene = gameObject.scene;
             return new SelectedObjectPath
             {
-                ObjectPath = GetGameObjectPath(gameObject),
+                ObjectPath = ObjectUtility.GetGameObjectPath(gameObject),
                 ScenePath = scene.path
             };
-        }
-
-        private static string GetGameObjectPath(GameObject gameObject)
-        {
-            using (GenericPool<StringBuilder>.Get(out var stringBuilder))
-            {
-                stringBuilder.Clear();
-                var tform = gameObject.transform;
-                while (tform != null)
-                {
-                    stringBuilder.Insert(0, tform.name);
-                    tform = tform.parent;
-                    if (tform != null)
-                    {
-                        stringBuilder.Insert(0, '/');
-                    }
-                }
-
-                var gameObjectPath = stringBuilder.ToString().Trim();
-                stringBuilder.Clear();
-                return gameObjectPath;
-            }
         }
 
         #endregion
