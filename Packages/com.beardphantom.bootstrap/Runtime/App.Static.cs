@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace BeardPhantom.Bootstrap
 {
@@ -54,7 +53,7 @@ namespace BeardPhantom.Bootstrap
 #if UNITY_EDITOR
         public static void CleanupEditorOnly()
         {
-            Debug.Log("[Bootstrapper] App CleanupEditorOnly");
+            Debug.Log("App CleanupEditorOnly");
             IsQuitting = false;
             IsPlaying = false;
             _instance?.Dispose();
