@@ -113,14 +113,16 @@ namespace BeardPhantom.Bootstrap
                         }
 
                         var foundObj = GameObject.Find(serializedSelectedObj.ObjectPath);
-                        if (foundObj != null)
+                        if (foundObj == null)
                         {
-                            selectedObjs.Add(foundObj);
+                            continue;
                         }
+
+                        selectedObjs.Add(foundObj);
                     }
                 }
 
-
+                await UniTask.NextFrame();
                 Selection.objects = selectedObjs.ToArray();
             }
         }
