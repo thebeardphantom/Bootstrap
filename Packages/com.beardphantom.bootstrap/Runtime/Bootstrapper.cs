@@ -9,7 +9,7 @@ namespace BeardPhantom.Bootstrap
         #region Fields
 
         [SerializeField]
-        private GameObject _servicesPrefab;
+        internal GameObject _servicesPrefab;
 
         private IPreBootstrapHandler _preHandler;
 
@@ -30,8 +30,8 @@ namespace BeardPhantom.Bootstrap
             _postHandler = foundPostHandler ? _postHandler : editorBootstrapHandler;
 #else
             var bootstrapHandler = new BuildBootstrapHandler();
-            _preHandler = foundPre ? _preHandler : bootstrapHandler;
-            _postHandler = foundPost ? _postHandler : bootstrapHandler;
+            _preHandler = foundPreHandler ? _preHandler : bootstrapHandler;
+            _postHandler = foundPostHandler ? _postHandler : bootstrapHandler;
 #endif
 
             Log.Verbose($"Selected IPreBootstrapHandler {_preHandler}.", this);

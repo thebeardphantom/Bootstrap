@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.Pool;
 using Object = UnityEngine.Object;
 
@@ -12,6 +13,8 @@ namespace BeardPhantom.Bootstrap
         #region Fields
 
         private readonly Dictionary<Type, object> _services = new();
+
+        private bool _reachedInitPhase;
 
         #endregion
 
@@ -47,6 +50,7 @@ namespace BeardPhantom.Bootstrap
             }
 
             // Call InitServiceAsync on each service
+            _reachedInitPhase = true;
             Log.Verbose("Initializing services.");
             using (ListPool<UniTask>.Get(out var tasks))
             {
@@ -86,6 +90,7 @@ namespace BeardPhantom.Bootstrap
 
         public bool TryLocateService(Type serviceType, out object service)
         {
+            Assert.IsTrue(_reachedInitPhase, "_reachedPostInitPhase");
             return _services.TryGetValue(serviceType, out service);
         }
 
