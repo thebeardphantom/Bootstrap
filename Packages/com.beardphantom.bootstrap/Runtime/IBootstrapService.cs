@@ -16,7 +16,7 @@ namespace BeardPhantom.Bootstrap
 
         /// <summary>
         /// Called when all services have been initalized. At this point all services are considered ready for
-        /// "cooperative" work. By this point all services should be considered ready"
+        /// "cooperative" work. By this point all services should be considered "ready"
         /// </summary>
         /// <returns></returns>
         UniTask PostInitAllServicesAsync();

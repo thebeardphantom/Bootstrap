@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Text;
 using UnityEngine;
-using UnityEngine.Pool;
 using Object = UnityEngine.Object;
 
 namespace BeardPhantom.Bootstrap

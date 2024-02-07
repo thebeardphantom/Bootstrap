@@ -7,6 +7,12 @@ namespace BeardPhantom.Bootstrap
 {
     public sealed partial class Bootstrapper
     {
+        #region Fields
+
+        public const string BOOTSTRAP_GAMEOBJECT_NAME = "--BOOTSTRAP--";
+
+        #endregion
+
         #region Methods
 
         private void Reset()
@@ -36,7 +42,7 @@ namespace BeardPhantom.Bootstrap
             tform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             tform.SetAsFirstSibling();
             tform.hideFlags = HideFlags.HideInInspector;
-            name = "--BOOTSTRAP--";
+            name = BOOTSTRAP_GAMEOBJECT_NAME;
         }
 
         #endregion
