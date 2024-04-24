@@ -1,49 +1,78 @@
-﻿using System;
+﻿using BeardPhantom.Bootstrap.Services;
+using System;
 using UnityEngine;
 
 namespace BeardPhantom.Bootstrap
 {
-    public sealed partial class App : IServiceLocator
+    public static partial class App
     {
-        #region Fields
+        #region Types
 
-        public readonly ServiceLocator ServiceLocator = new();
-
-        private readonly Guid _sessionGuid;
+        public delegate void OnAppBootstrapStateChanged(AppBootstrapState previousState, AppBootstrapState newState);
 
         #endregion
 
-        #region Constructors
+        #region Events
 
-        private App()
+        public static event OnAppBootstrapStateChanged AppBootstrapStateChanged;
+
+        #endregion
+
+        #region Fields
+
+        private static AppBootstrapState _bootstrapState;
+
+        #endregion
+
+        #region Properties
+
+        public static AppBootstrapState BootstrapState
         {
-            _sessionGuid = Guid.NewGuid();
-            Log.Verbose($"Created App session {_sessionGuid}.");
-
-            void OnApplicationQuitting()
+            get => _bootstrapState;
+            internal set
             {
-                IsQuitting = true;
-                Application.quitting -= OnApplicationQuitting;
-            }
+                if (_bootstrapState == value)
+                {
+                    return;
+                }
 
-            Application.quitting += OnApplicationQuitting;
+                var previousState = _bootstrapState;
+                _bootstrapState = value;
+                AppBootstrapStateChanged?.Invoke(previousState, value);
+            }
         }
+
+        public static ServiceLocator ServiceLocator { get; private set; }
+
+        public static Guid SessionGuid { get; private set; }
+
+        public static bool IsPlaying { get; private set; }
+
+        public static bool IsQuitting { get; private set; }
+
+        public static bool CanLocateServices => BootstrapState > AppBootstrapState.ServiceDiscovery;
 
         #endregion
 
         #region Methods
 
-        /// <inheritdoc />
-        public void Dispose()
+        public static bool TryLocate<T>(out T service) where T : class
         {
-            Log.Info("Disposing App.");
-            ServiceLocator?.Dispose();
+            return ServiceLocator.TryLocateService(out service);
         }
 
-        /// <inheritdoc />
-        public bool TryLocateService(Type serviceType, out object service)
+        public static T Locate<T>() where T : class
         {
-            return ServiceLocator.TryLocateService(serviceType, out service);
+            return ServiceLocator.LocateService<T>();
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void Init()
+        {
+            _bootstrapState = AppBootstrapState.None;
+            ServiceLocator = new ServiceLocator();
+            IsQuitting = false;
+            IsPlaying = true;
         }
 
         #endregion

@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using BeardPhantom.Bootstrap.Logging;
+using Cysharp.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
@@ -43,14 +44,23 @@ namespace BeardPhantom.Bootstrap
         {
             if (gameObject.scene.buildIndex == 0)
             {
+                App.BootstrapState = AppBootstrapState.BootstrapHandlerDiscovery;
                 Log.Info("Bootstrapping application.", this);
                 AssignBootstrapHandlers();
+
+                App.BootstrapState = AppBootstrapState.PreBootstrap;
                 Log.Verbose("Beginning pre-bootstrapping.", this);
                 await _preHandler.OnPreBootstrapAsync(this);
+
+                App.BootstrapState = AppBootstrapState.ServiceCreation;
                 Log.Verbose("Creating services.", this);
-                await App.Instance.ServiceLocator.CreateAsync(_servicesPrefab);
+                await App.ServiceLocator.CreateAsync(_servicesPrefab);
+
+                App.BootstrapState = AppBootstrapState.PostBoostrap;
                 Log.Verbose("Beginning post-boostrapping.", this);
                 await _postHandler.OnPostBootstrap(this);
+
+                App.BootstrapState = AppBootstrapState.Ready;
                 Log.Info("Bootstrapping complete.", this);
             }
             else

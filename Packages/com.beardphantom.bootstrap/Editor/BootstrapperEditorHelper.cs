@@ -53,7 +53,7 @@ namespace BeardPhantom.Bootstrap.Editor
             SessionState.EraseString(EditorBootstrapHandler.EDIT_MODE_STATE);
             EditorSceneManager.playModeStartScene = default;
 
-            var bootstrapper = Object.FindObjectOfType<Bootstrapper>();
+            var bootstrapper = Object.FindAnyObjectByType<Bootstrapper>();
             if (bootstrapper == null || !bootstrapper.isActiveAndEnabled)
             {
                 return;
