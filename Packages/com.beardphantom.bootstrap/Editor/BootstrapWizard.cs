@@ -155,8 +155,9 @@ namespace BeardPhantom.Bootstrap.Editor
                 var bootstrapperPrefab = new GameObject();
                 SceneManager.MoveGameObjectToScene(bootstrapperPrefab, bootstrapScene);
                 var bootstrapper = bootstrapperPrefab.AddComponent<Bootstrapper>();
-                bootstrapper._servicesPrefab = servicesPrefab;
-
+                var prefabLoader = ServicesPrefabLoader.Create<DirectServicesPrefabLoader>(bootstrapperPrefab, servicesPrefab);
+                bootstrapper.ServicesPrefabLoader = prefabLoader;
+                
                 PrefabUtility.SaveAsPrefabAssetAndConnect(
                     bootstrapperPrefab,
                     BootstrapPrefabPath,

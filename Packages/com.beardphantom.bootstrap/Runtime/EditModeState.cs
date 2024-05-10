@@ -6,10 +6,12 @@ namespace BeardPhantom.Bootstrap
     [Serializable]
     public class EditModeState
     {
-        public string BootstrapperJson;
-        
+        #region Fields
+
         public List<string> LoadedScenes;
 
         public SelectedObjectPath[] SelectedObjects;
+
+        #endregion
     }
 }

@@ -2,6 +2,7 @@
 using Cysharp.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace BeardPhantom.Bootstrap
 {
@@ -9,12 +10,16 @@ namespace BeardPhantom.Bootstrap
     {
         #region Fields
 
-        [SerializeField]
-        internal GameObject _servicesPrefab;
-
         private IPreBootstrapHandler _preHandler;
 
         private IPostBootstrapHandler _postHandler;
+
+        #endregion
+
+        #region Properties
+
+        [field: SerializeField]
+        internal ServicesPrefabLoader ServicesPrefabLoader { get; set; }
 
         #endregion
 
@@ -39,9 +44,12 @@ namespace BeardPhantom.Bootstrap
             Log.Verbose($"Selected IPostBootstrapHandler {_postHandler}.", this);
         }
 
+        [SuppressMessage("ReSharper", "UnusedMember.Local")]
         [SuppressMessage("ReSharper", "Unity.IncorrectMethodSignature")]
         private async UniTaskVoid Start()
         {
+            Assert.IsNotNull(ServicesPrefabLoader, "ServicesPrefabLoader != null");
+
             if (gameObject.scene.buildIndex == 0)
             {
                 App.BootstrapState = AppBootstrapState.BootstrapHandlerDiscovery;
@@ -52,9 +60,13 @@ namespace BeardPhantom.Bootstrap
                 Log.Verbose("Beginning pre-bootstrapping.", this);
                 await _preHandler.OnPreBootstrapAsync(this);
 
+                App.BootstrapState = AppBootstrapState.ServicePrefabLoad;
+                Log.Verbose($"Loading services prefab via loader {ServicesPrefabLoader}.", this);
+                var servicesPrefab = await ServicesPrefabLoader.LoadPrefabAsync();
+
                 App.BootstrapState = AppBootstrapState.ServiceCreation;
                 Log.Verbose("Creating services.", this);
-                await App.ServiceLocator.CreateAsync(_servicesPrefab);
+                await App.ServiceLocator.CreateAsync(servicesPrefab);
 
                 App.BootstrapState = AppBootstrapState.PostBoostrap;
                 Log.Verbose("Beginning post-boostrapping.", this);

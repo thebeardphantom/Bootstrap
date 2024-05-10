@@ -5,6 +5,7 @@ namespace BeardPhantom.Bootstrap
         None,
         BootstrapHandlerDiscovery,
         PreBootstrap,
+        ServicePrefabLoad,
         ServiceCreation,
         ServiceDiscovery,
         ServiceEarlyInit,
