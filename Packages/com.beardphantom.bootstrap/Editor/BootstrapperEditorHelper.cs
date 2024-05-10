@@ -82,14 +82,12 @@ namespace BeardPhantom.Bootstrap.Editor
                         }
                     }
 
-                    var bootstrapperJson = EditorJsonUtility.ToJson(bootstrapper);
                     var selectedObjectPaths = Selection.gameObjects
                         .Where(g => g != null && g.scene.IsValid())
                         .Select(SelectedObjectPath.CreateInstance)
                         .ToArray();
                     var editModeState = new EditModeState
                     {
-                        BootstrapperJson = bootstrapperJson,
                         LoadedScenes = scenePaths,
                         SelectedObjects = selectedObjectPaths
                     };

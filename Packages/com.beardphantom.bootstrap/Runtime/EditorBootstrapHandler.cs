@@ -23,14 +23,6 @@ namespace BeardPhantom.Bootstrap
 
         #region Methods
 
-        public static void OverwriteFromSerializedObject(Bootstrapper bootstrapper, string json)
-        {
-            if (!string.IsNullOrWhiteSpace(json))
-            {
-                EditorJsonUtility.FromJsonOverwrite(json, bootstrapper);
-            }
-        }
-
         public static void LoadScenesInPlayMode(IReadOnlyList<string> scenePaths)
         {
             Assert.IsNotNull(scenePaths, "scenePaths != null");
@@ -69,7 +61,6 @@ namespace BeardPhantom.Bootstrap
 
             _editModeState = new EditModeState();
             EditorJsonUtility.FromJsonOverwrite(editModeStateJson, _editModeState);
-            OverwriteFromSerializedObject(bootstrapper, _editModeState.BootstrapperJson);
             return default;
         }
 
