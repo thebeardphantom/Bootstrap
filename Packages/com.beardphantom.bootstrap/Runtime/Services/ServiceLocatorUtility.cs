@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine.Assertions;
 
 namespace BeardPhantom.Bootstrap.Services
 {
@@ -9,6 +10,8 @@ namespace BeardPhantom.Bootstrap.Services
         public static bool TryLocateService<T>(this IServiceLocator serviceLocator, out T service)
             where T : class
         {
+            Assert.IsTrue(App.CanLocateServices, "CanLocateServices");
+
             if (serviceLocator.TryLocateService(typeof(T), out var rawObject))
             {
                 service = (T)rawObject;
@@ -21,6 +24,8 @@ namespace BeardPhantom.Bootstrap.Services
 
         public static T LocateService<T>(this IServiceLocator serviceLocator) where T : class
         {
+            Assert.IsTrue(App.CanLocateServices, "CanLocateServices");
+
             if (serviceLocator.TryLocateService<T>(out var service))
             {
                 return service;
@@ -31,6 +36,8 @@ namespace BeardPhantom.Bootstrap.Services
 
         public static object LocateService(this IServiceLocator serviceLocator, Type serviceType)
         {
+            Assert.IsTrue(App.CanLocateServices, "CanLocateServices");
+
             if (serviceLocator.TryLocateService(serviceType, out var service))
             {
                 return service;

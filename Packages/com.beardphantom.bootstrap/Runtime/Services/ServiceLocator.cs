@@ -63,7 +63,6 @@ namespace BeardPhantom.Bootstrap.Services
             using (ListPool<IBootstrapService>.Get(out var foundServices))
             {
                 servicesInstance.GetComponentsInChildren(true, foundServices);
-                foundServices.Sort(BootstrapServiceComparer.Instance);
 
                 foreach (var service in foundServices)
                 {

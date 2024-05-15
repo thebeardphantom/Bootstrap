@@ -50,7 +50,7 @@ namespace BeardPhantom.Bootstrap
 
         public static bool IsQuitting { get; private set; }
 
-        public static bool CanLocateServices => BootstrapState > AppBootstrapState.ServiceDiscovery;
+        public static bool CanLocateServices => BootstrapState >= AppBootstrapState.ServiceLateInit;
 
         #endregion
 

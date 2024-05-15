@@ -1,18 +1,15 @@
 ﻿#if UNITY_EDITOR
+using BeardPhantom.Bootstrap.Logging;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace BeardPhantom.Bootstrap
 {
     public sealed partial class Bootstrapper
     {
-        #region Fields
-
-        public const string BOOTSTRAP_GAMEOBJECT_NAME = "--BOOTSTRAP--";
-
-        #endregion
-
         #region Methods
 
         private void Reset()
@@ -38,11 +35,25 @@ namespace BeardPhantom.Bootstrap
             }
 
             var tform = transform;
-            tform.parent = null;
+            tform.SetParent(null, false);
             tform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             tform.SetAsFirstSibling();
-            tform.hideFlags = HideFlags.HideInInspector;
-            name = BOOTSTRAP_GAMEOBJECT_NAME;
+        }
+
+        partial void TryReplaceWithOverrideInstance()
+        {
+            var contents = InternalEditorUtility.LoadSerializedFileAndForget(EditorBootstrapHandler.TEMP_BOOTSTRAPPER_PATH);
+            var overridePrefab = contents.OfType<GameObject>().SingleOrDefault();
+            if (overridePrefab == null)
+            {
+                return;
+            }
+
+            Log.Info($"Loading custom bootstrapper from path '{EditorBootstrapHandler.TEMP_BOOTSTRAPPER_PATH}'.");
+            var overrideInstance = Instantiate(overridePrefab);
+            overrideInstance.name = overridePrefab.name;
+            overrideInstance.GetComponent<Bootstrapper>()._isOverrideInstance = true;
+            DestroyImmediate(gameObject);
         }
 
         #endregion
