@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace BeardPhantom.Bootstrap
 {
-    public partial class DirectServicesPrefabLoader : ServicesPrefabLoader
+    public class DirectPrefabProvider : PrefabProvider
     {
         #region Properties
 
         [field: SerializeField]
-        private GameObject ServicesPrefab { get; set; }
+        private GameObject Prefab { get; set; }
 
         #endregion
 
@@ -17,7 +17,13 @@ namespace BeardPhantom.Bootstrap
         /// <inheritdoc />
         public override UniTask<GameObject> LoadPrefabAsync()
         {
-            return UniTask.FromResult(ServicesPrefab);
+            return UniTask.FromResult(Prefab);
+        }
+
+        /// <inheritdoc />
+        protected override void SetPrefab(GameObject prefab)
+        {
+            Prefab = prefab;
         }
 
         #endregion

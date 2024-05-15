@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿#if UNITY_ADDRESSABLES
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace BeardPhantom.Bootstrap.Addressables
@@ -15,7 +16,7 @@ namespace BeardPhantom.Bootstrap.Addressables
         #region Methods
 
         /// <inheritdoc />
-        public UniTask OnPostBootstrap(Bootstrapper bootstrapper)
+        public UniTask OnPostBootstrapAsync(Bootstrapper bootstrapper)
         {
             return UnityEngine.AddressableAssets.Addressables.LoadSceneAsync(Key).ToUniTask();
         }
@@ -23,3 +24,4 @@ namespace BeardPhantom.Bootstrap.Addressables
         #endregion
     }
 }
+#endif

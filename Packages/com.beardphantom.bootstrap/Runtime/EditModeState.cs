@@ -8,9 +8,11 @@ namespace BeardPhantom.Bootstrap
     {
         #region Fields
 
-        public List<string> LoadedScenes;
+        public string OverrideBootstrapperScenePath = string.Empty;
 
-        public SelectedObjectPath[] SelectedObjects;
+        public List<string> LoadedScenes = new();
+
+        public SelectedObjectPath[] SelectedObjects = Array.Empty<SelectedObjectPath>();
 
         #endregion
     }

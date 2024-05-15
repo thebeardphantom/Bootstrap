@@ -28,7 +28,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private string ScenePath => $"{OutputDirectory}{SceneName}.unity";
 
-        private string BootstrapPrefabPath => $"{OutputDirectory}{Bootstrapper.BOOTSTRAP_GAMEOBJECT_NAME}.prefab";
+        private string BootstrapperPrefabPath => $"{OutputDirectory}Bootstrapper.prefab";
 
         private string ServicesPrefabPath => ServicesPrefabInRoot
             ? $"Assets/{ServicesPrefabName}.prefab"
@@ -42,6 +42,11 @@ namespace BeardPhantom.Bootstrap.Editor
         private static void Open()
         {
             DisplayWizard<BootstrapWizard>("Bootstrap Wizard", "Run Setup");
+        }
+
+        private static bool DoesAssetPathExist(string path)
+        {
+            return !string.IsNullOrWhiteSpace(AssetDatabase.AssetPathToGUID(path));
         }
 
         /// <inheritdoc />
@@ -73,19 +78,20 @@ namespace BeardPhantom.Bootstrap.Editor
 
             const string ASSET_EXISTS_WARN = "Asset exists at this path and will be overwritten.";
 
-            var assetPathExists = AssetDatabase.AssetPathExists(ScenePath);
+
+            var assetPathExists = DoesAssetPathExist(ScenePath);
             GUI.contentColor = assetPathExists ? Color.yellow : Color.white;
             var tooltip = assetPathExists ? ASSET_EXISTS_WARN : null;
             EditorGUILayout.LabelField(new GUIContent("Scene Path", tooltip), new GUIContent(ScenePath, tooltip));
 
-            assetPathExists = AssetDatabase.AssetPathExists(BootstrapPrefabPath);
+            assetPathExists = DoesAssetPathExist(BootstrapperPrefabPath);
             GUI.contentColor = assetPathExists ? Color.yellow : Color.white;
             tooltip = assetPathExists ? ASSET_EXISTS_WARN : null;
             EditorGUILayout.LabelField(
                 new GUIContent("Bootstrap Prefab Path", tooltip),
-                new GUIContent(BootstrapPrefabPath, tooltip));
+                new GUIContent(BootstrapperPrefabPath, tooltip));
 
-            assetPathExists = AssetDatabase.AssetPathExists(ServicesPrefabPath);
+            assetPathExists = DoesAssetPathExist(ServicesPrefabPath);
             GUI.contentColor = assetPathExists ? Color.yellow : Color.white;
             tooltip = assetPathExists ? ASSET_EXISTS_WARN : null;
             EditorGUILayout.LabelField(
@@ -143,6 +149,7 @@ namespace BeardPhantom.Bootstrap.Editor
                     return;
                 }
 
+                // Create services
                 var servicesObj = new GameObject(ServicesPrefabName);
                 var servicesPrefab = PrefabUtility.SaveAsPrefabAsset(servicesObj, ServicesPrefabPath, out var success);
                 DestroyImmediate(servicesObj);
@@ -152,18 +159,16 @@ namespace BeardPhantom.Bootstrap.Editor
                     return;
                 }
 
-                var bootstrapperPrefab = new GameObject();
-                SceneManager.MoveGameObjectToScene(bootstrapperPrefab, bootstrapScene);
-                var bootstrapper = bootstrapperPrefab.AddComponent<Bootstrapper>();
-                var prefabLoader = ServicesPrefabLoader.Create<DirectServicesPrefabLoader>(bootstrapperPrefab, servicesPrefab);
-                bootstrapper.ServicesPrefabLoader = prefabLoader;
-                
+                var boostrapperGObj = new GameObject("Bootstrapper");
+                SceneManager.MoveGameObjectToScene(boostrapperGObj, bootstrapScene);
+                var bootstrapper = boostrapperGObj.AddComponent<Bootstrapper>();
+                var prefabLoader = PrefabProvider.Create<DirectPrefabProvider>(boostrapperGObj, servicesPrefab);
+                bootstrapper.PrefabProvider = prefabLoader;
                 PrefabUtility.SaveAsPrefabAssetAndConnect(
-                    bootstrapperPrefab,
-                    BootstrapPrefabPath,
+                    boostrapperGObj,
+                    BootstrapperPrefabPath,
                     InteractionMode.AutomatedAction,
                     out success);
-
                 if (!success)
                 {
                     Debug.LogError("Bootstrap prefab not saved.");

@@ -14,7 +14,7 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <inheritdoc />
-        public UniTask OnPostBootstrap(Bootstrapper bootstrapper)
+        public UniTask OnPostBootstrapAsync(Bootstrapper bootstrapper)
         {
             SceneManager.LoadScene(1);
             return UniTask.NextFrame();

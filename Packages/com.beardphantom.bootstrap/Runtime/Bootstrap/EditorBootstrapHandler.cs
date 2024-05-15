@@ -17,6 +17,8 @@ namespace BeardPhantom.Bootstrap
 
         public const string EDIT_MODE_STATE = "EDIT_MODE_STATE";
 
+        public const string TEMP_BOOTSTRAPPER_PATH = "Temp/Bootstrap_Override.prefab";
+
         private EditModeState _editModeState;
 
         #endregion
@@ -54,20 +56,20 @@ namespace BeardPhantom.Bootstrap
         public UniTask OnPreBootstrapAsync(Bootstrapper bootstrapper)
         {
             var editModeStateJson = SessionState.GetString(EDIT_MODE_STATE, "");
+            _editModeState = new EditModeState();
             if (string.IsNullOrWhiteSpace(editModeStateJson))
             {
                 return default;
             }
 
-            _editModeState = new EditModeState();
             EditorJsonUtility.FromJsonOverwrite(editModeStateJson, _editModeState);
             return default;
         }
 
         /// <inheritdoc />
-        public async UniTask OnPostBootstrap(Bootstrapper bootstrapper)
+        public async UniTask OnPostBootstrapAsync(Bootstrapper bootstrapper)
         {
-            var editModeScenePaths = _editModeState?.LoadedScenes;
+            var editModeScenePaths = _editModeState.LoadedScenes;
             if (editModeScenePaths == null || editModeScenePaths.Count == 0)
             {
                 SceneManager.LoadScene(1);

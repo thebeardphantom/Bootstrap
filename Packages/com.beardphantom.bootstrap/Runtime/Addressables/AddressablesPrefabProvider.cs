@@ -1,10 +1,11 @@
-﻿using Cysharp.Threading.Tasks;
+﻿#if UNITY_ADDRESSABLES
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 namespace BeardPhantom.Bootstrap.Addressables
 {
-    public partial class AddressablesServicesPrefabLoader : ServicesPrefabLoader
+    public partial class AddressablesPrefabProvider : PrefabProvider
     {
         #region Properties
 
@@ -21,6 +22,16 @@ namespace BeardPhantom.Bootstrap.Addressables
             return UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(PrefabReference).ToUniTask();
         }
 
+        protected override void SetPrefab(GameObject prefab)
+        {
+#if UNITY_EDITOR
+            SetServicesPrefabInEditor(prefab);
+#else
+            throw new System.Exception("Cannot set prefab outside of editor.");
+#endif
+        }
+
         #endregion
     }
 }
+#endif
