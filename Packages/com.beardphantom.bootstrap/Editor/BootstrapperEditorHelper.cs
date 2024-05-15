@@ -68,6 +68,14 @@ namespace BeardPhantom.Bootstrap.Editor
                 return;
             }
 
+            if (!EditorSceneManager.EnsureUntitledSceneHasBeenSaved("Bootstrapper does not support untitled scenes."))
+            {
+                EditorApplication.isPlaying = false;
+                return;
+            }
+
+            EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
+
             Log.Verbose("BootstrapEditorHelper prepping for playmode.");
             var bootstrapScene = EditorBuildSettings.scenes.FirstOrDefault(
                 s => AssetDatabase.LoadAssetAtPath<SceneAsset>(s.path) != default);
@@ -85,7 +93,7 @@ namespace BeardPhantom.Bootstrap.Editor
                     for (var i = 0; i < SceneManager.sceneCount; i++)
                     {
                         var scene = SceneManager.GetSceneAt(i);
-                        if (scene.buildIndex != 0)
+                        if (scene.buildIndex != 0 && scene.IsValid())
                         {
                             scenePaths.Add(scene.path);
                         }
