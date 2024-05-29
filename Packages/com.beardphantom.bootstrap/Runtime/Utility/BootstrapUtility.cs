@@ -1,10 +1,10 @@
 ﻿namespace BeardPhantom.Bootstrap
 {
-    public static class BootstrapUtility
+    public static partial class BootstrapUtility
     {
         #region Methods
 
-        public static void GetDefaultBoostrapHandlers(
+        public static void GetDefaultBootstrapHandlers(
             out IPreBootstrapHandler preHandler,
             out IPostBootstrapHandler postHandler)
         {

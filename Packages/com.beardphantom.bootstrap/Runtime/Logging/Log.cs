@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using UnityEngine;
 
-namespace BeardPhantom.Bootstrap.Logging
+namespace BeardPhantom.Bootstrap
 {
-    public static class Log
+    internal static class Log
     {
         public const string BOOTSTRAP_TAG = "Bootstrap";
 

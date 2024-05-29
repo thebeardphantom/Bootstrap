@@ -1,5 +1,4 @@
 ﻿#if UNITY_EDITOR
-using BeardPhantom.Bootstrap.Logging;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;

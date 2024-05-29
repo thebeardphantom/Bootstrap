@@ -1,5 +1,4 @@
-﻿using BeardPhantom.Bootstrap.Services;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace BeardPhantom.Bootstrap
@@ -42,7 +41,7 @@ namespace BeardPhantom.Bootstrap
             }
         }
 
-        public static ServiceLocator ServiceLocator { get; private set; }
+        public static ServiceLocator ServiceLocator { get; internal set; }
 
         public static Guid SessionGuid { get; private set; }
 
@@ -73,6 +72,14 @@ namespace BeardPhantom.Bootstrap
             ServiceLocator = new ServiceLocator();
             IsQuitting = false;
             IsPlaying = true;
+            Application.quitting -= OnApplicationQuitting;
+            Application.quitting += OnApplicationQuitting;
+        }
+
+        private static void OnApplicationQuitting()
+        {
+            Application.quitting -= OnApplicationQuitting;
+            IsQuitting = true;
         }
 
         #endregion

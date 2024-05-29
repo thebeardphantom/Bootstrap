@@ -1,6 +1,4 @@
 #if UNITY_EDITOR
-using BeardPhantom.Bootstrap.Logging;
-
 namespace BeardPhantom.Bootstrap
 {
     public static partial class App

@@ -53,7 +53,7 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <inheritdoc />
-        public UniTask OnPreBootstrapAsync(Bootstrapper bootstrapper)
+        public UniTask OnPreBootstrapAsync(BootstrapContext context, Bootstrapper bootstrapper)
         {
             var editModeStateJson = SessionState.GetString(EDIT_MODE_STATE, "");
             _editModeState = new EditModeState();
@@ -67,7 +67,7 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <inheritdoc />
-        public async UniTask OnPostBootstrapAsync(Bootstrapper bootstrapper)
+        public async UniTask OnPostBootstrapAsync(BootstrapContext context, Bootstrapper bootstrapper)
         {
             var editModeScenePaths = _editModeState.LoadedScenes;
             if (editModeScenePaths == null || editModeScenePaths.Count == 0)

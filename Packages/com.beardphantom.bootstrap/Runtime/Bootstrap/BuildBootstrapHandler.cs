@@ -8,13 +8,13 @@ namespace BeardPhantom.Bootstrap
         #region Methods
 
         /// <inheritdoc />
-        public UniTask OnPreBootstrapAsync(Bootstrapper bootstrapper)
+        public UniTask OnPreBootstrapAsync(BootstrapContext context, Bootstrapper bootstrapper)
         {
             return default;
         }
 
         /// <inheritdoc />
-        public UniTask OnPostBootstrapAsync(Bootstrapper bootstrapper)
+        public UniTask OnPostBootstrapAsync(BootstrapContext context, Bootstrapper bootstrapper)
         {
             SceneManager.LoadScene(1);
             return UniTask.NextFrame();

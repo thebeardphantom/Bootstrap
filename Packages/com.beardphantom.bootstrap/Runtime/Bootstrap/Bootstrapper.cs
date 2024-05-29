@@ -1,5 +1,4 @@
-﻿using BeardPhantom.Bootstrap.Logging;
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -64,6 +63,7 @@ namespace BeardPhantom.Bootstrap
             }
 #endif
 
+            var context = new BootstrapContext(NullProgress.Instance);
             Assert.IsNotNull(PrefabProvider, "ServicesPrefabLoader != null");
 
             App.BootstrapState = AppBootstrapState.BootstrapHandlerDiscovery;
@@ -72,7 +72,7 @@ namespace BeardPhantom.Bootstrap
 
             App.BootstrapState = AppBootstrapState.PreBootstrap;
             Log.Verbose("Beginning pre-bootstrapping.", this);
-            await _preHandler.OnPreBootstrapAsync(this);
+            await _preHandler.OnPreBootstrapAsync(context, this);
 
             App.BootstrapState = AppBootstrapState.ServicePrefabLoad;
             Log.Verbose($"Loading services prefab via loader {PrefabProvider}.", this);
@@ -80,11 +80,16 @@ namespace BeardPhantom.Bootstrap
 
             App.BootstrapState = AppBootstrapState.ServiceCreation;
             Log.Verbose("Creating services.", this);
-            await App.ServiceLocator.CreateAsync(servicesPrefab);
+            servicesPrefab.SetActive(false);
+            var servicesInstance = Instantiate(servicesPrefab);
+            DontDestroyOnLoad(servicesInstance);
+            servicesInstance.name = servicesPrefab.name;
+            servicesPrefab.SetActive(true);
+            await App.ServiceLocator.CreateAsync(context, servicesInstance);
 
             App.BootstrapState = AppBootstrapState.PostBoostrap;
             Log.Verbose("Beginning post-boostrapping.", this);
-            await _postHandler.OnPostBootstrapAsync(this);
+            await _postHandler.OnPostBootstrapAsync(context, this);
 
             App.BootstrapState = AppBootstrapState.Ready;
             Log.Info("Bootstrapping complete.", this);
