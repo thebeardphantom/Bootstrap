@@ -1,5 +1,4 @@
-﻿using BeardPhantom.Bootstrap.Logging;
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +7,7 @@ using UnityEngine.Assertions;
 using UnityEngine.Pool;
 using Object = UnityEngine.Object;
 
-namespace BeardPhantom.Bootstrap.Services
+namespace BeardPhantom.Bootstrap
 {
     public class ServiceLocator : IServiceLocator
     {
@@ -47,15 +46,8 @@ namespace BeardPhantom.Bootstrap.Services
             onServiceEvent?.Invoke(bootstrapService);
         }
 
-        public async UniTask CreateAsync(GameObject prefab)
+        public async UniTask CreateAsync(BootstrapContext context, GameObject servicesInstance)
         {
-            prefab.SetActive(false);
-            var servicesInstance = Object.Instantiate(prefab);
-            servicesInstance.name = prefab.name;
-            prefab.SetActive(true);
-
-            Object.DontDestroyOnLoad(servicesInstance);
-
             /*
              * Service Discovery
              */
@@ -94,7 +86,7 @@ namespace BeardPhantom.Bootstrap.Services
             {
                 foreach (var service in _services.Values.OfType<IEarlyInitBootstrapService>())
                 {
-                    var earlyInitTask = service.EarlyInitServiceAsync();
+                    var earlyInitTask = service.EarlyInitServiceAsync(context);
                     tasks.Add(WaitThenFireEvent(ServiceEarlyInitialized, earlyInitTask, service));
                 }
 
@@ -110,7 +102,7 @@ namespace BeardPhantom.Bootstrap.Services
             {
                 foreach (var service in _services.Values)
                 {
-                    var initTask = service.InitServiceAsync();
+                    var initTask = service.InitServiceAsync(context);
                     tasks.Add(WaitThenFireEvent(ServiceInitialized, initTask, service));
                 }
 
@@ -126,7 +118,7 @@ namespace BeardPhantom.Bootstrap.Services
             {
                 foreach (var service in _services.Values.OfType<ILateInitBootstrapService>())
                 {
-                    var lateInitTask = service.LateInitServiceAsync();
+                    var lateInitTask = service.LateInitServiceAsync(context);
                     tasks.Add(WaitThenFireEvent(ServiceLateInitialized, lateInitTask, service));
                 }
 

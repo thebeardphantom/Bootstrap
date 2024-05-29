@@ -6,7 +6,7 @@ namespace BeardPhantom.Bootstrap
     {
         #region Methods
 
-        UniTask OnPreBootstrapAsync(Bootstrapper bootstrapper);
+        UniTask OnPreBootstrapAsync(BootstrapContext context, Bootstrapper bootstrapper);
 
         #endregion
     }

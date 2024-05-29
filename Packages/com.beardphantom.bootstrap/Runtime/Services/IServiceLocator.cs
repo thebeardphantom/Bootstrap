@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BeardPhantom.Bootstrap.Services
+namespace BeardPhantom.Bootstrap
 {
     public interface IServiceLocator : IDisposable
     {

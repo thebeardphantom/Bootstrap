@@ -16,7 +16,7 @@ namespace BeardPhantom.Bootstrap.Addressables
         #region Methods
 
         /// <inheritdoc />
-        public UniTask OnPostBootstrapAsync(Bootstrapper bootstrapper)
+        public UniTask OnPostBootstrapAsync(BootstrapContext context, Bootstrapper bootstrapper)
         {
             return UnityEngine.AddressableAssets.Addressables.LoadSceneAsync(Key).ToUniTask();
         }

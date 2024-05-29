@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace BeardPhantom.Bootstrap.Services
+namespace BeardPhantom.Bootstrap
 {
     /// <summary>
     /// For services that want to be locatable via multiple types.

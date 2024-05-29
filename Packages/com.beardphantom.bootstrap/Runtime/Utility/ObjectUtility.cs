@@ -2,28 +2,31 @@
 using UnityEngine;
 using UnityEngine.Pool;
 
-internal static class ObjectUtility
+namespace BeardPhantom.Bootstrap
 {
-    #region Methods
-
-    internal static string GetGameObjectPath(GameObject gameObject)
+    internal static class ObjectUtility
     {
-        using (GenericPool<StringBuilder>.Get(out var stringBuilder))
+        #region Methods
+
+        internal static string GetGameObjectPath(GameObject gameObject)
         {
-            stringBuilder.Clear();
-            var tform = gameObject.transform;
-            while (tform != null)
+            using (GenericPool<StringBuilder>.Get(out var stringBuilder))
             {
-                stringBuilder.Insert(0, tform.name);
-                stringBuilder.Insert(0, '/');
-                tform = tform.parent;
+                stringBuilder.Clear();
+                var tform = gameObject.transform;
+                while (tform != null)
+                {
+                    stringBuilder.Insert(0, tform.name);
+                    stringBuilder.Insert(0, '/');
+                    tform = tform.parent;
+                }
+
+                var gameObjectPath = stringBuilder.ToString().Trim();
+                stringBuilder.Clear();
+                return gameObjectPath;
             }
-
-            var gameObjectPath = stringBuilder.ToString().Trim();
-            stringBuilder.Clear();
-            return gameObjectPath;
         }
-    }
 
-    #endregion
+        #endregion
+    }
 }

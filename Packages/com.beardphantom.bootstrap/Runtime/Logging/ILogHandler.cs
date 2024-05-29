@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace BeardPhantom.Bootstrap.Logging
+namespace BeardPhantom.Bootstrap
 {
-    public interface ILogHandler
+    internal interface ILogHandler
     {
         #region Methods
 

@@ -1,6 +1,6 @@
 using Cysharp.Threading.Tasks;
 
-namespace BeardPhantom.Bootstrap.Services
+namespace BeardPhantom.Bootstrap
 {
     public interface IEarlyInitBootstrapService : IBootstrapService
     {
@@ -10,7 +10,8 @@ namespace BeardPhantom.Bootstrap.Services
         /// Called the earliest in the service initialization lifecycle. Useful for services that want to do something before
         /// any other service has initialized.
         /// </summary>
-        UniTask EarlyInitServiceAsync();
+        /// <param name="context"></param>
+        UniTask EarlyInitServiceAsync(BootstrapContext context);
 
         #endregion
     }

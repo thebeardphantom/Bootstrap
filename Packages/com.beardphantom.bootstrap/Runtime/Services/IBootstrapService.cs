@@ -1,6 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 
-namespace BeardPhantom.Bootstrap.Services
+namespace BeardPhantom.Bootstrap
 {
     public interface IBootstrapService
     {
@@ -10,7 +10,8 @@ namespace BeardPhantom.Bootstrap.Services
         /// Called when this service should do "non-cooperative" work. There is no guarantee that any other services
         /// are ready by this point.
         /// </summary>
-        UniTask InitServiceAsync();
+        /// <param name="context"></param>
+        UniTask InitServiceAsync(BootstrapContext context);
 
         #endregion
     }

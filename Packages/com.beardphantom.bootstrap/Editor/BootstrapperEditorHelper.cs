@@ -1,5 +1,4 @@
-﻿using BeardPhantom.Bootstrap.Logging;
-using System.Linq;
+﻿using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -46,6 +45,7 @@ namespace BeardPhantom.Bootstrap.Editor
                     }
 
                     App.CleanupEditorOnly();
+                    EditorApplication.delayCall += () => EditModeBootstrapper.PerformBootstrapping().Forget();
                     break;
                 }
             }

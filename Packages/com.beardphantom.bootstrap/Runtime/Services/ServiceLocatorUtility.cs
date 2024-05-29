@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine.Assertions;
 
-namespace BeardPhantom.Bootstrap.Services
+namespace BeardPhantom.Bootstrap
 {
     public static class ServiceLocatorUtility
     {

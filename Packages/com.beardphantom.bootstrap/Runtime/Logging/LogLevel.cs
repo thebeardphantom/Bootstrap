@@ -1,6 +1,6 @@
-namespace BeardPhantom.Bootstrap.Logging
+namespace BeardPhantom.Bootstrap
 {
-    public enum LogLevel
+    internal enum LogLevel
     {
         Verbose,
         Info
