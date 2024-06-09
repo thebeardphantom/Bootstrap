@@ -85,6 +85,7 @@ namespace BeardPhantom.Bootstrap
             DontDestroyOnLoad(servicesInstance);
             servicesInstance.name = servicesPrefab.name;
             servicesPrefab.SetActive(true);
+            ClearDirtyFlag(servicesPrefab);
             await App.ServiceLocator.CreateAsync(context, servicesInstance);
 
             App.BootstrapState = AppBootstrapState.PostBoostrap;
@@ -94,6 +95,8 @@ namespace BeardPhantom.Bootstrap
             App.BootstrapState = AppBootstrapState.Ready;
             Log.Info("Bootstrapping complete.", this);
         }
+
+        partial void ClearDirtyFlag(GameObject servicesPrefab);
 
         partial void TryReplaceWithOverrideInstance();
 
