@@ -55,6 +55,11 @@ namespace BeardPhantom.Bootstrap
             DestroyImmediate(gameObject);
         }
 
+        partial void ClearDirtyFlag(GameObject servicesPrefab)
+        {
+            EditorUtility.ClearDirty(servicesPrefab);
+        }
+
         #endregion
     }
 }
