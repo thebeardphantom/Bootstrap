@@ -63,7 +63,7 @@ namespace BeardPhantom.Bootstrap
             }
 #endif
 
-            var context = new BootstrapContext(NullProgress.Instance);
+            var context = new BootstrapContext(this);
             Assert.IsNotNull(PrefabProvider, "ServicesPrefabLoader != null");
 
             App.BootstrapState = AppBootstrapState.BootstrapHandlerDiscovery;
@@ -72,7 +72,7 @@ namespace BeardPhantom.Bootstrap
 
             App.BootstrapState = AppBootstrapState.PreBootstrap;
             Log.Verbose("Beginning pre-bootstrapping.", this);
-            await _preHandler.OnPreBootstrapAsync(context, this);
+            await _preHandler.OnPreBootstrapAsync(context);
 
             App.BootstrapState = AppBootstrapState.ServicePrefabLoad;
             Log.Verbose($"Loading services prefab via loader {PrefabProvider}.", this);

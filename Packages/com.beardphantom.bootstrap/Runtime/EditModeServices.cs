@@ -8,6 +8,8 @@ namespace BeardPhantom.Bootstrap
     {
         #region Properties
 
+        public EditModeServices SourceComponent { get; internal set; }
+        
         public GameObject SourcePrefab { get; internal set; }
 
         #endregion

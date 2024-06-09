@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 namespace BeardPhantom.Bootstrap.Editor
 {
-    public class BootstrapSceneProcessor : IProcessSceneWithReport
+    internal class BootstrapSceneProcessor : IProcessSceneWithReport
     {
         #region Properties
 

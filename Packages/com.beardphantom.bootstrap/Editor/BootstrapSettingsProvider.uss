@@ -1,0 +1,74 @@
+.tab-view {
+    margin-left: 2px;
+}
+
+.tab-view-tab {
+    flex-grow: 1;
+    -unity-text-align: middle-center;
+}
+
+.tab-view-tab > .unity-base-field__input {
+    display: none;
+}
+
+.tab-view-tab > .unity-toggle__label {
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.tab-view-content {
+    flex-grow: 1;
+    border-left-color: rgba(0, 0, 0, 0.25);
+    border-right-color: rgba(0, 0, 0, 0.25);
+    border-top-color: rgba(0, 0, 0, 0.25);
+    border-bottom-color: rgba(0, 0, 0, 0.25);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    margin-top: 2px;
+}
+
+.title-label {
+    font-size: 19px;
+    -unity-font-style: bold;
+}
+
+.header-label-1 {
+    font-size: 16px;
+    -unity-font-style: bold;
+}
+
+.header-label-2 {
+    font-size: 14px;
+    -unity-font-style: bold;
+    padding: 4px;
+}
+
+.settings-content {
+    padding: 5px;
+    flex-grow: 1;
+}
+
+#reinitialize-button {
+}
+
+.row {
+    flex-direction: row;
+}
+
+#services-instance {
+    flex-grow: 1;
+    flex-shrink: 1;
+}

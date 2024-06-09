@@ -1,0 +1,28 @@
+.spacer {
+    flex-grow: 1;
+}
+
+.separator {
+    border-left-color: rgba(0, 0, 0, 0.2);
+    border-right-color: rgba(0, 0, 0, 0.2);
+    border-top-color: rgba(0, 0, 0, 0.2);
+    border-bottom-color: rgba(0, 0, 0, 0.2);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+#toolbar {
+    margin-top: 0;
+    border-top-width: 1px;
+    border-right-width: 0;
+    border-bottom-width: 1px;
+    border-left-width: 0;
+}
+
+.no-display {
+    display: none;
+}

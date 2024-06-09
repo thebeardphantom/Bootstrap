@@ -1,18 +1,18 @@
 ﻿namespace BeardPhantom.Bootstrap
 {
-    public class BootstrapContext
+    public readonly struct BootstrapContext
     {
-        #region Properties
+        #region Fields
 
-        public IProgress Progress { get; set; }
+        public readonly Bootstrapper Bootstrapper;
 
         #endregion
 
         #region Constructors
 
-        public BootstrapContext(IProgress progress)
+        public BootstrapContext(Bootstrapper bootstrapper)
         {
-            Progress = progress;
+            Bootstrapper = bootstrapper;
         }
 
         #endregion

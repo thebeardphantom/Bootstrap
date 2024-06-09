@@ -21,8 +21,6 @@ namespace DefaultNamespace
             const float DURATION = 0.5f;
             while (timer < DURATION)
             {
-                var progress = timer / DURATION;
-                context.Progress.Report("Doing something", progress);
                 await UniTask.NextFrame();
                 timer += Time.deltaTime;
             }
