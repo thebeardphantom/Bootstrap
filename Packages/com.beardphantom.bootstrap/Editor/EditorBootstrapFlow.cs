@@ -9,7 +9,7 @@ using UnityEngine.Windows;
 namespace BeardPhantom.Bootstrap.Editor
 {
     [InitializeOnLoad]
-    public static class BootstrapperEditorHelper
+    public static class EditorBootstrapFlow
     {
         #region Properties
 
@@ -19,7 +19,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
         #region Constructors
 
-        static BootstrapperEditorHelper()
+        static EditorBootstrapFlow()
         {
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
         }
@@ -45,7 +45,7 @@ namespace BeardPhantom.Bootstrap.Editor
                     }
 
                     App.CleanupEditorOnly();
-                    EditorApplication.delayCall += () => EditModeBootstrapper.PerformBootstrapping().Forget();
+                    EditorApplication.delayCall += () => EditModeBootstrapping.PerformBootstrapping().Forget();
                     break;
                 }
             }

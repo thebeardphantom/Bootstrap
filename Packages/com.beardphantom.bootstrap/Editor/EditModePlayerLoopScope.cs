@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEditor;
+using UnityEngine.Assertions;
 
 namespace BeardPhantom.Bootstrap.Editor
 {
@@ -32,6 +33,7 @@ namespace BeardPhantom.Bootstrap.Editor
         /// <inheritdoc />
         public void Dispose()
         {
+            Assert.AreNotEqual(0, _counter, "_counter != 0");
             _counter--;
             if (_counter == 0)
             {

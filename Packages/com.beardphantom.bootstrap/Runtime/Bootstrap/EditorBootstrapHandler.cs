@@ -53,7 +53,7 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <inheritdoc />
-        public UniTask OnPreBootstrapAsync(BootstrapContext context, Bootstrapper bootstrapper)
+        public UniTask OnPreBootstrapAsync(in BootstrapContext context)
         {
             var editModeStateJson = SessionState.GetString(EDIT_MODE_STATE, "");
             _editModeState = new EditModeState();

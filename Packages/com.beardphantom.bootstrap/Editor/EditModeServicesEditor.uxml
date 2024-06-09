@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Packages/com.beardphantom.bootstrap/Editor/EditModeServicesEditor.uss?fileID=7433441132597879392&amp;guid=6853271438510b84eac611fce8d24d93&amp;type=3#EditModeServicesEditor" />
+    <uie:Toolbar name="toolbar" class="tab-view">
+        <uie:ToolbarButton label="Make Active" name="make-active-button" text="Make Active" />
+        <uie:ToolbarButton label="Select Active" name="select-active-button" text="Select Active" />
+        <ui:VisualElement name="spacer" class="spacer" />
+        <uie:ToolbarButton label="Settings" name="settings-button" text="Settings" />
+    </uie:Toolbar>
+    <uie:ObjectField label="Source Prefab" type="UnityEngine.GameObject, UnityEngine.CoreModule" name="source-prefab" allow-scene-objects="true" />
+    <ui:VisualElement name="separator" class="separator" />
+</ui:UXML>

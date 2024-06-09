@@ -15,11 +15,11 @@ public class CustomBootstrapHandler : MonoBehaviour, IPreBootstrapHandler, IPost
     #region Methods
 
     /// <inheritdoc />
-    UniTask IPreBootstrapHandler.OnPreBootstrapAsync(BootstrapContext context, Bootstrapper bootstrapper)
+    UniTask IPreBootstrapHandler.OnPreBootstrapAsync(in BootstrapContext context)
     {
         BootstrapUtility.GetDefaultBootstrapHandlers(out _defaultPreHandler, out _defaultPostHandler);
         Debug.Log("USING CUSTOM OnPreBootstrapAsync");
-        return _defaultPreHandler.OnPreBootstrapAsync(context, bootstrapper);
+        return _defaultPreHandler.OnPreBootstrapAsync(context);
     }
 
     /// <inheritdoc />
