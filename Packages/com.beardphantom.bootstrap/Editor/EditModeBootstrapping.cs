@@ -11,18 +11,12 @@ namespace BeardPhantom.Bootstrap.Editor
     [InitializeOnLoad]
     public static class EditModeBootstrapping
     {
-        #region Constructors
-
         static EditModeBootstrapping()
         {
             EditorApplication.delayCall += () => PerformBootstrapping().Forget();
             BootstrapEditorProjectSettings.instance.EditModeServices.ValueChanged += OnEditModeServicesChanged;
             BootstrapEditorUserSettings.instance.EditModeServices.ValueChanged += OnEditModeServicesChanged;
         }
-
-        #endregion
-
-        #region Methods
 
         public static async UniTaskVoid PerformBootstrapping()
         {
@@ -50,7 +44,6 @@ namespace BeardPhantom.Bootstrap.Editor
                 var servicesInstanceCmp = servicesInstance.GetComponent<EditModeServices>();
                 servicesInstanceCmp.SourcePrefab = servicesPrefab;
                 servicesInstanceCmp.SourceComponent = servicesCmp;
-                servicesInstance.hideFlags = HideFlags.HideAndDontSave;
                 servicesInstance.name = $"{servicesPrefab.name} Instance";
                 servicesPrefab.SetActive(true);
                 EditorUtility.ClearDirty(servicesPrefab);
@@ -60,7 +53,7 @@ namespace BeardPhantom.Bootstrap.Editor
                 var description = $"Creating edit mode services from prefab '{servicesPrefab.name}' from {definedScope} scope.";
                 Progress.Report(progressId, 1f, description);
                 EditorUtility.DisplayProgressBar("Edit Mode Bootstrapping", description, 1f);
-                await App.ServiceLocator.CreateAsync(context, servicesInstance);
+                await App.ServiceLocator.CreateAsync(context, servicesInstance, HideFlags.HideAndDontSave);
                 EditorUtility.ClearProgressBar();
                 App.BootstrapState = AppBootstrapState.Ready;
                 Progress.Report(progressId, 1f, $"Finished with instance '{servicesInstance.name}' from {definedScope} scope.");
@@ -117,7 +110,5 @@ namespace BeardPhantom.Bootstrap.Editor
 
             App.BootstrapState = AppBootstrapState.None;
         }
-
-        #endregion
     }
 }

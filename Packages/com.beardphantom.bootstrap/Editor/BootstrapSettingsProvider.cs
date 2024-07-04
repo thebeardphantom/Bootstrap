@@ -10,11 +10,9 @@ namespace BeardPhantom.Bootstrap.Editor
 {
     public class BootstrapSettingsProvider : SettingsProvider
     {
-        #region Fields
+        public const string SettingsPath = "Project/Bootstrap";
 
-        public const string SETTINGS_PATH = "Project/Bootstrap";
-
-        private const string UXML_GUID = "cc2657753a54cb14396441d2393d3d8f";
+        private const string UxmlGuid = "cc2657753a54cb14396441d2393d3d8f";
 
         private VisualElement _content;
 
@@ -30,16 +28,8 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private ObjectField _servicesInstance;
 
-        #endregion
-
-        #region Constructors
-
         /// <inheritdoc />
-        private BootstrapSettingsProvider() : base(SETTINGS_PATH, SettingsScope.Project) { }
-
-        #endregion
-
-        #region Methods
+        private BootstrapSettingsProvider() : base(SettingsPath, SettingsScope.Project) { }
 
         [SettingsProvider]
         private static SettingsProvider Open()
@@ -95,7 +85,7 @@ namespace BeardPhantom.Bootstrap.Editor
         {
             App.AppBootstrapStateChanged += OnBootstrapStateChanged;
 
-            var uxml = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(AssetDatabase.GUIDToAssetPath(UXML_GUID));
+            var uxml = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(AssetDatabase.GUIDToAssetPath(UxmlGuid));
             uxml.CloneTree(rootElement);
             _content = rootElement.Q("settings-content");
             _tabViewContent = _content.Q(className: "tab-view-content");
@@ -175,7 +165,5 @@ namespace BeardPhantom.Bootstrap.Editor
                     .ForEach(spf => spf.SetAlwaysOverride(true));
             }
         }
-
-        #endregion
     }
 }

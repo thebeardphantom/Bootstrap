@@ -11,22 +11,12 @@ namespace BeardPhantom.Bootstrap.Editor
     [InitializeOnLoad]
     public static class EditorBootstrapFlow
     {
-        #region Properties
-
         public static bool EnableSceneManagement { get; set; } = true;
-
-        #endregion
-
-        #region Constructors
 
         static EditorBootstrapFlow()
         {
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
         }
-
-        #endregion
-
-        #region Methods
 
         private static void OnPlayModeStateChanged(PlayModeStateChange mode)
         {
@@ -53,8 +43,8 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private static void PrepareForEnteringPlayMode()
         {
-            SessionState.EraseString(EditorBootstrapHandler.EDIT_MODE_STATE);
-            File.Delete(EditorBootstrapHandler.TEMP_BOOTSTRAPPER_PATH);
+            SessionState.EraseString(EditorBootstrapHandler.EditModeState);
+            File.Delete(EditorBootstrapHandler.TempBootstrapperPath);
 
             if (!EnableSceneManagement)
             {
@@ -99,14 +89,12 @@ namespace BeardPhantom.Bootstrap.Editor
                         }
                     }
 
-                    var overrideBootstrapperScenePath = string.Empty;
                     if (bootstrapper.gameObject.scene.buildIndex != 0)
                     {
-                        overrideBootstrapperScenePath = bootstrapper.gameObject.scene.path;
                         Log.Info(
-                            $"BootstrapEditorHelper saving custom bootstrapper from scene '{bootstrapper.gameObject.scene.path}' to path '{EditorBootstrapHandler.TEMP_BOOTSTRAPPER_PATH}'.");
+                            $"BootstrapEditorHelper saving custom bootstrapper from scene '{bootstrapper.gameObject.scene.path}' to path '{EditorBootstrapHandler.TempBootstrapperPath}'.");
                         var bootstrapperClone = Object.Instantiate(bootstrapper.gameObject);
-                        PrefabUtility.SaveAsPrefabAsset(bootstrapperClone, EditorBootstrapHandler.TEMP_BOOTSTRAPPER_PATH);
+                        PrefabUtility.SaveAsPrefabAsset(bootstrapperClone, EditorBootstrapHandler.TempBootstrapperPath);
                         Object.DestroyImmediate(bootstrapperClone);
                     }
 
@@ -116,12 +104,11 @@ namespace BeardPhantom.Bootstrap.Editor
                         .ToArray();
                     var editModeState = new EditModeState
                     {
-                        OverrideBootstrapperScenePath = overrideBootstrapperScenePath,
                         LoadedScenes = scenePaths,
-                        SelectedObjects = selectedObjectPaths
+                        SelectedObjects = selectedObjectPaths,
                     };
                     var editModeStateJson = EditorJsonUtility.ToJson(editModeState);
-                    SessionState.SetString(EditorBootstrapHandler.EDIT_MODE_STATE, editModeStateJson);
+                    SessionState.SetString(EditorBootstrapHandler.EditModeState, editModeStateJson);
                 }
             }
         }
@@ -134,7 +121,5 @@ namespace BeardPhantom.Bootstrap.Editor
             var activeScene = SceneManager.GetActiveScene();
             return bootstrappers.FirstOrDefault(bootstrapper => bootstrapper.gameObject.scene.path == activeScene.path);
         }
-
-        #endregion
     }
 }

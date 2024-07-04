@@ -6,13 +6,9 @@ namespace BeardPhantom.Bootstrap
     [DisallowMultipleComponent]
     public class EditModeServices : MonoBehaviour
     {
-        #region Properties
-
         public EditModeServices SourceComponent { get; internal set; }
-        
-        public GameObject SourcePrefab { get; internal set; }
 
-        #endregion
+        public GameObject SourcePrefab { get; internal set; }
     }
 }
 #endif

@@ -9,8 +9,6 @@ namespace BeardPhantom.Bootstrap.Editor
 {
     public class BootstrapWizard : ScriptableWizard
     {
-        #region Properties
-
         [field: Delayed]
         [field: SerializeField]
         private string OutputDirectory { get; set; } = "Assets/Bootstrap";
@@ -33,10 +31,6 @@ namespace BeardPhantom.Bootstrap.Editor
         private string ServicesPrefabPath => ServicesPrefabInRoot
             ? $"Assets/{ServicesPrefabName}.prefab"
             : $"{OutputDirectory}{ServicesPrefabName}.prefab";
-
-        #endregion
-
-        #region Methods
 
         [MenuItem("Edit/Bootstrap Wizard")]
         private static void Open()
@@ -63,8 +57,7 @@ namespace BeardPhantom.Bootstrap.Editor
             {
                 // if(serializedProperty.propertyPath is not "m_Script" or "")
                 EditorGUILayout.PropertyField(serializedProperty, true);
-            }
-            while (serializedProperty.NextVisible(false));
+            } while (serializedProperty.NextVisible(false));
 
             DrawOutputPaths();
 
@@ -76,24 +69,23 @@ namespace BeardPhantom.Bootstrap.Editor
             EditorGUILayout.Separator();
             EditorGUILayout.LabelField("Output Paths", EditorStyles.boldLabel);
 
-            const string ASSET_EXISTS_WARN = "Asset exists at this path and will be overwritten.";
-
+            const string AssetExistsWarn = "Asset exists at this path and will be overwritten.";
 
             var assetPathExists = DoesAssetPathExist(ScenePath);
             GUI.contentColor = assetPathExists ? Color.yellow : Color.white;
-            var tooltip = assetPathExists ? ASSET_EXISTS_WARN : null;
+            var tooltip = assetPathExists ? AssetExistsWarn : null;
             EditorGUILayout.LabelField(new GUIContent("Scene Path", tooltip), new GUIContent(ScenePath, tooltip));
 
             assetPathExists = DoesAssetPathExist(BootstrapperPrefabPath);
             GUI.contentColor = assetPathExists ? Color.yellow : Color.white;
-            tooltip = assetPathExists ? ASSET_EXISTS_WARN : null;
+            tooltip = assetPathExists ? AssetExistsWarn : null;
             EditorGUILayout.LabelField(
                 new GUIContent("Bootstrap Prefab Path", tooltip),
                 new GUIContent(BootstrapperPrefabPath, tooltip));
 
             assetPathExists = DoesAssetPathExist(ServicesPrefabPath);
             GUI.contentColor = assetPathExists ? Color.yellow : Color.white;
-            tooltip = assetPathExists ? ASSET_EXISTS_WARN : null;
+            tooltip = assetPathExists ? AssetExistsWarn : null;
             EditorGUILayout.LabelField(
                 new GUIContent("Services Prefab Path", tooltip),
                 new GUIContent(ServicesPrefabPath, tooltip));
@@ -189,7 +181,5 @@ namespace BeardPhantom.Bootstrap.Editor
                 }
             }
         }
-
-        #endregion
     }
 }

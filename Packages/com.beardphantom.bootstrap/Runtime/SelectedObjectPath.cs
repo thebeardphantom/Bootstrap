@@ -7,15 +7,9 @@ namespace BeardPhantom.Bootstrap
     [Serializable]
     public class SelectedObjectPath
     {
-        #region Fields
+        public string ScenePath { get; set; }
 
-        public string ScenePath;
-
-        public string ObjectPath;
-
-        #endregion
-
-        #region Methods
+        public string ObjectPath { get; set; }
 
         public static SelectedObjectPath CreateInstance(Object obj)
         {
@@ -23,7 +17,7 @@ namespace BeardPhantom.Bootstrap
             {
                 GameObject gObj => CreateFromGameObject(gObj),
                 Component cmp => CreateFromGameObject(cmp.gameObject),
-                _ => throw new ArgumentException("Invalid type", nameof(obj))
+                _ => throw new ArgumentException("Invalid type", nameof(obj)),
             };
         }
 
@@ -33,10 +27,8 @@ namespace BeardPhantom.Bootstrap
             return new SelectedObjectPath
             {
                 ObjectPath = ObjectUtility.GetGameObjectPath(gameObject),
-                ScenePath = scene.path
+                ScenePath = scene.path,
             };
         }
-
-        #endregion
     }
 }

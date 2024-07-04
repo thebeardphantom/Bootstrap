@@ -4,8 +4,6 @@ using UnityEditor;
 
 public static class BootstrapEditorSettingsUtility
 {
-    #region Methods
-
     public static T GetValue<T>(Func<IBootstrapEditorSettingsAsset, SettingsProperty<T>> valueSelector)
     {
         return GetValue(valueSelector, out var _);
@@ -26,6 +24,4 @@ public static class BootstrapEditorSettingsUtility
         property = valueSelector(BootstrapEditorProjectSettings.instance);
         return property.Value;
     }
-
-    #endregion
 }

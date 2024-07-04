@@ -5,10 +5,7 @@ namespace BeardPhantom.Bootstrap
 {
     public static class ServiceLocatorUtility
     {
-        #region Methods
-
-        public static bool TryLocateService<T>(this IServiceLocator serviceLocator, out T service)
-            where T : class
+        public static bool TryLocateService<T>(this IServiceLocator serviceLocator, out T service) where T : class
         {
             Assert.IsTrue(App.CanLocateServices, "CanLocateServices");
 
@@ -45,7 +42,5 @@ namespace BeardPhantom.Bootstrap
 
             throw new Exception($"Service of type {serviceType} not found.");
         }
-
-        #endregion
     }
 }

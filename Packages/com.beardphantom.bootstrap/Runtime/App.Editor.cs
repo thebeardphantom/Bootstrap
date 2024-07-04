@@ -3,8 +3,6 @@ namespace BeardPhantom.Bootstrap
 {
     public static partial class App
     {
-        #region Methods
-
         internal static void CleanupEditorOnly()
         {
             Log.Info("App CleanupEditorOnly");
@@ -22,8 +20,6 @@ namespace BeardPhantom.Bootstrap
                 AppBootstrapStateChanged = default;
             }
         }
-
-        #endregion
     }
 }
 #endif

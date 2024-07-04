@@ -4,15 +4,9 @@ namespace BeardPhantom.Bootstrap
 {
     public class ServiceRef<T> where T : class
     {
-        #region Fields
-
         private T _value;
 
         private Guid _sessionGuid;
-
-        #endregion
-
-        #region Properties
 
         public T Value
         {
@@ -28,7 +22,5 @@ namespace BeardPhantom.Bootstrap
                 return _value;
             }
         }
-
-        #endregion
     }
 }

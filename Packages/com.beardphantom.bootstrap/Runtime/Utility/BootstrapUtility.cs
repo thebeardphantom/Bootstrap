@@ -2,8 +2,6 @@
 {
     public static partial class BootstrapUtility
     {
-        #region Methods
-
         public static void GetDefaultBootstrapHandlers(
             out IPreBootstrapHandler preHandler,
             out IPostBootstrapHandler postHandler)
@@ -18,7 +16,5 @@
             postHandler = bootstrapHandler;
 #endif
         }
-
-        #endregion
     }
 }

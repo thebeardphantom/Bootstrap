@@ -13,17 +13,11 @@ namespace BeardPhantom.Bootstrap
 {
     public class EditorBootstrapHandler : IPreBootstrapHandler, IPostBootstrapHandler
     {
-        #region Fields
+        public const string EditModeState = "EDIT_MODE_STATE";
 
-        public const string EDIT_MODE_STATE = "EDIT_MODE_STATE";
-
-        public const string TEMP_BOOTSTRAPPER_PATH = "Temp/Bootstrap_Override.prefab";
+        public const string TempBootstrapperPath = "Temp/Bootstrap_Override.prefab";
 
         private EditModeState _editModeState;
-
-        #endregion
-
-        #region Methods
 
         public static void LoadScenesInPlayMode(IReadOnlyList<string> scenePaths)
         {
@@ -55,7 +49,7 @@ namespace BeardPhantom.Bootstrap
         /// <inheritdoc />
         public UniTask OnPreBootstrapAsync(in BootstrapContext context)
         {
-            var editModeStateJson = SessionState.GetString(EDIT_MODE_STATE, "");
+            var editModeStateJson = SessionState.GetString(EditModeState, "");
             _editModeState = new EditModeState();
             if (string.IsNullOrWhiteSpace(editModeStateJson))
             {
@@ -119,8 +113,6 @@ namespace BeardPhantom.Bootstrap
                 Selection.objects = selectedObjs.ToArray();
             }
         }
-
-        #endregion
     }
 }
 

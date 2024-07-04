@@ -5,14 +5,8 @@ namespace BeardPhantom.Bootstrap
 {
     public class DirectPrefabProvider : PrefabProvider
     {
-        #region Properties
-
         [field: SerializeField]
         private GameObject Prefab { get; set; }
-
-        #endregion
-
-        #region Methods
 
         /// <inheritdoc />
         public override UniTask<GameObject> LoadPrefabAsync()
@@ -25,7 +19,5 @@ namespace BeardPhantom.Bootstrap
         {
             Prefab = prefab;
         }
-
-        #endregion
     }
 }

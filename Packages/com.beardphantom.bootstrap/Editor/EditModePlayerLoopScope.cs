@@ -6,22 +6,16 @@ namespace BeardPhantom.Bootstrap.Editor
 {
     public readonly struct EditModePlayerLoopScope : IDisposable
     {
-        #region Fields
-
-        private static int _counter;
-
-        #endregion
-
-        #region Methods
+        private static int s_counter;
 
         public static EditModePlayerLoopScope Create()
         {
-            if (_counter == 0)
+            if (s_counter == 0)
             {
                 EditorApplication.update += OnUpdate;
             }
 
-            _counter++;
+            s_counter++;
             return new EditModePlayerLoopScope();
         }
 
@@ -33,14 +27,12 @@ namespace BeardPhantom.Bootstrap.Editor
         /// <inheritdoc />
         public void Dispose()
         {
-            Assert.AreNotEqual(0, _counter, "_counter != 0");
-            _counter--;
-            if (_counter == 0)
+            Assert.AreNotEqual(0, s_counter, "_counter != 0");
+            s_counter--;
+            if (s_counter == 0)
             {
                 EditorApplication.update -= OnUpdate;
             }
         }
-
-        #endregion
     }
 }

@@ -8,14 +8,8 @@ namespace BeardPhantom.Bootstrap.Editor
 {
     internal class BootstrapSceneProcessor : IProcessSceneWithReport
     {
-        #region Properties
-
         /// <inheritdoc />
         public int callbackOrder { get; }
-
-        #endregion
-
-        #region Methods
 
         /// <inheritdoc />
         void IProcessSceneWithReport.OnProcessScene(Scene scene, BuildReport report)
@@ -39,7 +33,5 @@ namespace BeardPhantom.Bootstrap.Editor
                 Object.DestroyImmediate(bootstrapper.gameObject);
             }
         }
-
-        #endregion
     }
 }

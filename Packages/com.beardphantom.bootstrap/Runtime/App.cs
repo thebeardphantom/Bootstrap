@@ -5,38 +5,24 @@ namespace BeardPhantom.Bootstrap
 {
     public static partial class App
     {
-        #region Types
-
         public delegate void OnAppBootstrapStateChanged(AppBootstrapState previousState, AppBootstrapState newState);
-
-        #endregion
-
-        #region Events
 
         public static event OnAppBootstrapStateChanged AppBootstrapStateChanged;
 
-        #endregion
-
-        #region Fields
-
-        private static AppBootstrapState _bootstrapState;
-
-        #endregion
-
-        #region Properties
+        private static AppBootstrapState s_bootstrapState;
 
         public static AppBootstrapState BootstrapState
         {
-            get => _bootstrapState;
+            get => s_bootstrapState;
             internal set
             {
-                if (_bootstrapState == value)
+                if (s_bootstrapState == value)
                 {
                     return;
                 }
 
-                var previousState = _bootstrapState;
-                _bootstrapState = value;
+                var previousState = s_bootstrapState;
+                s_bootstrapState = value;
                 AppBootstrapStateChanged?.Invoke(previousState, value);
             }
         }
@@ -51,10 +37,6 @@ namespace BeardPhantom.Bootstrap
 
         public static bool CanLocateServices => BootstrapState >= AppBootstrapState.ServiceLateInit;
 
-        #endregion
-
-        #region Methods
-
         public static bool TryLocate<T>(out T service) where T : class
         {
             return ServiceLocator.TryLocateService(out service);
@@ -68,7 +50,7 @@ namespace BeardPhantom.Bootstrap
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Init()
         {
-            _bootstrapState = AppBootstrapState.None;
+            s_bootstrapState = AppBootstrapState.None;
             ServiceLocator = new ServiceLocator();
             IsQuitting = false;
             IsPlaying = true;
@@ -81,7 +63,5 @@ namespace BeardPhantom.Bootstrap
             Application.quitting -= OnApplicationQuitting;
             IsQuitting = true;
         }
-
-        #endregion
     }
 }

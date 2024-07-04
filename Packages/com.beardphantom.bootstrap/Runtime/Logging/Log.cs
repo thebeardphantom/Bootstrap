@@ -5,9 +5,7 @@ namespace BeardPhantom.Bootstrap
 {
     internal static class Log
     {
-        public const string BOOTSTRAP_TAG = "Bootstrap";
-
-        #region Methods
+        public const string BootstrapTag = "Bootstrap";
 
         public static readonly ILogHandler DefaultLogHandler = new DefaultLogHandler();
 
@@ -16,7 +14,7 @@ namespace BeardPhantom.Bootstrap
         [Conditional("BOOTSTRAPPER_LOG_VERBOSE")]
         internal static void Verbose(object message, Object context = default)
         {
-            LogHandler?.Log(LogLevel.Verbose, BOOTSTRAP_TAG, message, context);
+            LogHandler?.Log(LogLevel.Verbose, BootstrapTag, message, context);
         }
 
 #if BOOTSTRAPPER_LOG_DISABLE
@@ -24,9 +22,7 @@ namespace BeardPhantom.Bootstrap
 #endif
         internal static void Info(object message, Object context = default)
         {
-            LogHandler?.Log(LogLevel.Info, BOOTSTRAP_TAG, message, context);
+            LogHandler?.Log(LogLevel.Info, BootstrapTag, message, context);
         }
-
-        #endregion
     }
 }

@@ -1,14 +1,12 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-#if UNITY_EDITOR
 namespace BeardPhantom.Bootstrap
 {
     public static partial class BootstrapUtility
     {
-        #region Methods
-
         public static bool IsFromPrefab(Object obj)
         {
             return PrefabUtility.IsPartOfAnyPrefab(obj) || IsPartOfPrefabStage(obj);
@@ -42,8 +40,6 @@ namespace BeardPhantom.Bootstrap
             src = PrefabUtility.GetCorrespondingObjectFromOriginalSource(obj);
             return src == null ? obj : src;
         }
-
-        #endregion
     }
 }
 #endif

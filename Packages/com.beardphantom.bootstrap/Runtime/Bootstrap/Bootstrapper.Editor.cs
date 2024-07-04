@@ -9,8 +9,6 @@ namespace BeardPhantom.Bootstrap
 {
     public sealed partial class Bootstrapper
     {
-        #region Methods
-
         private void Reset()
         {
             ResetGameObjectInHierarchy();
@@ -41,14 +39,14 @@ namespace BeardPhantom.Bootstrap
 
         partial void TryReplaceWithOverrideInstance()
         {
-            var contents = InternalEditorUtility.LoadSerializedFileAndForget(EditorBootstrapHandler.TEMP_BOOTSTRAPPER_PATH);
+            var contents = InternalEditorUtility.LoadSerializedFileAndForget(EditorBootstrapHandler.TempBootstrapperPath);
             var overridePrefab = contents.OfType<GameObject>().SingleOrDefault();
             if (overridePrefab == null)
             {
                 return;
             }
 
-            Log.Info($"Loading custom bootstrapper from path '{EditorBootstrapHandler.TEMP_BOOTSTRAPPER_PATH}'.");
+            Log.Info($"Loading custom bootstrapper from path '{EditorBootstrapHandler.TempBootstrapperPath}'.");
             var overrideInstance = Instantiate(overridePrefab);
             overrideInstance.name = overridePrefab.name;
             overrideInstance.GetComponent<Bootstrapper>()._isOverrideInstance = true;
@@ -59,8 +57,6 @@ namespace BeardPhantom.Bootstrap
         {
             EditorUtility.ClearDirty(servicesPrefab);
         }
-
-        #endregion
     }
 }
 #endif
