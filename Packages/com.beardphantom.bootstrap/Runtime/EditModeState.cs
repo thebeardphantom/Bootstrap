@@ -6,14 +6,8 @@ namespace BeardPhantom.Bootstrap
     [Serializable]
     public class EditModeState
     {
-        #region Fields
+        public List<string> LoadedScenes { get; set; } = new();
 
-        public string OverrideBootstrapperScenePath = string.Empty;
-
-        public List<string> LoadedScenes = new();
-
-        public SelectedObjectPath[] SelectedObjects = Array.Empty<SelectedObjectPath>();
-
-        #endregion
+        public SelectedObjectPath[] SelectedObjects { get; set; } = Array.Empty<SelectedObjectPath>();
     }
 }

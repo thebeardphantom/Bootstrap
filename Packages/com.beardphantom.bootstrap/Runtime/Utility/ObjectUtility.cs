@@ -6,8 +6,6 @@ namespace BeardPhantom.Bootstrap
 {
     internal static class ObjectUtility
     {
-        #region Methods
-
         internal static string GetGameObjectPath(GameObject gameObject)
         {
             using (GenericPool<StringBuilder>.Get(out var stringBuilder))
@@ -26,7 +24,5 @@ namespace BeardPhantom.Bootstrap
                 return gameObjectPath;
             }
         }
-
-        #endregion
     }
 }

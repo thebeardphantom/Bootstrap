@@ -6,15 +6,9 @@ namespace BeardPhantom.Bootstrap.Editor
 {
     public class SettingsPropertyField : VisualElement
     {
-        #region Properties
-
         public PropertyField OverrideEnabledToggle { get; }
 
         public PropertyField PropertyField { get; }
-
-        #endregion
-
-        #region Constructors
 
         public SettingsPropertyField() { }
 
@@ -30,18 +24,14 @@ namespace BeardPhantom.Bootstrap.Editor
             {
                 style =
                 {
-                    flexGrow = 1
-                }
+                    flexGrow = 1,
+                },
             };
             Add(PropertyField);
 
             SetAlwaysOverride(false);
             PropertyField.SetEnabled(overrideEnabledProperty.boolValue);
         }
-
-        #endregion
-
-        #region Methods
 
         public void SetAlwaysOverride(bool alwaysOverride)
         {
@@ -62,7 +52,5 @@ namespace BeardPhantom.Bootstrap.Editor
         {
             PropertyField.SetEnabled(evt.changedProperty.boolValue);
         }
-
-        #endregion
     }
 }

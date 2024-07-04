@@ -5,8 +5,6 @@ namespace BeardPhantom.Bootstrap
 {
     public class BuildBootstrapHandler : IPreBootstrapHandler, IPostBootstrapHandler
     {
-        #region Methods
-
         /// <inheritdoc />
         public UniTask OnPreBootstrapAsync(in BootstrapContext context)
         {
@@ -19,7 +17,5 @@ namespace BeardPhantom.Bootstrap
             SceneManager.LoadScene(1);
             return UniTask.NextFrame();
         }
-
-        #endregion
     }
 }

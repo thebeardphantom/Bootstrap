@@ -6,8 +6,6 @@ namespace BeardPhantom.Bootstrap
     [DisallowMultipleComponent]
     public abstract class PrefabProvider : MonoBehaviour
     {
-        #region Methods
-
         internal static T Create<T>(GameObject host, GameObject prefab) where T : PrefabProvider
         {
             if (!host.TryGetComponent(out T cmp))
@@ -22,7 +20,5 @@ namespace BeardPhantom.Bootstrap
         public abstract UniTask<GameObject> LoadPrefabAsync();
 
         protected abstract void SetPrefab(GameObject prefab);
-
-        #endregion
     }
 }

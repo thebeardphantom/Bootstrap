@@ -8,11 +8,12 @@ namespace BeardPhantom.Bootstrap
         ServicePrefabLoad,
         ServiceCreation,
         ServiceDiscovery,
+        ServiceBinding,
         ServiceEarlyInit,
         ServiceInit,
         ServiceLateInit,
         ServiceActivation,
         PostBoostrap,
-        Ready
+        Ready,
     }
 }

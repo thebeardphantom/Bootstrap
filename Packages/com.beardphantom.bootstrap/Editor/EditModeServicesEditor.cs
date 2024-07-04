@@ -8,13 +8,11 @@ namespace BeardPhantom.Bootstrap.Editor
     [CustomEditor(typeof(EditModeServices))]
     public class EditModeServicesEditor : UnityEditor.Editor
     {
-        #region Fields
+        private const string UxmlGuid = "a6549777747b40899a8ce75ecc5547ea";
 
-        private const string UXML_GUID = "a6549777747b40899a8ce75ecc5547ea";
+        private const string UserOverride = "User Override";
 
-        private const string USER_OVERRIDE = "User Override";
-
-        private const string PROJECT_DEFAULT = "Project Default";
+        private const string ProjectDefault = "Project Default";
 
         private EditModeServices _editModeServicesSrc;
 
@@ -24,13 +22,9 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private ToolbarButton _settingsButton;
 
-        #endregion
-
-        #region Methods
-
         private static void OnSettingsButtonClicked()
         {
-            SettingsService.OpenProjectSettings(BootstrapSettingsProvider.SETTINGS_PATH);
+            SettingsService.OpenProjectSettings(BootstrapSettingsProvider.SettingsPath);
         }
 
         public override VisualElement CreateInspectorGUI()
@@ -39,7 +33,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
             var root = new VisualElement();
 
-            var uxml = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(AssetDatabase.GUIDToAssetPath(UXML_GUID));
+            var uxml = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(AssetDatabase.GUIDToAssetPath(UxmlGuid));
             uxml.CloneTree(root);
 
             var sourcePrefab = root.Q<ObjectField>("source-prefab");
@@ -79,7 +73,7 @@ namespace BeardPhantom.Bootstrap.Editor
             var userServices = userSettings.EditModeServices;
             var isUser = userServices.Value == _editModeServicesSrc;
             menu.AddItem(
-                new GUIContent(USER_OVERRIDE),
+                new GUIContent(UserOverride),
                 isUser,
                 () =>
                 {
@@ -101,7 +95,7 @@ namespace BeardPhantom.Bootstrap.Editor
             var projectServices = projectSettings.EditModeServices;
             var isProject = projectServices.Value == _editModeServicesSrc;
             menu.AddItem(
-                new GUIContent(PROJECT_DEFAULT),
+                new GUIContent(ProjectDefault),
                 isProject,
                 () =>
                 {
@@ -122,12 +116,12 @@ namespace BeardPhantom.Bootstrap.Editor
             var isUser = userServices.Value == _editModeServicesSrc;
             if (userServices.Value == null)
             {
-                menu.AddDisabledItem(new GUIContent(USER_OVERRIDE));
+                menu.AddDisabledItem(new GUIContent(UserOverride));
             }
             else
             {
                 menu.AddItem(
-                    new GUIContent(USER_OVERRIDE),
+                    new GUIContent(UserOverride),
                     isUser,
                     () =>
                     {
@@ -139,17 +133,16 @@ namespace BeardPhantom.Bootstrap.Editor
                     });
             }
 
-
             var projectServices = BootstrapEditorProjectSettings.instance.EditModeServices;
             var isProject = projectServices.Value == _editModeServicesSrc;
             if (projectServices.Value == null)
             {
-                menu.AddDisabledItem(new GUIContent(PROJECT_DEFAULT));
+                menu.AddDisabledItem(new GUIContent(ProjectDefault));
             }
             else
             {
                 menu.AddItem(
-                    new GUIContent(PROJECT_DEFAULT),
+                    new GUIContent(ProjectDefault),
                     isProject,
                     () =>
                     {
@@ -163,7 +156,5 @@ namespace BeardPhantom.Bootstrap.Editor
 
             menu.ShowAsContext();
         }
-
-        #endregion
     }
 }

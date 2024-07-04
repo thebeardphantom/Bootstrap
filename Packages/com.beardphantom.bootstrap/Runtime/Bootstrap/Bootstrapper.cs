@@ -7,24 +7,14 @@ namespace BeardPhantom.Bootstrap
 {
     public sealed partial class Bootstrapper : MonoBehaviour
     {
-        #region Fields
-
         private IPreBootstrapHandler _preHandler;
 
         private IPostBootstrapHandler _postHandler;
 
         private bool _isOverrideInstance;
 
-        #endregion
-
-        #region Properties
-
         [field: SerializeField]
         internal PrefabProvider PrefabProvider { get; set; }
-
-        #endregion
-
-        #region Methods
 
         private void AssignBootstrapHandlers()
         {
@@ -99,7 +89,5 @@ namespace BeardPhantom.Bootstrap
         partial void ClearDirtyFlag(GameObject servicesPrefab);
 
         partial void TryReplaceWithOverrideInstance();
-
-        #endregion
     }
 }

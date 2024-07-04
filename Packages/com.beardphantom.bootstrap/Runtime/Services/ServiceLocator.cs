@@ -11,13 +11,7 @@ namespace BeardPhantom.Bootstrap
 {
     public class ServiceLocator : IServiceLocator
     {
-        #region Types
-
         public delegate void OnServiceEvent(IBootstrapService service);
-
-        #endregion
-
-        #region Events
 
         public event OnServiceEvent ServiceDiscovered;
 
@@ -27,15 +21,11 @@ namespace BeardPhantom.Bootstrap
 
         public event OnServiceEvent ServiceLateInitialized;
 
-        #endregion
+        private readonly Dictionary<Type, IBootstrapService> _typeToServices = new();
 
-        #region Fields
+        private readonly HashSet<IBootstrapService> _services = new();
 
-        private readonly Dictionary<Type, IBootstrapService> _services = new();
-
-        #endregion
-
-        #region Methods
+        private GameObject _servicesInstance;
 
         private static async UniTask WaitThenFireEvent(
             OnServiceEvent onServiceEvent,
@@ -46,35 +36,45 @@ namespace BeardPhantom.Bootstrap
             onServiceEvent?.Invoke(bootstrapService);
         }
 
-        public async UniTask CreateAsync(BootstrapContext context, GameObject servicesInstance)
+        public async UniTask CreateAsync(BootstrapContext context, GameObject servicesInstance, HideFlags hideFlags = HideFlags.DontSave)
         {
+            _servicesInstance = servicesInstance;
+            _servicesInstance.hideFlags = hideFlags;
+
             /*
              * Service Discovery
              */
             App.BootstrapState = AppBootstrapState.ServiceDiscovery;
-            using (ListPool<IBootstrapService>.Get(out var foundServices))
+            using (ListPool<IBootstrapService>.Get(out var serviceComponents))
             {
-                servicesInstance.GetComponentsInChildren(true, foundServices);
-
-                foreach (var service in foundServices)
+                _servicesInstance.GetComponentsInChildren(true, serviceComponents);
+                foreach (var service in serviceComponents)
                 {
-                    var serviceType = service.GetType();
-                    _services.Add(serviceType, service);
+                    var component = (Component)service;
+                    component.hideFlags = hideFlags;
+                    _services.Add(service);
+                }
+            }
 
-                    if (service is IMultiboundBootstrapService multiboundService)
+            App.BootstrapState = AppBootstrapState.ServiceBinding;
+            foreach (var service in _services)
+            {
+                var serviceType = service.GetType();
+                _typeToServices.Add(serviceType, service);
+
+                if (service is IMultiboundBootstrapService multiboundService)
+                {
+                    using (ListPool<Type>.Get(out var extraBindableTypes))
                     {
-                        using (ListPool<Type>.Get(out var extraBindableTypes))
+                        multiboundService.GetExtraBindableTypes(extraBindableTypes);
+                        foreach (var extraType in extraBindableTypes)
                         {
-                            multiboundService.GetExtraBindableTypes(extraBindableTypes);
-                            foreach (var extraType in extraBindableTypes)
-                            {
-                                _services.Add(extraType, service);
-                            }
+                            _typeToServices.Add(extraType, service);
                         }
                     }
-
-                    ServiceDiscovered?.Invoke(service);
                 }
+
+                ServiceDiscovered?.Invoke(service);
             }
 
             /*
@@ -84,7 +84,7 @@ namespace BeardPhantom.Bootstrap
             Log.Verbose("Early initializing services.");
             using (ListPool<UniTask>.Get(out var tasks))
             {
-                foreach (var service in _services.Values.OfType<IEarlyInitBootstrapService>())
+                foreach (var service in _services.OfType<IEarlyInitBootstrapService>())
                 {
                     var earlyInitTask = service.EarlyInitServiceAsync(context);
                     tasks.Add(WaitThenFireEvent(ServiceEarlyInitialized, earlyInitTask, service));
@@ -100,7 +100,7 @@ namespace BeardPhantom.Bootstrap
             Log.Verbose("Initializing services.");
             using (ListPool<UniTask>.Get(out var tasks))
             {
-                foreach (var service in _services.Values)
+                foreach (var service in _services)
                 {
                     var initTask = service.InitServiceAsync(context);
                     tasks.Add(WaitThenFireEvent(ServiceInitialized, initTask, service));
@@ -116,7 +116,7 @@ namespace BeardPhantom.Bootstrap
             Log.Verbose("Late initializing services.");
             using (ListPool<UniTask>.Get(out var tasks))
             {
-                foreach (var service in _services.Values.OfType<ILateInitBootstrapService>())
+                foreach (var service in _services.OfType<ILateInitBootstrapService>())
                 {
                     var lateInitTask = service.LateInitServiceAsync(context);
                     tasks.Add(WaitThenFireEvent(ServiceLateInitialized, lateInitTask, service));
@@ -127,20 +127,20 @@ namespace BeardPhantom.Bootstrap
 
             App.BootstrapState = AppBootstrapState.ServiceActivation;
             Log.Verbose("Activating services.");
-            servicesInstance.SetActive(true);
+            _servicesInstance.SetActive(true);
         }
 
         public bool TryLocateService(Type serviceType, out IBootstrapService service)
         {
             Assert.IsTrue(App.CanLocateServices, "App.CanLocateServices");
-            return _services.TryGetValue(serviceType, out service);
+            return _typeToServices.TryGetValue(serviceType, out service);
         }
 
         /// <inheritdoc />
         public void Dispose()
         {
             Log.Verbose("Disposing ServiceLocator.");
-            foreach (var service in _services.Values)
+            foreach (var service in _services)
             {
                 if (service is IDisposable disposable)
                 {
@@ -148,6 +148,8 @@ namespace BeardPhantom.Bootstrap
                     disposable.Dispose();
                 }
             }
+
+            Object.DestroyImmediate(_servicesInstance);
         }
 
         /// <inheritdoc />
@@ -157,7 +159,5 @@ namespace BeardPhantom.Bootstrap
             service = bootstrapService;
             return didFind;
         }
-
-        #endregion
     }
 }
