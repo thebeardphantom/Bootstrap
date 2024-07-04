@@ -14,6 +14,8 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private const string UxmlGuid = "cc2657753a54cb14396441d2393d3d8f";
 
+        private static readonly string s_searchText = $"p: prefab:any t:{nameof(EditModeServices)}";
+
         private VisualElement _content;
 
         private SerializedObject _serializedObject;
@@ -57,7 +59,7 @@ namespace BeardPhantom.Bootstrap.Editor
                     objectField.value = result;
                 },
                 default,
-                $"p: prefab:any t:{nameof(EditModeServices)}",
+                s_searchText,
                 nameof(EditModeServices),
                 typeof(GameObject));
         }
