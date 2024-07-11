@@ -4,8 +4,6 @@ using UnityEngine.SceneManagement;
 
 public class SceneLogger : MonoBehaviour
 {
-    #region Methods
-
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void Init()
     {
@@ -32,6 +30,4 @@ public class SceneLogger : MonoBehaviour
         Debug.Log($"Scene path: {arg0.path}");
         Debug.Log($"Scene name: {arg0.name}");
     }
-
-    #endregion
 }

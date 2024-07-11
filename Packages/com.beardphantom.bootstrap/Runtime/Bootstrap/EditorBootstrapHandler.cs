@@ -17,7 +17,7 @@ namespace BeardPhantom.Bootstrap
 
         public const string TempBootstrapperPath = "Temp/Bootstrap_Override.prefab";
 
-        private EditModeState _editModeState;
+        public static readonly EditorBootstrapHandler Instance = new();
 
         public static void LoadScenesInPlayMode(IReadOnlyList<string> scenePaths)
         {
@@ -47,23 +47,28 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <inheritdoc />
-        public UniTask OnPreBootstrapAsync(in BootstrapContext context)
+        UniTask IPreBootstrapHandler.OnPreBootstrapAsync(in BootstrapContext context)
         {
             var editModeStateJson = SessionState.GetString(EditModeState, "");
-            _editModeState = new EditModeState();
+            context.EditModeState = new EditModeState();
             if (string.IsNullOrWhiteSpace(editModeStateJson))
             {
                 return default;
             }
 
-            EditorJsonUtility.FromJsonOverwrite(editModeStateJson, _editModeState);
+            EditorJsonUtility.FromJsonOverwrite(editModeStateJson, context.EditModeState);
             return default;
         }
 
         /// <inheritdoc />
-        public async UniTask OnPostBootstrapAsync(BootstrapContext context, Bootstrapper bootstrapper)
+        async UniTask IPostBootstrapHandler.OnPostBootstrapAsync(BootstrapContext context, Bootstrapper bootstrapper)
         {
-            var editModeScenePaths = _editModeState.LoadedScenes;
+            if (App.IsRunningTests)
+            {
+                return;
+            }
+
+            var editModeScenePaths = context.EditModeState.LoadedScenes;
             if (editModeScenePaths == null || editModeScenePaths.Count == 0)
             {
                 SceneManager.LoadScene(1);
@@ -73,7 +78,7 @@ namespace BeardPhantom.Bootstrap
                 LoadScenesInPlayMode(editModeScenePaths);
             }
 
-            var serializedSelectedObjs = _editModeState.SelectedObjects;
+            var serializedSelectedObjs = context.EditModeState.SelectedObjects;
             if (serializedSelectedObjs == null)
             {
                 return;

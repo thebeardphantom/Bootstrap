@@ -7,13 +7,11 @@
             out IPostBootstrapHandler postHandler)
         {
 #if UNITY_EDITOR
-            var editorBootstrapHandler = new EditorBootstrapHandler();
-            preHandler = editorBootstrapHandler;
-            postHandler = editorBootstrapHandler;
+            preHandler = EditorBootstrapHandler.Instance;
+            postHandler = EditorBootstrapHandler.Instance;
 #else
-            var bootstrapHandler = new BuildBootstrapHandler();
-            preHandler = bootstrapHandler;
-            postHandler = bootstrapHandler;
+            preHandler = BuildBootstrapHandler.Instance;
+            postHandler = BuildBootstrapHandler.Instance;
 #endif
         }
     }

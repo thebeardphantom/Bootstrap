@@ -1,7 +1,9 @@
 ﻿using Cysharp.Threading.Tasks;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Progress = UnityEditor.Progress;
@@ -20,6 +22,11 @@ namespace BeardPhantom.Bootstrap.Editor
 
         public static async UniTaskVoid PerformBootstrapping()
         {
+            if (EditorApplication.isCompiling)
+            {
+                return;
+            }
+
             using var _ = EditModePlayerLoopScope.Create();
 
             var progressId = Progress.Start(
@@ -28,12 +35,14 @@ namespace BeardPhantom.Bootstrap.Editor
                 Progress.Options.Indefinite | Progress.Options.Managed | Progress.Options.Sticky);
             try
             {
+                var sw = Stopwatch.StartNew();
                 Cleanup();
 
                 var servicesCmp = BootstrapEditorSettingsUtility.GetValue(asset => asset.EditModeServices, out var definedScope);
                 if (servicesCmp == null)
                 {
-                    Progress.Report(progressId, 1f, $"No edit mode services defined in {definedScope} scope.");
+                    sw.Stop();
+                    Progress.Report(progressId, 1f, $"Finished in {sw.Elapsed.TotalMilliseconds:0.00}ms. No edit mode services defined in {definedScope} scope.");
                     Progress.Finish(progressId);
                     return;
                 }
@@ -56,7 +65,8 @@ namespace BeardPhantom.Bootstrap.Editor
                 await App.ServiceLocator.CreateAsync(context, servicesInstance, HideFlags.HideAndDontSave);
                 EditorUtility.ClearProgressBar();
                 App.BootstrapState = AppBootstrapState.Ready;
-                Progress.Report(progressId, 1f, $"Finished with instance '{servicesInstance.name}' from {definedScope} scope.");
+                sw.Stop();
+                Progress.Report(progressId, 1f, $"Finished in {sw.Elapsed.TotalMilliseconds:0.00}ms with instance '{servicesInstance.name}' from {definedScope} scope.");
                 Progress.Finish(progressId);
             }
             catch (Exception ex)
@@ -84,6 +94,26 @@ namespace BeardPhantom.Bootstrap.Editor
             {
                 PerformBootstrapping().Forget();
             }
+        }
+
+        public static void UpdateScriptingDefinesIfNecessary()
+        {
+            var selectedBuildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            var namedBuildTarget = NamedBuildTarget.FromBuildTargetGroup(selectedBuildTargetGroup);
+
+            PlayerSettings.GetScriptingDefineSymbols(namedBuildTarget, out var defines);
+
+            var set = defines.ToHashSet();
+            if (BootstrapEditorProjectSettings.instance.VerboseLogging)
+            {
+                set.Add(Log.VerboseLogDefine);
+            }
+            else
+            {
+                set.Remove(Log.VerboseLogDefine);
+            }
+
+            PlayerSettings.SetScriptingDefineSymbols(namedBuildTarget, set.ToArray());
         }
 
         private static void OnEditModeServicesChanged(EditModeServices obj)

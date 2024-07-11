@@ -5,6 +5,8 @@ namespace BeardPhantom.Bootstrap
 {
     public class BuildBootstrapHandler : IPreBootstrapHandler, IPostBootstrapHandler
     {
+        public static readonly BuildBootstrapHandler Instance = new();
+
         /// <inheritdoc />
         public UniTask OnPreBootstrapAsync(in BootstrapContext context)
         {
@@ -12,10 +14,14 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <inheritdoc />
-        public UniTask OnPostBootstrapAsync(BootstrapContext context, Bootstrapper bootstrapper)
+        public async UniTask OnPostBootstrapAsync(BootstrapContext context, Bootstrapper bootstrapper)
         {
-            SceneManager.LoadScene(1);
-            return UniTask.NextFrame();
+            if (App.IsRunningTests)
+            {
+                return;
+            }
+
+            await SceneManager.LoadSceneAsync(1).ToUniTask();
         }
     }
 }

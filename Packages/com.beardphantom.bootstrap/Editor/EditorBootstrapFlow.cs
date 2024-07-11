@@ -11,8 +11,6 @@ namespace BeardPhantom.Bootstrap.Editor
     [InitializeOnLoad]
     public static class EditorBootstrapFlow
     {
-        public static bool EnableSceneManagement { get; set; } = true;
-
         static EditorBootstrapFlow()
         {
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
@@ -29,7 +27,7 @@ namespace BeardPhantom.Bootstrap.Editor
                 }
                 case PlayModeStateChange.EnteredEditMode:
                 {
-                    if (EnableSceneManagement)
+                    if (BootstrapEditorSettingsUtility.GetValue(a => a.EditorFlowEnabled))
                     {
                         EditorSceneManager.playModeStartScene = default;
                     }
@@ -46,7 +44,7 @@ namespace BeardPhantom.Bootstrap.Editor
             SessionState.EraseString(EditorBootstrapHandler.EditModeState);
             File.Delete(EditorBootstrapHandler.TempBootstrapperPath);
 
-            if (!EnableSceneManagement)
+            if (!BootstrapEditorSettingsUtility.GetValue(a => a.EditorFlowEnabled))
             {
                 return;
             }

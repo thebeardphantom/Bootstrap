@@ -4,15 +4,9 @@ using UnityEngine;
 
 public class CustomBootstrapHandler : MonoBehaviour, IPreBootstrapHandler, IPostBootstrapHandler
 {
-    #region Fields
-
     private IPreBootstrapHandler _defaultPreHandler;
 
     private IPostBootstrapHandler _defaultPostHandler;
-
-    #endregion
-
-    #region Methods
 
     /// <inheritdoc />
     UniTask IPreBootstrapHandler.OnPreBootstrapAsync(in BootstrapContext context)
@@ -28,6 +22,4 @@ public class CustomBootstrapHandler : MonoBehaviour, IPreBootstrapHandler, IPost
         Debug.Log("USING CUSTOM OnPostBootstrapAsync");
         return _defaultPostHandler.OnPostBootstrapAsync(context, bootstrapper);
     }
-
-    #endregion
 }

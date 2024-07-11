@@ -1,4 +1,5 @@
 ﻿using UnityEditor;
+using UnityEditor.Compilation;
 using UnityEditor.Search;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -29,6 +30,7 @@ namespace BeardPhantom.Bootstrap.Editor
         private ToolbarToggle _userToggle;
 
         private ObjectField _servicesInstance;
+        private VisualElement _rootElement;
 
         /// <inheritdoc />
         private BootstrapSettingsProvider() : base(SettingsPath, SettingsScope.Project) { }
@@ -43,6 +45,7 @@ namespace BeardPhantom.Bootstrap.Editor
         {
             var settingsAsset = (IBootstrapEditorSettingsAsset)obj.targetObject;
             settingsAsset.Save();
+            EditModeBootstrapping.UpdateScriptingDefinesIfNecessary();
             EditModeBootstrapping.PerformBootstrappingIfNecessary();
         }
 
@@ -85,11 +88,14 @@ namespace BeardPhantom.Bootstrap.Editor
         /// <inheritdoc />
         public override void OnActivate(string searchContext, VisualElement rootElement)
         {
+            CompilationPipeline.compilationStarted += OnCompilationStarted;
             App.AppBootstrapStateChanged += OnBootstrapStateChanged;
 
+            _rootElement = rootElement;
+
             var uxml = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(AssetDatabase.GUIDToAssetPath(UxmlGuid));
-            uxml.CloneTree(rootElement);
-            _content = rootElement.Q("settings-content");
+            uxml.CloneTree(_rootElement);
+            _content = _rootElement.Q("settings-content");
             _tabViewContent = _content.Q(className: "tab-view-content");
             _projectToggle = _content.Q<ToolbarToggle>("project-toggle");
             _userToggle = _content.Q<ToolbarToggle>("user-toggle");
@@ -104,7 +110,13 @@ namespace BeardPhantom.Bootstrap.Editor
         /// <inheritdoc />
         public override void OnDeactivate()
         {
+            CompilationPipeline.compilationStarted -= OnCompilationStarted;
             App.AppBootstrapStateChanged -= OnBootstrapStateChanged;
+        }
+
+        private void OnCompilationStarted(object obj)
+        {
+            _rootElement.SetEnabled(false);
         }
 
         private void OnBootstrapStateChanged(AppBootstrapState previousState, AppBootstrapState newState)
