@@ -15,8 +15,10 @@ namespace BeardPhantom.Bootstrap
                 var appSessionGuid = App.SessionGuid;
                 if (_value.IsNull() || _sessionGuid != appSessionGuid)
                 {
-                    _sessionGuid = appSessionGuid;
-                    _value = App.Locate<T>();
+                    if (App.TryLocate(out _value))
+                    {
+                        _sessionGuid = appSessionGuid;
+                    }
                 }
 
                 return _value;

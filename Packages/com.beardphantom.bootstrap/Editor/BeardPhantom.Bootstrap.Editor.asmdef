@@ -1,19 +1,19 @@
 {
-    "name": "BeardPhantom.Bootstrap.Editor",
-    "rootNamespace": "BeardPhantom.Bootstrap.Editor",
-    "references": [
-        "GUID:b9853a2b6bad9cc4c9ad4d8907949464",
-        "GUID:f51ebe6a0ceec4240a699833d6309b23"
-    ],
-    "includePlatforms": [
-        "Editor"
-    ],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+  "name": "BeardPhantom.Bootstrap.Editor",
+  "rootNamespace": "BeardPhantom.Bootstrap.Editor",
+  "references": [
+    "GUID:b9853a2b6bad9cc4c9ad4d8907949464",
+    "GUID:f51ebe6a0ceec4240a699833d6309b23"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
 }

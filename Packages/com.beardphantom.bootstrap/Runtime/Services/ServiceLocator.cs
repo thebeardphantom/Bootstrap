@@ -3,13 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.Pool;
 using Object = UnityEngine.Object;
 
 namespace BeardPhantom.Bootstrap
 {
-    public class ServiceLocator : IServiceLocator
+    public class ServiceLocator : IDisposable
     {
         public delegate void OnServiceEvent(IBootstrapService service);
 
@@ -26,6 +25,8 @@ namespace BeardPhantom.Bootstrap
         private readonly HashSet<IBootstrapService> _services = new();
 
         private GameObject _servicesInstance;
+
+        public bool CanLocateServices => App.BootstrapState > AppBootstrapState.ServiceEarlyInit;
 
         private static async UniTask WaitThenFireEvent(
             OnServiceEvent onServiceEvent,
@@ -56,6 +57,9 @@ namespace BeardPhantom.Bootstrap
                 }
             }
 
+            /*
+             * Service Binding
+             */
             App.BootstrapState = AppBootstrapState.ServiceBinding;
             foreach (var service in _services)
             {
@@ -130,13 +134,6 @@ namespace BeardPhantom.Bootstrap
             _servicesInstance.SetActive(true);
         }
 
-        public bool TryLocateService(Type serviceType, out IBootstrapService service)
-        {
-            Assert.IsTrue(App.CanLocateServices, "App.CanLocateServices");
-            return _typeToServices.TryGetValue(serviceType, out service);
-        }
-
-        /// <inheritdoc />
         public void Dispose()
         {
             Log.Verbose("Disposing ServiceLocator.");
@@ -152,12 +149,41 @@ namespace BeardPhantom.Bootstrap
             Object.DestroyImmediate(_servicesInstance);
         }
 
-        /// <inheritdoc />
-        bool IServiceLocator.TryLocateService(Type serviceType, out object service)
+        public bool TryLocateService<T>(out T service) where T : class
         {
-            var didFind = TryLocateService(serviceType, out var bootstrapService);
-            service = bootstrapService;
-            return didFind;
+            if (TryLocateService(typeof(T), out var untypedService))
+            {
+                service = (T)untypedService;
+                return true;
+            }
+
+            service = default;
+            return false;
+        }
+
+        public bool TryLocateService(Type serviceType, out IBootstrapService service)
+        {
+            return _typeToServices.TryGetValue(serviceType, out service);
+        }
+
+        public T LocateService<T>() where T : class
+        {
+            if (TryLocateService<T>(out var service))
+            {
+                return service;
+            }
+
+            throw new Exception($"Service of type {typeof(T)} not found.");
+        }
+
+        public IBootstrapService LocateService(Type serviceType)
+        {
+            if (TryLocateService(serviceType, out var service))
+            {
+                return service;
+            }
+
+            throw new Exception($"Service of type {serviceType} not found.");
         }
     }
 }

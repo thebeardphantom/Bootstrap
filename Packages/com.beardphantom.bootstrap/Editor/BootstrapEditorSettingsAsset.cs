@@ -3,9 +3,7 @@ using UnityEngine;
 
 namespace BeardPhantom.Bootstrap.Editor
 {
-    public abstract class BootstrapEditorSettingsAsset<T> : ScriptableSingleton<T>,
-        IBootstrapEditorSettingsAsset
-        where T : ScriptableObject
+    public abstract class BootstrapEditorSettingsAsset<T> : ScriptableSingleton<T>, IBootstrapEditorSettingsAsset where T : ScriptableObject
     {
         [field: SerializeField]
         public SettingsProperty<bool> EditorFlowEnabled { get; set; } = new();

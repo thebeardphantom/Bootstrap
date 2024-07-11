@@ -1,8 +1,10 @@
 ﻿namespace BeardPhantom.Bootstrap
 {
-    public readonly struct BootstrapContext
+    public class BootstrapContext
     {
         public readonly Bootstrapper Bootstrapper;
+
+        public EditModeState EditModeState { get; set; }
 
         public BootstrapContext(Bootstrapper bootstrapper)
         {

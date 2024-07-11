@@ -7,11 +7,13 @@ namespace BeardPhantom.Bootstrap
     {
         public const string BootstrapTag = "Bootstrap";
 
+        public const string VerboseLogDefine = "BOOTSTRAPPER_LOG_VERBOSE";
+
         public static readonly ILogHandler DefaultLogHandler = new DefaultLogHandler();
 
         public static ILogHandler LogHandler { get; set; } = DefaultLogHandler;
 
-        [Conditional("BOOTSTRAPPER_LOG_VERBOSE")]
+        [Conditional(VerboseLogDefine)]
         internal static void Verbose(object message, Object context = default)
         {
             LogHandler?.Log(LogLevel.Verbose, BootstrapTag, message, context);

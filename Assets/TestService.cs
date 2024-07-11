@@ -2,30 +2,23 @@
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace DefaultNamespace
+public class TestService : MonoBehaviour, IBootstrapService
 {
-    public class TestService : MonoBehaviour, IBootstrapService
+    /// <param name="context"></param>
+    /// <inheritdoc />
+    public async UniTask InitServiceAsync(BootstrapContext context)
     {
-        #region Methods
-
-        /// <param name="context"></param>
-        /// <inheritdoc />
-        public async UniTask InitServiceAsync(BootstrapContext context)
+        if (Application.isPlaying)
         {
-            if (Application.isPlaying)
-            {
-                return;
-            }
-
-            var timer = 0f;
-            const float DURATION = 0.5f;
-            while (timer < DURATION)
-            {
-                await UniTask.NextFrame();
-                timer += Time.deltaTime;
-            }
+            return;
         }
 
-        #endregion
+        var timer = 0f;
+        const float Duration = 0.5f;
+        while (timer < Duration)
+        {
+            await UniTask.NextFrame();
+            timer += Time.deltaTime;
+        }
     }
 }

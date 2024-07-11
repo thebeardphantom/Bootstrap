@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace BeardPhantom.Bootstrap
 {
@@ -35,15 +36,24 @@ namespace BeardPhantom.Bootstrap
 
         public static bool IsQuitting { get; private set; }
 
-        public static bool CanLocateServices => BootstrapState >= AppBootstrapState.ServiceLateInit;
+        public static bool IsRunningTests { get; set; }
+
+        public static bool CanLocateServices => ServiceLocator is { CanLocateServices: true, };
 
         public static bool TryLocate<T>(out T service) where T : class
         {
+            if (!CanLocateServices)
+            {
+                service = default;
+                return false;
+            }
+
             return ServiceLocator.TryLocateService(out service);
         }
 
         public static T Locate<T>() where T : class
         {
+            Assert.IsTrue(CanLocateServices, "CanLocateServices");
             return ServiceLocator.LocateService<T>();
         }
 
