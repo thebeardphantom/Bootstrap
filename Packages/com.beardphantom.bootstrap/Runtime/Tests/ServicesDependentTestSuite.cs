@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if UNITY_INCLUDE_TESTS
+using System.Collections;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
@@ -22,3 +23,4 @@ namespace BeardPhantom.Bootstrap.Tests
         }
     }
 }
+#endif

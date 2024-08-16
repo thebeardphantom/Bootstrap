@@ -1,4 +1,5 @@
-﻿using BeardPhantom.Bootstrap.Tests;
+﻿#if UNITY_INCLUDE_TESTS
+using BeardPhantom.Bootstrap.Tests;
 using NUnit.Framework.Interfaces;
 using UnityEngine.TestRunner;
 
@@ -10,12 +11,22 @@ namespace BeardPhantom.Bootstrap.Tests
     {
         void ITestRunCallback.RunStarted(ITest testsToRun)
         {
+            if (App.IsRunningTests)
+            {
+                return;
+            }
+
             Log.Info("Playmode test execution start detected.");
             App.IsRunningTests = true;
         }
 
         void ITestRunCallback.RunFinished(ITestResult testResults)
         {
+            if (!App.IsRunningTests)
+            {
+                return;
+            }
+
             Log.Info("Playmode test execution finish detected.");
             App.IsRunningTests = false;
         }
@@ -25,3 +36,4 @@ namespace BeardPhantom.Bootstrap.Tests
         void ITestRunCallback.TestFinished(ITestResult result) { }
     }
 }
+#endif
