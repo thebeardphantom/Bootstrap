@@ -1,4 +1,4 @@
-using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 namespace BeardPhantom.Bootstrap
 {
@@ -9,6 +9,6 @@ namespace BeardPhantom.Bootstrap
         /// "cooperative" work. By this point all services should be considered "ready"
         /// </summary>
         /// <param name="context"></param>
-        UniTask LateInitServiceAsync(BootstrapContext context);
+        Awaitable LateInitServiceAsync(BootstrapContext context);
     }
 }

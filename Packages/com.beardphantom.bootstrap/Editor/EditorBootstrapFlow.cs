@@ -35,7 +35,7 @@ namespace BeardPhantom.Bootstrap.Editor
                     }
 
                     App.DeinitializeIfInMode(AppInitMode.PlayMode);
-                    EditorApplication.delayCall += () => EditModeBootstrapping.PerformBootstrapping().Forget();
+                    EditorApplication.delayCall += () => EditModeBootstrapping.PerformBootstrappingAsync().Forget();
                     break;
                 }
             }

@@ -1,12 +1,10 @@
 ﻿using BeardPhantom.Bootstrap;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class TestService : MonoBehaviour, IBootstrapService
 {
-    /// <param name="context"></param>
     /// <inheritdoc />
-    public async UniTask InitServiceAsync(BootstrapContext context)
+    async Awaitable IBootstrapService.InitServiceAsync(BootstrapContext context)
     {
         if (Application.isPlaying)
         {
@@ -17,7 +15,7 @@ public class TestService : MonoBehaviour, IBootstrapService
         const float Duration = 0.5f;
         while (timer < Duration)
         {
-            await UniTask.NextFrame();
+            await Awaitable.NextFrameAsync();
             timer += Time.deltaTime;
         }
     }

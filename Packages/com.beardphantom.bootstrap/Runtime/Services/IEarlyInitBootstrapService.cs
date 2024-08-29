@@ -1,4 +1,4 @@
-using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 namespace BeardPhantom.Bootstrap
 {
@@ -9,6 +9,6 @@ namespace BeardPhantom.Bootstrap
         /// any other service has initialized.
         /// </summary>
         /// <param name="context"></param>
-        UniTask EarlyInitServiceAsync(BootstrapContext context);
+        Awaitable EarlyInitServiceAsync(BootstrapContext context);
     }
 }
