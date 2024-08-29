@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using UnityEditor;
@@ -22,14 +23,14 @@ namespace BeardPhantom.Bootstrap.Editor
 
         public static async UniTaskVoid PerformBootstrapping()
         {
-            if (EditorApplication.isCompiling)
+            if (EditorApplication.isCompiling || EditorApplication.isPlayingOrWillChangePlaymode)
             {
                 return;
             }
 
             using var _ = EditModePlayerLoopScope.Create();
 
-            var progressId = Progress.Start(
+            int progressId = Progress.Start(
                 $"Edit Mode Bootstrapping @ {DateTime.Now}",
                 "Cleanup",
                 Progress.Options.Indefinite | Progress.Options.Managed | Progress.Options.Sticky);
@@ -38,7 +39,7 @@ namespace BeardPhantom.Bootstrap.Editor
                 var sw = Stopwatch.StartNew();
                 Cleanup();
 
-                var servicesCmp = BootstrapEditorSettingsUtility.GetValue(asset => asset.EditModeServices, out var definedScope);
+                EditModeServices servicesCmp = BootstrapEditorSettingsUtility.GetValue(asset => asset.EditModeServices, out SettingsScope definedScope);
                 if (servicesCmp == null)
                 {
                     sw.Stop();
@@ -47,9 +48,9 @@ namespace BeardPhantom.Bootstrap.Editor
                     return;
                 }
 
-                var servicesPrefab = servicesCmp.gameObject;
+                GameObject servicesPrefab = servicesCmp.gameObject;
                 servicesPrefab.SetActive(false);
-                var servicesInstance = Object.Instantiate(servicesPrefab);
+                GameObject servicesInstance = Object.Instantiate(servicesPrefab);
                 var servicesInstanceCmp = servicesInstance.GetComponent<EditModeServices>();
                 servicesInstanceCmp.SourcePrefab = servicesPrefab;
                 servicesInstanceCmp.SourceComponent = servicesCmp;
@@ -57,7 +58,8 @@ namespace BeardPhantom.Bootstrap.Editor
                 servicesPrefab.SetActive(true);
                 EditorUtility.ClearDirty(servicesPrefab);
 
-                App.ServiceLocator = new ServiceLocator();
+                App.Init();
+
                 var context = new BootstrapContext(default);
                 var description = $"Creating edit mode services from prefab '{servicesPrefab.name}' from {definedScope} scope.";
                 Progress.Report(progressId, 1f, description);
@@ -89,8 +91,8 @@ namespace BeardPhantom.Bootstrap.Editor
 
         public static void PerformBootstrappingIfNecessary()
         {
-            var services = BootstrapEditorSettingsUtility.GetValue(asset => asset.EditModeServices);
-            if (!TryGetServicesInstance(out var instance) || services != instance.SourceComponent)
+            EditModeServices services = BootstrapEditorSettingsUtility.GetValue(asset => asset.EditModeServices);
+            if (!TryGetServicesInstance(out EditModeServices instance) || services != instance.SourceComponent)
             {
                 PerformBootstrapping().Forget();
             }
@@ -98,12 +100,12 @@ namespace BeardPhantom.Bootstrap.Editor
 
         public static void UpdateScriptingDefinesIfNecessary()
         {
-            var selectedBuildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            BuildTargetGroup selectedBuildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
             var namedBuildTarget = NamedBuildTarget.FromBuildTargetGroup(selectedBuildTargetGroup);
 
-            PlayerSettings.GetScriptingDefineSymbols(namedBuildTarget, out var defines);
+            PlayerSettings.GetScriptingDefineSymbols(namedBuildTarget, out string[] defines);
 
-            var set = defines.ToHashSet();
+            HashSet<string> set = defines.ToHashSet();
             if (BootstrapEditorProjectSettings.instance.VerboseLogging)
             {
                 set.Add(Log.VerboseLogDefine);
@@ -116,20 +118,14 @@ namespace BeardPhantom.Bootstrap.Editor
             PlayerSettings.SetScriptingDefineSymbols(namedBuildTarget, set.ToArray());
         }
 
-        private static void OnEditModeServicesChanged(EditModeServices obj)
+        public static void Cleanup()
         {
-            PerformBootstrappingIfNecessary();
-        }
+            App.DeinitializeIfInMode(AppInitMode.EditMode);
 
-        private static void Cleanup()
-        {
-            App.ServiceLocator?.Dispose();
-            App.ServiceLocator = default;
-
-            var liveServices = Resources.FindObjectsOfTypeAll<EditModeServices>();
-            foreach (var liveService in liveServices)
+            EditModeServices[] liveServices = Resources.FindObjectsOfTypeAll<EditModeServices>();
+            foreach (EditModeServices liveService in liveServices)
             {
-                var gObj = liveService.gameObject;
+                GameObject gObj = liveService.gameObject;
                 if (BootstrapUtility.IsFromPrefab(gObj))
                 {
                     continue;
@@ -137,8 +133,11 @@ namespace BeardPhantom.Bootstrap.Editor
 
                 Object.DestroyImmediate(gObj, false);
             }
+        }
 
-            App.BootstrapState = AppBootstrapState.None;
+        private static void OnEditModeServicesChanged(EditModeServices obj)
+        {
+            PerformBootstrappingIfNecessary();
         }
     }
 }

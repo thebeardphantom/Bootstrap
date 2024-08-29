@@ -25,13 +25,13 @@ namespace BeardPhantom.Bootstrap
                 return false;
             }
 
-            var stage = PrefabStageUtility.GetPrefabStage(gameObject);
+            PrefabStage stage = PrefabStageUtility.GetPrefabStage(gameObject);
             return stage != null;
         }
 
         public static T GetSourceObject<T>(T obj) where T : Component
         {
-            var src = PrefabUtility.GetCorrespondingObjectFromSource(obj);
+            T src = PrefabUtility.GetCorrespondingObjectFromSource(obj);
             if (src != null)
             {
                 return src;

@@ -22,13 +22,15 @@ namespace BeardPhantom.Bootstrap
                     return;
                 }
 
-                var previousState = s_bootstrapState;
+                AppBootstrapState previousState = s_bootstrapState;
                 s_bootstrapState = value;
                 AppBootstrapStateChanged?.Invoke(previousState, value);
             }
         }
 
-        public static ServiceLocator ServiceLocator { get; internal set; }
+        public static ServiceLocator ServiceLocator { get; private set; }
+
+        public static AppInitMode InitMode { get; set; }
 
         public static Guid SessionGuid { get; private set; }
 
@@ -36,7 +38,7 @@ namespace BeardPhantom.Bootstrap
 
         public static bool IsQuitting { get; private set; }
 
-        public static bool IsRunningTests { get; set; }
+        public static bool IsRunningTests { get; internal set; }
 
         public static bool CanLocateServices => ServiceLocator is { CanLocateServices: true, };
 
@@ -58,14 +60,19 @@ namespace BeardPhantom.Bootstrap
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Init()
+        internal static void Init()
         {
+            InitMode = BootstrapUtility.IsInPlayMode() ? AppInitMode.PlayMode : AppInitMode.EditMode;
             s_bootstrapState = AppBootstrapState.None;
-            ServiceLocator = new ServiceLocator();
             IsQuitting = false;
-            IsPlaying = true;
-            Application.quitting -= OnApplicationQuitting;
-            Application.quitting += OnApplicationQuitting;
+            IsPlaying = InitMode == AppInitMode.PlayMode;
+            if (InitMode == AppInitMode.PlayMode)
+            {
+                Application.quitting -= OnApplicationQuitting;
+                Application.quitting += OnApplicationQuitting;
+            }
+
+            ServiceLocator = new ServiceLocator();
         }
 
         private static void OnApplicationQuitting()

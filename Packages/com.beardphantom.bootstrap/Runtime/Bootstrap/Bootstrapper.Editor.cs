@@ -31,7 +31,7 @@ namespace BeardPhantom.Bootstrap
                 return;
             }
 
-            var tform = transform;
+            Transform tform = transform;
             tform.SetParent(null, false);
             tform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             tform.SetAsFirstSibling();
@@ -39,23 +39,18 @@ namespace BeardPhantom.Bootstrap
 
         partial void TryReplaceWithOverrideInstance()
         {
-            var contents = InternalEditorUtility.LoadSerializedFileAndForget(EditorBootstrapHandler.TempBootstrapperPath);
-            var overridePrefab = contents.OfType<GameObject>().SingleOrDefault();
+            Object[] contents = InternalEditorUtility.LoadSerializedFileAndForget(EditorBootstrapHandler.TempBootstrapperPath);
+            GameObject overridePrefab = contents.OfType<GameObject>().SingleOrDefault();
             if (overridePrefab == null)
             {
                 return;
             }
 
             Log.Info($"Loading custom bootstrapper from path '{EditorBootstrapHandler.TempBootstrapperPath}'.");
-            var overrideInstance = Instantiate(overridePrefab);
+            GameObject overrideInstance = Instantiate(overridePrefab);
             overrideInstance.name = overridePrefab.name;
             overrideInstance.GetComponent<Bootstrapper>()._isOverrideInstance = true;
             DestroyImmediate(gameObject);
-        }
-
-        partial void ClearDirtyFlag(GameObject servicesPrefab)
-        {
-            EditorUtility.ClearDirty(servicesPrefab);
         }
     }
 }
