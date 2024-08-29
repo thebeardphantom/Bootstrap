@@ -18,18 +18,12 @@ namespace BeardPhantom.Bootstrap
 
         private void AssignBootstrapHandlers()
         {
-            var foundPreHandler = TryGetComponent(out _preHandler);
-            var foundPostHandler = TryGetComponent(out _postHandler);
+            bool foundPreHandler = TryGetComponent(out _preHandler);
+            bool foundPostHandler = TryGetComponent(out _postHandler);
 
-#if UNITY_EDITOR
-            var editorBootstrapHandler = new EditorBootstrapHandler();
-            _preHandler = foundPreHandler ? _preHandler : editorBootstrapHandler;
-            _postHandler = foundPostHandler ? _postHandler : editorBootstrapHandler;
-#else
-            var bootstrapHandler = new BuildBootstrapHandler();
-            _preHandler = foundPreHandler ? _preHandler : bootstrapHandler;
-            _postHandler = foundPostHandler ? _postHandler : bootstrapHandler;
-#endif
+            BootstrapUtility.GetDefaultBootstrapHandlers(out IPreBootstrapHandler defautlPreHandler, out IPostBootstrapHandler defaultPostHandler);
+            _preHandler = foundPreHandler ? _preHandler : defautlPreHandler;
+            _postHandler = foundPostHandler ? _postHandler : defaultPostHandler;
 
             Log.Verbose($"Selected IPreBootstrapHandler {_preHandler}.", this);
             Log.Verbose($"Selected IPostBootstrapHandler {_postHandler}.", this);
@@ -63,31 +57,32 @@ namespace BeardPhantom.Bootstrap
             App.BootstrapState = AppBootstrapState.PreBootstrap;
             Log.Verbose("Beginning pre-bootstrapping.", this);
             await _preHandler.OnPreBootstrapAsync(context);
+            await UniTask.NextFrame();
 
             App.BootstrapState = AppBootstrapState.ServicePrefabLoad;
             Log.Verbose($"Loading services prefab via loader {PrefabProvider}.", this);
-            var servicesPrefab = await PrefabProvider.LoadPrefabAsync();
+            GameObject servicesPrefab = await PrefabProvider.LoadPrefabAsync();
 
             App.BootstrapState = AppBootstrapState.ServiceCreation;
             Log.Verbose("Creating services.", this);
             servicesPrefab.SetActive(false);
-            var servicesInstance = Instantiate(servicesPrefab);
+            GameObject servicesInstance = Instantiate(servicesPrefab);
             DontDestroyOnLoad(servicesInstance);
             servicesInstance.name = servicesPrefab.name;
             servicesPrefab.SetActive(true);
-            ClearDirtyFlag(servicesPrefab);
-            await App.ServiceLocator.CreateAsync(context, servicesInstance);
+            BootstrapUtility.ClearDirtyFlag(servicesPrefab);
+            await App.ServiceLocator.CreateAsync(context, servicesInstance, HideFlags.None);
+            await UniTask.NextFrame();
 
             App.BootstrapState = AppBootstrapState.PostBoostrap;
-            Log.Verbose("Beginning post-boostrapping.", this);
+            Log.Verbose("Beginning post-bootstrapping.", this);
             await _postHandler.OnPostBootstrapAsync(context, this);
+            await UniTask.NextFrame();
 
             App.BootstrapState = AppBootstrapState.Ready;
             Log.Info("Bootstrapping complete.", this);
         }
-
-        partial void ClearDirtyFlag(GameObject servicesPrefab);
-
+        
         partial void TryReplaceWithOverrideInstance();
     }
 }

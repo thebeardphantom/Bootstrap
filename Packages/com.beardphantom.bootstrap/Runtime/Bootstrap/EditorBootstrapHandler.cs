@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -27,7 +28,7 @@ namespace BeardPhantom.Bootstrap
             var loadFirstAsSingle = true;
             for (var i = 0; i < SceneManager.sceneCount; i++)
             {
-                var scene = SceneManager.GetSceneAt(i);
+                Scene scene = SceneManager.GetSceneAt(i);
                 if (scene.buildIndex != 0)
                 {
                     loadFirstAsSingle = false;
@@ -37,7 +38,7 @@ namespace BeardPhantom.Bootstrap
 
             for (var i = 0; i < scenePaths.Count; i++)
             {
-                var path = scenePaths[i];
+                string path = scenePaths[i];
                 var loadSceneParameters = new LoadSceneParameters(
                     loadFirstAsSingle && i == 0
                         ? LoadSceneMode.Single
@@ -49,14 +50,13 @@ namespace BeardPhantom.Bootstrap
         /// <inheritdoc />
         UniTask IPreBootstrapHandler.OnPreBootstrapAsync(in BootstrapContext context)
         {
-            var editModeStateJson = SessionState.GetString(EditModeState, "");
-            context.EditModeState = new EditModeState();
+            string editModeStateJson = SessionState.GetString(EditModeState, "");
             if (string.IsNullOrWhiteSpace(editModeStateJson))
             {
                 return default;
             }
 
-            EditorJsonUtility.FromJsonOverwrite(editModeStateJson, context.EditModeState);
+            context.EditModeState = JsonConvert.DeserializeObject<EditModeState>(editModeStateJson);
             return default;
         }
 
@@ -68,7 +68,7 @@ namespace BeardPhantom.Bootstrap
                 return;
             }
 
-            var editModeScenePaths = context.EditModeState.LoadedScenes;
+            List<string> editModeScenePaths = context.EditModeState.LoadedScenes;
             if (editModeScenePaths == null || editModeScenePaths.Count == 0)
             {
                 SceneManager.LoadScene(1);
@@ -78,8 +78,8 @@ namespace BeardPhantom.Bootstrap
                 LoadScenesInPlayMode(editModeScenePaths);
             }
 
-            var serializedSelectedObjs = context.EditModeState.SelectedObjects;
-            if (serializedSelectedObjs == null)
+            SelectedObjectPath[] serializedSelectedObjs = context.EditModeState.SelectedObjects;
+            if (serializedSelectedObjs == null || serializedSelectedObjs.Length == 0)
             {
                 return;
             }
@@ -87,24 +87,24 @@ namespace BeardPhantom.Bootstrap
             await UniTask.NextFrame();
 
             // Restore editor selection
-            using (HashSetPool<Object>.Get(out var selectedObjs))
+            using (HashSetPool<Object>.Get(out HashSet<Object> selectedObjs))
             {
-                foreach (var o in Selection.objects)
+                foreach (Object o in Selection.objects)
                 {
                     selectedObjs.Add(o);
                 }
 
                 for (var i = 0; i < SceneManager.sceneCount; i++)
                 {
-                    var scene = SceneManager.GetSceneAt(i);
-                    foreach (var serializedSelectedObj in serializedSelectedObjs)
+                    Scene scene = SceneManager.GetSceneAt(i);
+                    foreach (SelectedObjectPath serializedSelectedObj in serializedSelectedObjs)
                     {
                         if (scene.path != serializedSelectedObj.ScenePath)
                         {
                             continue;
                         }
 
-                        var foundObj = GameObject.Find(serializedSelectedObj.ObjectPath);
+                        GameObject foundObj = GameObject.Find(serializedSelectedObj.ObjectPath);
                         if (foundObj == null)
                         {
                             continue;
