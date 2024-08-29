@@ -1,5 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -28,16 +27,16 @@ namespace BeardPhantom.Bootstrap
 
         public bool CanLocateServices => App.BootstrapState > AppBootstrapState.ServiceEarlyInit;
 
-        private static async UniTask WaitThenFireEvent(
+        private static async Awaitable WaitThenFireEvent(
             OnServiceEvent onServiceEvent,
-            UniTask serviceTask,
+            Awaitable serviceTask,
             IBootstrapService bootstrapService)
         {
             await serviceTask;
             onServiceEvent?.Invoke(bootstrapService);
         }
 
-        public async UniTask CreateAsync(BootstrapContext context, GameObject servicesInstance, HideFlags hideFlags = HideFlags.DontSave)
+        public async Awaitable CreateAsync(BootstrapContext context, GameObject servicesInstance, HideFlags hideFlags = HideFlags.DontSave)
         {
             _servicesInstance = servicesInstance;
             _servicesInstance.hideFlags = hideFlags;
@@ -86,15 +85,15 @@ namespace BeardPhantom.Bootstrap
              */
             App.BootstrapState = AppBootstrapState.ServiceEarlyInit;
             Log.Verbose("Early initializing services.");
-            using (ListPool<UniTask>.Get(out List<UniTask> tasks))
+            using (ListPool<Awaitable>.Get(out List<Awaitable> tasks))
             {
                 foreach (IEarlyInitBootstrapService service in _services.OfType<IEarlyInitBootstrapService>())
                 {
-                    UniTask earlyInitTask = service.EarlyInitServiceAsync(context);
+                    Awaitable earlyInitTask = service.EarlyInitServiceAsync(context);
                     tasks.Add(WaitThenFireEvent(ServiceEarlyInitialized, earlyInitTask, service));
                 }
 
-                await UniTask.WhenAll(tasks);
+                await AwaitableUtility.WhenAll(tasks);
             }
 
             /*
@@ -102,15 +101,15 @@ namespace BeardPhantom.Bootstrap
              */
             App.BootstrapState = AppBootstrapState.ServiceInit;
             Log.Verbose("Initializing services.");
-            using (ListPool<UniTask>.Get(out List<UniTask> tasks))
+            using (ListPool<Awaitable>.Get(out List<Awaitable> tasks))
             {
                 foreach (IBootstrapService service in _services)
                 {
-                    UniTask initTask = service.InitServiceAsync(context);
+                    Awaitable initTask = service.InitServiceAsync(context);
                     tasks.Add(WaitThenFireEvent(ServiceInitialized, initTask, service));
                 }
 
-                await UniTask.WhenAll(tasks);
+                await AwaitableUtility.WhenAll(tasks);
             }
 
             /*
@@ -118,22 +117,22 @@ namespace BeardPhantom.Bootstrap
              */
             App.BootstrapState = AppBootstrapState.ServiceLateInit;
             Log.Verbose("Late initializing services.");
-            using (ListPool<UniTask>.Get(out List<UniTask> tasks))
+            using (ListPool<Awaitable>.Get(out List<Awaitable> tasks))
             {
                 foreach (ILateInitBootstrapService service in _services.OfType<ILateInitBootstrapService>())
                 {
-                    UniTask lateInitTask = service.LateInitServiceAsync(context);
+                    Awaitable lateInitTask = service.LateInitServiceAsync(context);
                     tasks.Add(WaitThenFireEvent(ServiceLateInitialized, lateInitTask, service));
                 }
 
-                await UniTask.WhenAll(tasks);
+                await AwaitableUtility.WhenAll(tasks);
             }
 
             App.BootstrapState = AppBootstrapState.ServiceActivation;
             Log.Verbose("Activating services.");
             _servicesInstance.SetActive(true);
             // Give the object one frame to run awake/start
-            await UniTask.NextFrame();
+            await Awaitable.NextFrameAsync();
         }
 
         public void Dispose()
@@ -170,7 +169,7 @@ namespace BeardPhantom.Bootstrap
 
         public T LocateService<T>() where T : class
         {
-            if (TryLocateService<T>(out T service))
+            if (TryLocateService(out T service))
             {
                 return service;
             }

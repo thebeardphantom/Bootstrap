@@ -1,5 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -16,12 +15,12 @@ namespace BeardPhantom.Bootstrap.Editor
     {
         static EditModeBootstrapping()
         {
-            EditorApplication.delayCall += () => PerformBootstrapping().Forget();
+            EditorApplication.delayCall += () => PerformBootstrappingAsync().Forget();
             BootstrapEditorProjectSettings.instance.EditModeServices.ValueChanged += OnEditModeServicesChanged;
             BootstrapEditorUserSettings.instance.EditModeServices.ValueChanged += OnEditModeServicesChanged;
         }
 
-        public static async UniTaskVoid PerformBootstrapping()
+        public static async Awaitable PerformBootstrappingAsync()
         {
             if (EditorApplication.isCompiling || EditorApplication.isPlayingOrWillChangePlaymode)
             {
@@ -94,7 +93,7 @@ namespace BeardPhantom.Bootstrap.Editor
             EditModeServices services = BootstrapEditorSettingsUtility.GetValue(asset => asset.EditModeServices);
             if (!TryGetServicesInstance(out EditModeServices instance) || services != instance.SourceComponent)
             {
-                PerformBootstrapping().Forget();
+                PerformBootstrappingAsync().Forget();
             }
         }
 

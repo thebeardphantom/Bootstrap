@@ -1,5 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace BeardPhantom.Bootstrap
 {
@@ -9,9 +8,9 @@ namespace BeardPhantom.Bootstrap
         private GameObject Prefab { get; set; }
 
         /// <inheritdoc />
-        public override UniTask<GameObject> LoadPrefabAsync()
+        public override Awaitable<GameObject> LoadPrefabAsync()
         {
-            return UniTask.FromResult(Prefab);
+            return AwaitableUtility.FromResult(Prefab);
         }
 
         /// <inheritdoc />

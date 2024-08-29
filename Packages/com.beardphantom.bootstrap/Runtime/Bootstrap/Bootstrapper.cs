@@ -1,4 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using UnityEngine;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -31,7 +31,7 @@ namespace BeardPhantom.Bootstrap
 
         [SuppressMessage("ReSharper", "UnusedMember.Local")]
         [SuppressMessage("ReSharper", "Unity.IncorrectMethodSignature")]
-        private async UniTaskVoid Start()
+        private async Awaitable Start()
         {
             Assert.IsTrue(gameObject.scene.buildIndex == 0, "gameObject.scene.buildIndex == 0");
 
@@ -57,7 +57,7 @@ namespace BeardPhantom.Bootstrap
             App.BootstrapState = AppBootstrapState.PreBootstrap;
             Log.Verbose("Beginning pre-bootstrapping.", this);
             await _preHandler.OnPreBootstrapAsync(context);
-            await UniTask.NextFrame();
+            await Awaitable.NextFrameAsync();
 
             App.BootstrapState = AppBootstrapState.ServicePrefabLoad;
             Log.Verbose($"Loading services prefab via loader {PrefabProvider}.", this);
@@ -72,12 +72,12 @@ namespace BeardPhantom.Bootstrap
             servicesPrefab.SetActive(true);
             BootstrapUtility.ClearDirtyFlag(servicesPrefab);
             await App.ServiceLocator.CreateAsync(context, servicesInstance, HideFlags.None);
-            await UniTask.NextFrame();
+            await Awaitable.NextFrameAsync();
 
             App.BootstrapState = AppBootstrapState.PostBoostrap;
             Log.Verbose("Beginning post-bootstrapping.", this);
             await _postHandler.OnPostBootstrapAsync(context, this);
-            await UniTask.NextFrame();
+            await Awaitable.NextFrameAsync();
 
             App.BootstrapState = AppBootstrapState.Ready;
             Log.Info("Bootstrapping complete.", this);

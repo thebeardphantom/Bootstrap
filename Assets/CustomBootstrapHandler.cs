@@ -1,5 +1,4 @@
 ﻿using BeardPhantom.Bootstrap;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class CustomBootstrapHandler : MonoBehaviour, IPreBootstrapHandler, IPostBootstrapHandler
@@ -9,7 +8,7 @@ public class CustomBootstrapHandler : MonoBehaviour, IPreBootstrapHandler, IPost
     private IPostBootstrapHandler _defaultPostHandler;
 
     /// <inheritdoc />
-    UniTask IPreBootstrapHandler.OnPreBootstrapAsync(in BootstrapContext context)
+    Awaitable IPreBootstrapHandler.OnPreBootstrapAsync(in BootstrapContext context)
     {
         BootstrapUtility.GetDefaultBootstrapHandlers(out _defaultPreHandler, out _defaultPostHandler);
         Debug.Log("USING CUSTOM OnPreBootstrapAsync");
@@ -17,7 +16,7 @@ public class CustomBootstrapHandler : MonoBehaviour, IPreBootstrapHandler, IPost
     }
 
     /// <inheritdoc />
-    UniTask IPostBootstrapHandler.OnPostBootstrapAsync(BootstrapContext context, Bootstrapper bootstrapper)
+    Awaitable IPostBootstrapHandler.OnPostBootstrapAsync(BootstrapContext context, Bootstrapper bootstrapper)
     {
         Debug.Log("USING CUSTOM OnPostBootstrapAsync");
         return _defaultPostHandler.OnPostBootstrapAsync(context, bootstrapper);

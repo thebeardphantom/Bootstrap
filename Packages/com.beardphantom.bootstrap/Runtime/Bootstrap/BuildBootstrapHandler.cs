@@ -1,4 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace BeardPhantom.Bootstrap
@@ -8,20 +8,20 @@ namespace BeardPhantom.Bootstrap
         public static readonly BuildBootstrapHandler Instance = new();
 
         /// <inheritdoc />
-        public UniTask OnPreBootstrapAsync(in BootstrapContext context)
+        public Awaitable OnPreBootstrapAsync(in BootstrapContext context)
         {
             return default;
         }
 
         /// <inheritdoc />
-        public async UniTask OnPostBootstrapAsync(BootstrapContext context, Bootstrapper bootstrapper)
+        public async Awaitable OnPostBootstrapAsync(BootstrapContext context, Bootstrapper bootstrapper)
         {
             if (App.IsRunningTests)
             {
                 return;
             }
 
-            await SceneManager.LoadSceneAsync(1).ToUniTask();
+            await SceneManager.LoadSceneAsync(1);
         }
     }
 }
