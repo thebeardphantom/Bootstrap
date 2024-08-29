@@ -8,10 +8,10 @@ namespace BeardPhantom.Bootstrap
     {
         internal static string GetGameObjectPath(GameObject gameObject)
         {
-            using (GenericPool<StringBuilder>.Get(out var stringBuilder))
+            using (GenericPool<StringBuilder>.Get(out StringBuilder stringBuilder))
             {
                 stringBuilder.Clear();
-                var tform = gameObject.transform;
+                Transform tform = gameObject.transform;
                 while (tform != null)
                 {
                     stringBuilder.Insert(0, tform.name);
@@ -19,7 +19,7 @@ namespace BeardPhantom.Bootstrap
                     tform = tform.parent;
                 }
 
-                var gameObjectPath = stringBuilder.ToString().Trim();
+                string gameObjectPath = stringBuilder.ToString().Trim();
                 stringBuilder.Clear();
                 return gameObjectPath;
             }

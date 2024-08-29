@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Diagnostics.CodeAnalysis;
-using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace BeardPhantom.Bootstrap
@@ -29,9 +27,12 @@ namespace BeardPhantom.Bootstrap
             Log.Verbose($"Selected IPostBootstrapHandler {_postHandler}.", this);
         }
 
-        [SuppressMessage("ReSharper", "UnusedMember.Local")]
-        [SuppressMessage("ReSharper", "Unity.IncorrectMethodSignature")]
-        private async Awaitable Start()
+        private void Start()
+        {
+            BootstrapApplicationAsync().Forget();
+        }
+
+        private async Awaitable BootstrapApplicationAsync()
         {
             Assert.IsTrue(gameObject.scene.buildIndex == 0, "gameObject.scene.buildIndex == 0");
 
@@ -82,7 +83,7 @@ namespace BeardPhantom.Bootstrap
             App.BootstrapState = AppBootstrapState.Ready;
             Log.Info("Bootstrapping complete.", this);
         }
-        
+
         partial void TryReplaceWithOverrideInstance();
     }
 }
