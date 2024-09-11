@@ -1,6 +1,7 @@
 ﻿#if BOOTSTRAP_ZLOGGER
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using ZLogger;
@@ -10,7 +11,7 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace BeardPhantom.Bootstrap.ZLogger
 {
-    public class LogService : MonoBehaviour, IEarlyInitBootstrapService, IDisposable, ILogService
+    public class LogService : MonoBehaviour, IEarlyInitBootstrapService, IMultiboundBootstrapService, IDisposable, ILogService
     {
         private static readonly LogFile[] s_logFiles =
         {
@@ -107,6 +108,11 @@ namespace BeardPhantom.Bootstrap.ZLogger
         Awaitable IBootstrapService.InitServiceAsync(BootstrapContext context)
         {
             return AwaitableUtility.GetCompleted();
+        }
+
+        void IMultiboundBootstrapService.GetExtraBindableTypes(List<Type> extraTypes)
+        {
+            extraTypes.Add(typeof(ILogService));
         }
 
         private readonly struct LogFile
