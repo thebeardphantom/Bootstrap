@@ -32,6 +32,11 @@ namespace BeardPhantom.Bootstrap
             Awaitable serviceTask,
             IBootstrapService bootstrapService)
         {
+            if (serviceTask == null)
+            {
+                throw new Exception("Service task is null");
+            }
+
             await serviceTask;
             onServiceEvent?.Invoke(bootstrapService);
         }
@@ -89,6 +94,7 @@ namespace BeardPhantom.Bootstrap
             {
                 foreach (IEarlyInitBootstrapService service in _services.OfType<IEarlyInitBootstrapService>())
                 {
+                    Log.Verbose($"Invoking EarlyInitServiceAsync on {service.GetType()}.");
                     Awaitable earlyInitTask = service.EarlyInitServiceAsync(context);
                     tasks.Add(WaitThenFireEvent(ServiceEarlyInitialized, earlyInitTask, service));
                 }
@@ -105,6 +111,7 @@ namespace BeardPhantom.Bootstrap
             {
                 foreach (IBootstrapService service in _services)
                 {
+                    Log.Verbose($"Invoking InitServiceAsync on {service.GetType()}.");
                     Awaitable initTask = service.InitServiceAsync(context);
                     tasks.Add(WaitThenFireEvent(ServiceInitialized, initTask, service));
                 }
@@ -121,6 +128,7 @@ namespace BeardPhantom.Bootstrap
             {
                 foreach (ILateInitBootstrapService service in _services.OfType<ILateInitBootstrapService>())
                 {
+                    Log.Verbose($"Invoking LateInitServiceAsync on {service.GetType()}.");
                     Awaitable lateInitTask = service.LateInitServiceAsync(context);
                     tasks.Add(WaitThenFireEvent(ServiceLateInitialized, lateInitTask, service));
                 }

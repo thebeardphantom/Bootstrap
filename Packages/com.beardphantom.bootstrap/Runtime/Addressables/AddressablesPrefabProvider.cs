@@ -6,14 +6,8 @@ namespace BeardPhantom.Bootstrap.Addressables
 {
     public partial class AddressablesPrefabProvider : PrefabProvider
     {
-        #region Properties
-
         [field: SerializeField]
         private AssetReferenceT<GameObject> PrefabReference { get; set; }
-
-        #endregion
-
-        #region Methods
 
         /// <inheritdoc />
         public override async Awaitable<GameObject> LoadPrefabAsync()
@@ -29,8 +23,6 @@ namespace BeardPhantom.Bootstrap.Addressables
             throw new System.Exception("Cannot set prefab outside of editor.");
 #endif
         }
-
-        #endregion
     }
 }
 #endif

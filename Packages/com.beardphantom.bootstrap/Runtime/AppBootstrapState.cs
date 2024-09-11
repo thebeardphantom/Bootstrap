@@ -13,7 +13,7 @@ namespace BeardPhantom.Bootstrap
         ServiceInit,
         ServiceLateInit,
         ServiceActivation,
-        PostBoostrap,
+        PostBootstrap,
         Ready,
     }
 }
