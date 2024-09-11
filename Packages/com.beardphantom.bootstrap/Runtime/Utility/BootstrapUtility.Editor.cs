@@ -7,12 +7,12 @@ namespace BeardPhantom.Bootstrap
 {
     public static partial class BootstrapUtility
     {
-        public static bool IsFromPrefab(Object obj)
+        internal static bool IsFromPrefab(Object obj)
         {
             return PrefabUtility.IsPartOfAnyPrefab(obj) || IsPartOfPrefabStage(obj);
         }
 
-        public static bool IsPartOfPrefabStage(Object obj)
+        internal static bool IsPartOfPrefabStage(Object obj)
         {
             var gameObject = obj as GameObject;
             if (obj is Component cmp)
@@ -29,16 +29,9 @@ namespace BeardPhantom.Bootstrap
             return stage != null;
         }
 
-        public static T GetSourceObject<T>(T obj) where T : Component
+        static partial void ClearDirtyFlagInEditor(Object obj)
         {
-            T src = PrefabUtility.GetCorrespondingObjectFromSource(obj);
-            if (src != null)
-            {
-                return src;
-            }
-
-            src = PrefabUtility.GetCorrespondingObjectFromOriginalSource(obj);
-            return src == null ? obj : src;
+            EditorUtility.ClearDirty(obj);
         }
     }
 }

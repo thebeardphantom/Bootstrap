@@ -75,13 +75,14 @@ namespace BeardPhantom.Bootstrap
             await App.ServiceLocator.CreateAsync(context, servicesInstance, HideFlags.None);
             await Awaitable.NextFrameAsync();
 
-            App.BootstrapState = AppBootstrapState.PostBoostrap;
+            App.BootstrapState = AppBootstrapState.PostBootstrap;
             Log.Verbose("Beginning post-bootstrapping.", this);
             await _postHandler.OnPostBootstrapAsync(context, this);
             await Awaitable.NextFrameAsync();
 
             App.BootstrapState = AppBootstrapState.Ready;
             Log.Info("Bootstrapping complete.", this);
+            await Awaitable.NextFrameAsync();
         }
 
         partial void TryReplaceWithOverrideInstance();

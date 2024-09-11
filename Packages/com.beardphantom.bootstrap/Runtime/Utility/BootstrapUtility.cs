@@ -21,7 +21,7 @@ namespace BeardPhantom.Bootstrap
 #endif
         }
 
-        public static bool IsInPlayMode()
+        internal static bool IsInPlayMode()
         {
 #if UNITY_EDITOR
             return EditorApplication.isPlayingOrWillChangePlaymode;
@@ -31,11 +31,11 @@ namespace BeardPhantom.Bootstrap
         }
 
         [Conditional("UNITY_EDITOR")]
-        public static void ClearDirtyFlag(Object obj)
+        internal static void ClearDirtyFlag(Object obj)
         {
-#if UNITY_EDITOR
-            EditorUtility.ClearDirty(obj);
-#endif
+            ClearDirtyFlagInEditor(obj);
         }
+
+        static partial void ClearDirtyFlagInEditor(Object obj);
     }
 }

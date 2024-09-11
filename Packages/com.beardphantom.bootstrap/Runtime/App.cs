@@ -66,18 +66,17 @@ namespace BeardPhantom.Bootstrap
             s_bootstrapState = AppBootstrapState.None;
             IsQuitting = false;
             IsPlaying = InitMode == AppInitMode.PlayMode;
-            if (InitMode == AppInitMode.PlayMode)
+            SessionGuid = Guid.NewGuid();
+            ServiceLocator = new ServiceLocator();
+
+            if (!Application.isEditor)
             {
-                Application.quitting -= OnApplicationQuitting;
                 Application.quitting += OnApplicationQuitting;
             }
-
-            ServiceLocator = new ServiceLocator();
         }
 
         private static void OnApplicationQuitting()
         {
-            Application.quitting -= OnApplicationQuitting;
             IsQuitting = true;
         }
     }

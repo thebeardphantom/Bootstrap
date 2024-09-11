@@ -1,11 +1,19 @@
 #if UNITY_EDITOR
+using UnityEditor;
+using UnityEngine;
+
 namespace BeardPhantom.Bootstrap
 {
+    [InitializeOnLoad]
     public static partial class App
     {
+        static App()
+        {
+            Application.quitting += OnApplicationQuitting;
+        }
+
         public static void Deinitialize(AppInitMode mode)
         {
-            // Log.Info($"{nameof(DeinitializeIfInMode)} not in mode {mode}.");
             Log.Info($"{nameof(DeinitializeIfInMode)}({mode})");
             try
             {
