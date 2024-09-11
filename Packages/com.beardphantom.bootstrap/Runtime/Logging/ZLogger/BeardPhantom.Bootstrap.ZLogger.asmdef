@@ -1,0 +1,24 @@
+{
+  "name": "BeardPhantom.Bootstrap.ZLogger",
+  "rootNamespace": "BeardPhantom.Bootstrap.ZLogger",
+  "references": [
+    "GUID:b9853a2b6bad9cc4c9ad4d8907949464",
+    "GUID:2b78dc61ba35e42c39ba2aabce11b6c4",
+    "GUID:33661e06c33d31b4c9223810bf503247"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "autoReferenced": true,
+  "defineConstraints": [
+    "BOOTSTRAP_ZLOGGER"
+  ],
+  "versionDefines": [
+    {
+      "name": "com.cysharp.zlogger",
+      "expression": "0",
+      "define": "BOOTSTRAP_ZLOGGER"
+    }
+  ],
+  "noEngineReferences": false
+}

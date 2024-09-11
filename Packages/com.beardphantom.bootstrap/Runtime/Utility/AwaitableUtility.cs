@@ -7,9 +7,38 @@ using UnityEngine.Pool;
 
 namespace BeardPhantom.Bootstrap
 {
-    internal static class AwaitableUtility
+    public static class AwaitableUtility
     {
-        public static async Awaitable WhenAll(IEnumerable<Awaitable> awaitables, CancellationToken cancellationToken = default)
+        public static async Awaitable GetCompleted()
+        {
+            await Task.CompletedTask;
+        }
+
+        public static async void Forget(this Awaitable awaitable)
+        {
+            try
+            {
+                await awaitable;
+            }
+            catch (OperationCanceledException) { }
+        }
+
+        public static async void Forget<T>(this Awaitable<T> awaitable)
+        {
+            try
+            {
+                await awaitable;
+            }
+            catch (OperationCanceledException) { }
+        }
+
+        public static async Awaitable<T> FromResult<T>(T result)
+        {
+            await GetCompleted();
+            return result;
+        }
+
+        internal static async Awaitable WhenAll(IEnumerable<Awaitable> awaitables, CancellationToken cancellationToken = default)
         {
             using PooledObject<List<Awaitable>> _ = ListPool<Awaitable>.Get(out List<Awaitable> list);
             list.AddRange(awaitables);
@@ -28,26 +57,6 @@ namespace BeardPhantom.Bootstrap
             {
                 await awaitable;
             }
-        }
-
-        public static async Awaitable<T> FromResult<T>(T result)
-        {
-            await GetCompleted();
-            return result;
-        }
-
-        public static async Awaitable GetCompleted()
-        {
-            await Task.CompletedTask;
-        }
-
-        public static async void Forget(this Awaitable awaitable)
-        {
-            try
-            {
-                await awaitable;
-            }
-            catch (OperationCanceledException) { }
         }
 
         private static bool AreAllTasksComplete(List<Awaitable> awaitables)
