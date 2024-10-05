@@ -14,7 +14,7 @@ namespace BeardPhantom.Bootstrap
         {
             get
             {
-                var appSessionGuid = App.SessionGuid;
+                Guid appSessionGuid = App.SessionGuid;
                 if (_value.IsNull() || _sessionGuid != appSessionGuid)
                 {
                     _hasValue = false;

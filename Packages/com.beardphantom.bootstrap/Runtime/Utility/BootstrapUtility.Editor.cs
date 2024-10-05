@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+using Newtonsoft.Json;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -27,6 +28,19 @@ namespace BeardPhantom.Bootstrap
 
             PrefabStage stage = PrefabStageUtility.GetPrefabStage(gameObject);
             return stage != null;
+        }
+
+        internal static bool TryLoadEditModeState(out EditModeState editModeState)
+        {
+            string json = SessionState.GetString(EditorBootstrapHandler.EditModeState, default);
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                editModeState = default;
+                return false;
+            }
+
+            editModeState = JsonConvert.DeserializeObject<EditModeState>(json);
+            return editModeState != null;
         }
 
         static partial void ClearDirtyFlagInEditor(Object obj)

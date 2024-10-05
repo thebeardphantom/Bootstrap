@@ -21,6 +21,25 @@ namespace BeardPhantom.Bootstrap
 #endif
         }
 
+        public static GameObject InstantiateAsInactive(GameObject prefab)
+        {
+            bool isActive = prefab.activeSelf;
+            GameObject instance;
+            if (isActive)
+            {
+                prefab.SetActive(false);
+                instance = Object.Instantiate(prefab);
+                prefab.SetActive(true);
+                ClearDirtyFlag(prefab);
+            }
+            else
+            {
+                instance = Object.Instantiate(prefab);
+            }
+
+            return instance;
+        }
+
         internal static bool IsInPlayMode()
         {
 #if UNITY_EDITOR

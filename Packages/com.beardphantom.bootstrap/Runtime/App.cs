@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BeardPhantom.Bootstrap.Environment;
+using System;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -42,6 +43,8 @@ namespace BeardPhantom.Bootstrap
 
         public static bool CanLocateServices => ServiceLocator is { CanLocateServices: true, };
 
+        public static BootstrapEnvironmentAsset SessionEnvironment { get; private set; }
+
         public static bool TryLocate<T>(out T service) where T : class
         {
             if (!CanLocateServices)
@@ -73,6 +76,28 @@ namespace BeardPhantom.Bootstrap
             {
                 Application.quitting += OnApplicationQuitting;
             }
+
+            if (InitMode == AppInitMode.PlayMode)
+            {
+                if (TryDetermineSessionEnvironment(out RuntimeBootstrapEnvironmentAsset environment))
+                {
+                    SessionEnvironment = environment;
+                    environment.StartEnvironment();
+                }
+                else
+                {
+                    throw new Exception("No environment found.");
+                }
+            }
+        }
+
+        private static bool TryDetermineSessionEnvironment(out RuntimeBootstrapEnvironmentAsset environment)
+        {
+#if UNITY_EDITOR
+            return TryDetermineSessionEnvironmentInEditor(out environment);
+#else
+            return TryDetermineSessionEnvironmentInBuild(out environment);
+#endif
         }
 
         private static void OnApplicationQuitting()

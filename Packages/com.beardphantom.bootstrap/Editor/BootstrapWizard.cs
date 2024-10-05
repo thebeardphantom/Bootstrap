@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -28,9 +29,10 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private string BootstrapperPrefabPath => $"{OutputDirectory}Bootstrapper.prefab";
 
-        private string ServicesPrefabPath => ServicesPrefabInRoot
-            ? $"Assets/{ServicesPrefabName}.prefab"
-            : $"{OutputDirectory}{ServicesPrefabName}.prefab";
+        private string ServicesPrefabPath =>
+            ServicesPrefabInRoot
+                ? $"Assets/{ServicesPrefabName}.prefab"
+                : $"{OutputDirectory}{ServicesPrefabName}.prefab";
 
         [MenuItem("Edit/Bootstrap Wizard")]
         private static void Open()
@@ -47,7 +49,7 @@ namespace BeardPhantom.Bootstrap.Editor
         protected override bool DrawWizardGUI()
         {
             using var serializedObject = new SerializedObject(this);
-            var serializedProperty = serializedObject.GetIterator();
+            SerializedProperty serializedProperty = serializedObject.GetIterator();
 
             // Enter first property and skip m_Script and m_SerializedDataModeController
             serializedProperty.NextVisible(true);
@@ -57,7 +59,8 @@ namespace BeardPhantom.Bootstrap.Editor
             {
                 // if(serializedProperty.propertyPath is not "m_Script" or "")
                 EditorGUILayout.PropertyField(serializedProperty, true);
-            } while (serializedProperty.NextVisible(false));
+            }
+            while (serializedProperty.NextVisible(false));
 
             DrawOutputPaths();
 
@@ -71,9 +74,9 @@ namespace BeardPhantom.Bootstrap.Editor
 
             const string AssetExistsWarn = "Asset exists at this path and will be overwritten.";
 
-            var assetPathExists = DoesAssetPathExist(ScenePath);
+            bool assetPathExists = DoesAssetPathExist(ScenePath);
             GUI.contentColor = assetPathExists ? Color.yellow : Color.white;
-            var tooltip = assetPathExists ? AssetExistsWarn : null;
+            string tooltip = assetPathExists ? AssetExistsWarn : null;
             EditorGUILayout.LabelField(new GUIContent("Scene Path", tooltip), new GUIContent(ScenePath, tooltip));
 
             assetPathExists = DoesAssetPathExist(BootstrapperPrefabPath);
@@ -134,7 +137,7 @@ namespace BeardPhantom.Bootstrap.Editor
                 Directory.CreateDirectory(OutputDirectory);
 
                 bootstrapScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-                var didSave = EditorSceneManager.SaveScene(bootstrapScene, ScenePath);
+                bool didSave = EditorSceneManager.SaveScene(bootstrapScene, ScenePath);
                 if (!didSave)
                 {
                     Debug.LogError("Bootstrap scene not saved, cancelling asset creation.");
@@ -143,7 +146,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
                 // Create services
                 var servicesObj = new GameObject(ServicesPrefabName);
-                var servicesPrefab = PrefabUtility.SaveAsPrefabAsset(servicesObj, ServicesPrefabPath, out var success);
+                GameObject servicesPrefab = PrefabUtility.SaveAsPrefabAsset(servicesObj, ServicesPrefabPath, out bool success);
                 DestroyImmediate(servicesObj);
                 if (!success)
                 {
@@ -168,7 +171,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
                 EditorSceneManager.SaveScene(bootstrapScene);
 
-                var scenesList = EditorBuildSettings.scenes.ToList();
+                List<EditorBuildSettingsScene> scenesList = EditorBuildSettings.scenes.ToList();
                 scenesList.RemoveAll(a => a.path == ScenePath);
                 scenesList.Insert(0, new EditorBuildSettingsScene(ScenePath, true));
                 EditorBuildSettings.scenes = scenesList.ToArray();

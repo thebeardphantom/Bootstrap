@@ -34,14 +34,29 @@ namespace BeardPhantom.Bootstrap
         {
             if (serviceTask == null)
             {
-                throw new Exception("Service task is null");
+                throw new Exception("Service Awaitable is null.");
             }
 
             await serviceTask;
             onServiceEvent?.Invoke(bootstrapService);
         }
 
-        public async Awaitable CreateAsync(BootstrapContext context, GameObject servicesInstance, HideFlags hideFlags = HideFlags.DontSave)
+        public void RegisterCustomService(IBootstrapService service)
+        {
+            if (service == null)
+            {
+                throw new NullReferenceException("Service cannot be null");
+            }
+
+            if (App.BootstrapState > AppBootstrapState.ServiceDiscovery)
+            {
+                throw new InvalidOperationException("Cannot register custom services after service discovery phase.");
+            }
+
+            _services.Add(service);
+        }
+
+        public async Awaitable CreateAsync(BootstrapContext context, GameObject servicesInstance, HideFlags hideFlags = HideFlags.None)
         {
             _servicesInstance = servicesInstance;
             _servicesInstance.hideFlags = hideFlags;
@@ -58,6 +73,7 @@ namespace BeardPhantom.Bootstrap
                     var component = (Component)service;
                     component.hideFlags = hideFlags;
                     _services.Add(service);
+                    ServiceDiscovered?.Invoke(service);
                 }
             }
 
@@ -81,8 +97,6 @@ namespace BeardPhantom.Bootstrap
                         }
                     }
                 }
-
-                ServiceDiscovered?.Invoke(service);
             }
 
             /*
@@ -94,9 +108,15 @@ namespace BeardPhantom.Bootstrap
             {
                 foreach (IEarlyInitBootstrapService service in _services.OfType<IEarlyInitBootstrapService>())
                 {
-                    Log.Verbose($"Invoking EarlyInitServiceAsync on {service.GetType()}.");
-                    Awaitable earlyInitTask = service.EarlyInitServiceAsync(context);
-                    tasks.Add(WaitThenFireEvent(ServiceEarlyInitialized, earlyInitTask, service));
+                    async Awaitable EarlyInitService()
+                    {
+                        Log.Verbose($"Begin EarlyInitServiceAsync on {service.GetType()}.");
+                        Awaitable awaitable = service.EarlyInitServiceAsync(context);
+                        await WaitThenFireEvent(ServiceEarlyInitialized, awaitable, service);
+                        Log.Verbose($"End EarlyInitServiceAsync on {service.GetType()}.");
+                    }
+
+                    tasks.Add(EarlyInitService());
                 }
 
                 await AwaitableUtility.WhenAll(tasks);
@@ -111,9 +131,15 @@ namespace BeardPhantom.Bootstrap
             {
                 foreach (IBootstrapService service in _services)
                 {
-                    Log.Verbose($"Invoking InitServiceAsync on {service.GetType()}.");
-                    Awaitable initTask = service.InitServiceAsync(context);
-                    tasks.Add(WaitThenFireEvent(ServiceInitialized, initTask, service));
+                    async Awaitable InitService()
+                    {
+                        Log.Verbose($"Begin InitServiceAsync on {service.GetType()}.");
+                        Awaitable awaitable = service.InitServiceAsync(context);
+                        await WaitThenFireEvent(ServiceInitialized, awaitable, service);
+                        Log.Verbose($"End InitServiceAsync on {service.GetType()}.");
+                    }
+
+                    tasks.Add(InitService());
                 }
 
                 await AwaitableUtility.WhenAll(tasks);
@@ -128,9 +154,15 @@ namespace BeardPhantom.Bootstrap
             {
                 foreach (ILateInitBootstrapService service in _services.OfType<ILateInitBootstrapService>())
                 {
-                    Log.Verbose($"Invoking LateInitServiceAsync on {service.GetType()}.");
-                    Awaitable lateInitTask = service.LateInitServiceAsync(context);
-                    tasks.Add(WaitThenFireEvent(ServiceLateInitialized, lateInitTask, service));
+                    async Awaitable LateInitService()
+                    {
+                        Log.Verbose($"Begin LateInitServiceAsync on {service.GetType()}.");
+                        Awaitable awaitable = service.LateInitServiceAsync(context);
+                        await WaitThenFireEvent(ServiceLateInitialized, awaitable, service);
+                        Log.Verbose($"End LateInitServiceAsync on {service.GetType()}.");
+                    }
+
+                    tasks.Add(LateInitService());
                 }
 
                 await AwaitableUtility.WhenAll(tasks);

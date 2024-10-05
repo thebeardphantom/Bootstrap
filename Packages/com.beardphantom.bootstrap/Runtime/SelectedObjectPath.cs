@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace BeardPhantom.Bootstrap
@@ -23,7 +24,7 @@ namespace BeardPhantom.Bootstrap
 
         private static SelectedObjectPath CreateFromGameObject(GameObject gameObject)
         {
-            var scene = gameObject.scene;
+            Scene scene = gameObject.scene;
             return new SelectedObjectPath
             {
                 ObjectPath = ObjectUtility.GetGameObjectPath(gameObject),

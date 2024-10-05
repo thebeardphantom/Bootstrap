@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using BeardPhantom.Bootstrap.Environment;
 using UnityEditor;
 using UnityEngine;
 
@@ -21,6 +22,7 @@ namespace BeardPhantom.Bootstrap
             }
             finally
             {
+                SessionEnvironment = default;
                 ServiceLocator = default;
                 SessionGuid = default;
                 IsPlaying = false;
@@ -37,6 +39,18 @@ namespace BeardPhantom.Bootstrap
             {
                 Deinitialize(mode);
             }
+        }
+
+        private static bool TryDetermineSessionEnvironmentInEditor(out RuntimeBootstrapEnvironmentAsset environment)
+        {
+            if (!BootstrapUtility.TryLoadEditModeState(out EditModeState editModeState))
+            {
+                environment = default;
+                return false;
+            }
+
+            environment = editModeState.Environment;
+            return editModeState.Environment != null;
         }
     }
 }

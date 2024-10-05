@@ -19,7 +19,9 @@ namespace BeardPhantom.Bootstrap
             bool foundPreHandler = TryGetComponent(out _preHandler);
             bool foundPostHandler = TryGetComponent(out _postHandler);
 
-            BootstrapUtility.GetDefaultBootstrapHandlers(out IPreBootstrapHandler defautlPreHandler, out IPostBootstrapHandler defaultPostHandler);
+            BootstrapUtility.GetDefaultBootstrapHandlers(
+                out IPreBootstrapHandler defautlPreHandler,
+                out IPostBootstrapHandler defaultPostHandler);
             _preHandler = foundPreHandler ? _preHandler : defautlPreHandler;
             _postHandler = foundPostHandler ? _postHandler : defaultPostHandler;
 
@@ -34,19 +36,10 @@ namespace BeardPhantom.Bootstrap
 
         private async Awaitable BootstrapApplicationAsync()
         {
-            Assert.IsTrue(gameObject.scene.buildIndex == 0, "gameObject.scene.buildIndex == 0");
-
-#if UNITY_EDITOR
-            if (!_isOverrideInstance)
+            if (App.BootstrapState != AppBootstrapState.None)
             {
-                TryReplaceWithOverrideInstance();
-                if (this == null)
-                {
-                    // this instance was destroyed
-                    return;
-                }
+                return;
             }
-#endif
 
             var context = new BootstrapContext(this);
             Assert.IsNotNull(PrefabProvider, "ServicesPrefabLoader != null");
@@ -84,7 +77,5 @@ namespace BeardPhantom.Bootstrap
             Log.Info("Bootstrapping complete.", this);
             await Awaitable.NextFrameAsync();
         }
-
-        partial void TryReplaceWithOverrideInstance();
     }
 }
