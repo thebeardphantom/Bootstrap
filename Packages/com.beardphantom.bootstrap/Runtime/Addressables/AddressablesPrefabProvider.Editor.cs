@@ -10,7 +10,7 @@ namespace BeardPhantom.Bootstrap.Addressables
     {
         private void SetServicesPrefabInEditor(GameObject prefab)
         {
-            var success = AssetDatabase.TryGetGUIDAndLocalFileIdentifier(prefab, out var guid, out long id);
+            bool success = AssetDatabase.TryGetGUIDAndLocalFileIdentifier(prefab, out string guid, out long id);
             Assert.IsTrue(success, "success");
             PrefabReference = new AssetReferenceT<GameObject>(guid);
         }

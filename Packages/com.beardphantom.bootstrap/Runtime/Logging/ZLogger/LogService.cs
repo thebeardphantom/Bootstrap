@@ -6,6 +6,7 @@ using System.IO;
 using UnityEngine;
 using ZLogger;
 using ZLogger.Formatters;
+using ZLogger.Providers;
 using ZLogger.Unity;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -13,18 +14,18 @@ namespace BeardPhantom.Bootstrap.ZLogger
 {
     public class LogService : MonoBehaviour, IEarlyInitBootstrapService, IMultiboundBootstrapService, IDisposable, ILogService
     {
-        private static readonly LogFile[] s_logFiles =
-        {
-            new("Temp/log_all.txt"),
-            new("Temp/log_debug.txt"),
-        };
-
         private static readonly ILogger s_logger = LogUtility.GetStaticLogger<LogService>();
 
         private ILoggerFactory _loggerFactory;
 
         [field: SerializeField]
-        private Microsoft.Extensions.Logging.LogLevel MinLogLevel { get; set; }
+        private Microsoft.Extensions.Logging.LogLevel ConsoleMinLogLevel { get; set; } = Microsoft.Extensions.Logging.LogLevel.Debug;
+
+        [field: SerializeField]
+        private Microsoft.Extensions.Logging.LogLevel FileMinLogLevel { get; set; } = Microsoft.Extensions.Logging.LogLevel.Trace;
+
+        [field: SerializeField]
+        private string FilePath { get; set; } = "Temp/log.txt";
 
         private static string GetLogLevelAbbreviated(Microsoft.Extensions.Logging.LogLevel logLevel)
         {
@@ -69,17 +70,14 @@ namespace BeardPhantom.Bootstrap.ZLogger
                 builder =>
                 {
                     builder
-                        .SetMinimumLevel(MinLogLevel)
+                        .SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace)
                         .AddZLoggerUnityDebug(
                             options =>
                             {
                                 options.UsePlainTextFormatter(SetPrefixFormatter);
-                            });
-                    foreach (LogFile logFile in s_logFiles)
-                    {
-                        logFile.Delete();
-                        logFile.AddFileSink(builder);
-                    }
+                            })
+                        .AddFilter<ZLoggerUnityDebugLoggerProvider>(level => level >= ConsoleMinLogLevel);
+                    // ConfigureFileProvider(builder);
                 });
         }
 
@@ -88,6 +86,23 @@ namespace BeardPhantom.Bootstrap.ZLogger
             formatter.SetPrefixFormatter(
                 $"[{0}] [{1}] ",
                 (in MessageTemplate template, in LogInfo info) => template.Format(GetLogLevelAbbreviated(info.LogLevel), info.Category));
+        }
+
+        protected virtual void ConfigureFileProvider(ILoggingBuilder builder)
+        {
+            if (string.IsNullOrWhiteSpace(FilePath))
+            {
+                return;
+            }
+
+            File.Delete(FilePath);
+            builder.AddZLoggerFile(
+                    FilePath,
+                    options =>
+                    {
+                        options.UsePlainTextFormatter(SetPrefixFormatter);
+                    })
+                .AddFilter<ZLoggerFileLoggerProvider>(level => level >= FileMinLogLevel);
         }
 
         void IDisposable.Dispose()
@@ -113,29 +128,6 @@ namespace BeardPhantom.Bootstrap.ZLogger
         void IMultiboundBootstrapService.GetExtraBindableTypes(List<Type> extraTypes)
         {
             extraTypes.Add(typeof(ILogService));
-        }
-
-        private readonly struct LogFile
-        {
-            private readonly string _path;
-
-            public LogFile(string path)
-            {
-                _path = path;
-            }
-
-            public void Delete()
-            {
-                if (File.Exists(_path))
-                {
-                    File.Delete(_path);
-                }
-            }
-
-            public void AddFileSink(ILoggingBuilder loggingBuilder)
-            {
-                loggingBuilder.AddZLoggerFile(_path);
-            }
         }
     }
 }

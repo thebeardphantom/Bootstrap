@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using BeardPhantom.Bootstrap.Editor.Environment;
+using BeardPhantom.Bootstrap.Editor.Settings;
+using BeardPhantom.Bootstrap.Environment;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -7,6 +10,7 @@ using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.SceneManagement;
 using UnityEngine.Windows;
+using Object = UnityEngine.Object;
 
 namespace BeardPhantom.Bootstrap.Editor
 {
@@ -52,12 +56,16 @@ namespace BeardPhantom.Bootstrap.Editor
                 return;
             }
 
-            EditorSceneManager.playModeStartScene = default;
-            Bootstrapper bootstrapper = FindActiveSceneBootstrapper();
-            if (bootstrapper == null || !bootstrapper.isActiveAndEnabled)
+            if (!FindActiveSceneEnvironment(out RuntimeBootstrapEnvironmentAsset environment))
             {
-                return;
+                environment = BootstrapEditorSettingsUtility.GetValue(a => a.DefaultPlayModEnvironment);
+                if (environment == null)
+                {
+                    return;
+                }
             }
+
+            EditorSceneManager.playModeStartScene = default;
 
             if (!EditorSceneManager.EnsureUntitledSceneHasBeenSaved("Bootstrapper does not support untitled scenes."))
             {
@@ -73,45 +81,55 @@ namespace BeardPhantom.Bootstrap.Editor
             if (bootstrapScene == default)
             {
                 Log.Info("No valid first scene in EditorBuildSettings");
+                return;
             }
-            else
+
+            var sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(bootstrapScene.path);
+            EditorSceneManager.playModeStartScene = sceneAsset;
+
+            using (ListPool<string>.Get(out List<string> scenePaths))
             {
-                var sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(bootstrapScene.path);
-                EditorSceneManager.playModeStartScene = sceneAsset;
-
-                using (ListPool<string>.Get(out List<string> scenePaths))
+                for (var i = 0; i < SceneManager.sceneCount; i++)
                 {
-                    for (var i = 0; i < SceneManager.sceneCount; i++)
+                    Scene scene = SceneManager.GetSceneAt(i);
+                    if (scene.buildIndex != 0 && scene.IsValid())
                     {
-                        Scene scene = SceneManager.GetSceneAt(i);
-                        if (scene.buildIndex != 0 && scene.IsValid())
-                        {
-                            scenePaths.Add(scene.path);
-                        }
+                        scenePaths.Add(scene.path);
                     }
+                }
 
-                    if (bootstrapper.gameObject.scene.buildIndex != 0)
-                    {
-                        Log.Info(
-                            $"BootstrapEditorHelper saving custom bootstrapper from scene '{bootstrapper.gameObject.scene.path}' to path '{EditorBootstrapHandler.TempBootstrapperPath}'.");
-                        GameObject bootstrapperClone = Object.Instantiate(bootstrapper.gameObject);
-                        PrefabUtility.SaveAsPrefabAsset(bootstrapperClone, EditorBootstrapHandler.TempBootstrapperPath);
-                        Object.DestroyImmediate(bootstrapperClone);
-                    }
+                SelectedObjectPath[] selectedObjectPaths = Selection.gameObjects
+                    .Where(g => g != null && g.scene.IsValid())
+                    .Select(SelectedObjectPath.CreateInstance)
+                    .ToArray();
+                var editModeState = new EditModeState
+                {
+                    Environment = environment,
+                    LoadedScenes = scenePaths,
+                    SelectedObjects = selectedObjectPaths,
+                };
+                string editModeStateJson = JsonConvert.SerializeObject(editModeState);
+                SessionState.SetString(EditorBootstrapHandler.EditModeState, editModeStateJson);
+            }
+        }
 
-                    SelectedObjectPath[] selectedObjectPaths = Selection.gameObjects
-                        .Where(g => g != null && g.scene.IsValid())
-                        .Select(SelectedObjectPath.CreateInstance)
-                        .ToArray();
-                    var editModeState = new EditModeState
-                    {
-                        LoadedScenes = scenePaths,
-                        SelectedObjects = selectedObjectPaths,
-                    };
-                    string editModeStateJson = JsonConvert.SerializeObject(editModeState);
-                    SessionState.SetString(EditorBootstrapHandler.EditModeState, editModeStateJson);
+        private static bool FindActiveSceneEnvironment(out RuntimeBootstrapEnvironmentAsset environment)
+        {
+            Scene activeScene = SceneManager.GetActiveScene();
+            var sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(activeScene.path);
+            MappedEnvironmentCollection<SceneAsset> sceneEnvironments = BootstrapEditorSettingsUtility.GetValue(
+                a => a.EditorSceneEnvironments);
+            foreach (MappedEnvironment<SceneAsset> mappedEnvironment in sceneEnvironments)
+            {
+                if (mappedEnvironment.Key == sceneAsset)
+                {
+                    environment = mappedEnvironment.Environment;
+                    return true;
                 }
             }
+
+            environment = default;
+            return false;
         }
 
         private static Bootstrapper FindActiveSceneBootstrapper()

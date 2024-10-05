@@ -1,8 +1,10 @@
-﻿using UnityEditor.Build;
+﻿using System.Collections.Generic;
+using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 namespace BeardPhantom.Bootstrap.Editor
 {
@@ -19,9 +21,9 @@ namespace BeardPhantom.Bootstrap.Editor
                 return;
             }
 
-            using var _ = ListPool<GameObject>.Get(out var rootGameObjects);
+            using PooledObject<List<GameObject>> _ = ListPool<GameObject>.Get(out List<GameObject> rootGameObjects);
             scene.GetRootGameObjects(rootGameObjects);
-            foreach (var rootGameObject in rootGameObjects)
+            foreach (GameObject rootGameObject in rootGameObjects)
             {
                 var bootstrapper = rootGameObject.GetComponentInChildren<Bootstrapper>(true);
                 if (bootstrapper == null)
