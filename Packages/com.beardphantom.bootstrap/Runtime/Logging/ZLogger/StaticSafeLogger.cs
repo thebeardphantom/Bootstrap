@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
+using System.Collections.Generic;
 
 namespace BeardPhantom.Bootstrap.ZLogger
 {
@@ -10,6 +11,8 @@ namespace BeardPhantom.Bootstrap.ZLogger
         private static readonly ServiceRef<ILogService> s_logService = new();
 
         private readonly Type _loggerType;
+
+        private readonly Queue<IQueuedLog> _logQueue = new();
 
         private ILogger _wrappedLogger;
 
@@ -29,7 +32,14 @@ namespace BeardPhantom.Bootstrap.ZLogger
             Func<TState, Exception, string> formatter)
         {
             ReacquireLogger();
-            _wrappedLogger.Log(logLevel, eventId, state, exception, formatter);
+            if (_wrappedLogger is NullLogger or null)
+            {
+                _logQueue.Enqueue(new QueuedLog<TState>(logLevel, eventId, state, exception, formatter));
+            }
+            else
+            {
+                _wrappedLogger.Log(logLevel, eventId, state, exception, formatter);
+            }
         }
 
         public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel)
@@ -55,11 +65,57 @@ namespace BeardPhantom.Bootstrap.ZLogger
             {
                 _wrappedLogger = logService.GetLogger(_loggerType);
                 _acquisitionGuid = App.SessionGuid;
+                EmptyLogQueue();
             }
             else
             {
                 _wrappedLogger = NullLogger.Instance;
                 _acquisitionGuid = default;
+            }
+        }
+
+        private void EmptyLogQueue()
+        {
+            while (_logQueue.TryDequeue(out IQueuedLog queuedLog))
+            {
+                queuedLog.Log(_wrappedLogger);
+            }
+        }
+
+        private interface IQueuedLog
+        {
+            void Log(ILogger logger);
+        }
+
+        private class QueuedLog<TState> : IQueuedLog
+        {
+            private readonly Microsoft.Extensions.Logging.LogLevel _logLevel;
+
+            private readonly EventId _eventId;
+
+            private readonly TState _state;
+
+            private readonly Exception _exception;
+
+            private readonly Func<TState, Exception, string> _formatter;
+
+            public QueuedLog(
+                Microsoft.Extensions.Logging.LogLevel logLevel,
+                EventId eventId,
+                TState state,
+                Exception exception,
+                Func<TState, Exception, string> formatter)
+            {
+                _logLevel = logLevel;
+                _eventId = eventId;
+                _state = state;
+                _exception = exception;
+                _formatter = formatter;
+            }
+
+            public void Log(ILogger logger)
+            {
+                logger.Log(_logLevel, _eventId, _state, _exception, _formatter);
             }
         }
     }
