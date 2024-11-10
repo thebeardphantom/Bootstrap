@@ -1,11 +1,19 @@
-﻿using BeardPhantom.Bootstrap.Environment;
+﻿// #undef UNITY_EDITOR
+
+using BeardPhantom.Bootstrap.Environment;
 using System;
 using UnityEngine;
 using UnityEngine.Assertions;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace BeardPhantom.Bootstrap
 {
-    public static partial class App
+#if UNITY_EDITOR
+    [InitializeOnLoad]
+#endif
+    public static class App
     {
         public delegate void OnAppBootstrapStateChanged(AppBootstrapState previousState, AppBootstrapState newState);
 
@@ -45,6 +53,11 @@ namespace BeardPhantom.Bootstrap
 
         public static BootstrapEnvironmentAsset SessionEnvironment { get; private set; }
 
+        static App()
+        {
+            Application.quitting += OnApplicationQuitting;
+        }
+
         public static bool TryLocate<T>(out T service) where T : class
         {
             if (!CanLocateServices)
@@ -62,6 +75,34 @@ namespace BeardPhantom.Bootstrap
             return ServiceLocator.LocateService<T>();
         }
 
+        public static void Deinitialize(AppInitMode mode)
+        {
+            Log.Info($"{nameof(DeinitializeIfInMode)}({mode})");
+            try
+            {
+                ServiceLocator?.Dispose();
+            }
+            finally
+            {
+                SessionEnvironment = default;
+                ServiceLocator = default;
+                SessionGuid = default;
+                IsPlaying = false;
+                IsQuitting = false;
+                BootstrapState = AppBootstrapState.None;
+                InitMode = AppInitMode.Uninitialized;
+                AppBootstrapStateChanged = default;
+            }
+        }
+
+        public static void DeinitializeIfInMode(AppInitMode mode)
+        {
+            if (InitMode == mode)
+            {
+                Deinitialize(mode);
+            }
+        }
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         internal static void Init()
         {
@@ -77,17 +118,23 @@ namespace BeardPhantom.Bootstrap
                 Application.quitting += OnApplicationQuitting;
             }
 
-            if (InitMode == AppInitMode.PlayMode)
+            if (InitMode != AppInitMode.PlayMode)
             {
-                if (TryDetermineSessionEnvironment(out RuntimeBootstrapEnvironmentAsset environment))
+                return;
+            }
+
+            if (TryDetermineSessionEnvironment(out RuntimeBootstrapEnvironmentAsset environment))
+            {
+                SessionEnvironment = environment;
+                Log.Info($"Selected environment {SessionEnvironment}.");
+                if (!environment.IsNoOp)
                 {
-                    SessionEnvironment = environment;
                     environment.StartEnvironment();
                 }
-                else
-                {
-                    throw new Exception("No environment found.");
-                }
+            }
+            else
+            {
+                Log.Info("No environment selected.");
             }
         }
 
@@ -104,5 +151,25 @@ namespace BeardPhantom.Bootstrap
         {
             IsQuitting = true;
         }
+
+        private static bool TryDetermineSessionEnvironmentInEditor(out RuntimeBootstrapEnvironmentAsset environment)
+        {
+            if (!BootstrapUtility.TryLoadEditModeState(out EditModeState editModeState))
+            {
+                environment = default;
+                return false;
+            }
+
+            environment = editModeState.Environment;
+            return editModeState.Environment != null;
+        }
+
+#if !UNITY_EDITOR
+        private static bool TryDetermineSessionEnvironmentInBuild(out RuntimeBootstrapEnvironmentAsset environment)
+        {
+            environment = RuntimeBootstrapEnvironmentAsset.Instance;
+            return environment != null;
+        }
+#endif
     }
 }

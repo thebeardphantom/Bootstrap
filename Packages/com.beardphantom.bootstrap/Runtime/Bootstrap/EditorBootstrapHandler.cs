@@ -15,8 +15,6 @@ namespace BeardPhantom.Bootstrap
     {
         public const string EditModeState = "EDIT_MODE_STATE";
 
-        public const string TempBootstrapperPath = "Temp/Bootstrap_Override.prefab";
-
         public static readonly EditorBootstrapHandler Instance = new();
 
         public static void LoadScenesInPlayMode(IReadOnlyList<string> scenePaths)

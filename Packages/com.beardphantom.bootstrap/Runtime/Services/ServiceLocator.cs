@@ -83,19 +83,21 @@ namespace BeardPhantom.Bootstrap
             App.BootstrapState = AppBootstrapState.ServiceBinding;
             foreach (IBootstrapService service in _services)
             {
-                Type serviceType = service.GetType();
-                _typeToServices.Add(serviceType, service);
-
                 if (service is IMultiboundBootstrapService multiboundService)
                 {
                     using (ListPool<Type>.Get(out List<Type> extraBindableTypes))
                     {
-                        multiboundService.GetExtraBindableTypes(extraBindableTypes);
+                        multiboundService.GetOverrideBindingTypes(extraBindableTypes);
                         foreach (Type extraType in extraBindableTypes)
                         {
                             _typeToServices.Add(extraType, service);
                         }
                     }
+                }
+                else
+                {
+                    Type serviceType = service.GetType();
+                    _typeToServices.Add(serviceType, service);
                 }
             }
 

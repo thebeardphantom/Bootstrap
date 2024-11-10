@@ -16,7 +16,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         public SettingsProperty<EditModeBootstrapEnvironmentAsset> EditModeEnvironment { get; private set; } = new();
 
         [field: SerializeField]
-        public SettingsProperty<RuntimeBootstrapEnvironmentAsset> DefaultPlayModEnvironment { get; private set; } = new();
+        public SettingsProperty<RuntimeBootstrapEnvironmentAsset> DefaultPlayModeEnvironment { get; private set; } = new();
 
         [field: SerializeField]
         public SettingsProperty<RuntimeBootstrapEnvironmentAsset> DefaultBuildEnvironment { get; private set; } = new();

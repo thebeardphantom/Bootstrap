@@ -5,6 +5,8 @@ namespace BeardPhantom.Bootstrap.Environment
     [CreateAssetMenu(menuName = "Bootstrap/Edit Mode Environment")]
     public class EditModeBootstrapEnvironmentAsset : BootstrapEnvironmentAsset
     {
+        public override bool IsNoOp => ServicesPrefab == null;
+
         [field: SerializeField]
         [field: DisallowSceneObjects]
         public GameObject ServicesPrefab { get; private set; }
