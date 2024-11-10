@@ -74,13 +74,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
             return false;
         }
-
-        private static bool TryGetDefaultBuildEnvironment(out RuntimeBootstrapEnvironmentAsset environment)
-        {
-            environment = BootstrapEditorSettingsUtility.GetValue(a => a.DefaultBuildEnvironment);
-            return environment != null;
-        }
-
+        
         private static void PackEnvironmentAsset(BootstrapEnvironmentAsset environment)
         {
             Debug.Log($"Packing environment {environment.name}.");
@@ -114,13 +108,6 @@ namespace BeardPhantom.Bootstrap.Editor
 
             if (TryGetEnvironmentForBuildTarget(report.summary, out environment))
             {
-                PackEnvironmentAsset(environment);
-                return;
-            }
-
-            if (TryGetDefaultBuildEnvironment(out environment))
-            {
-                Debug.Log("Using default build environment.");
                 PackEnvironmentAsset(environment);
                 return;
             }

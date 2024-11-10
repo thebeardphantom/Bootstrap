@@ -16,6 +16,11 @@ namespace BeardPhantom.Bootstrap.Editor.Environment
 
         public MappedEnvironment<T> this[int index] => Maps[index];
 
+        private static bool KeyEquals(T key, T other)
+        {
+            return EqualityComparer<T>.Default.Equals(key, other);
+        }
+
         public void Cleanup()
         {
             Maps.RemoveAll(ShouldRemove);
@@ -23,22 +28,34 @@ namespace BeardPhantom.Bootstrap.Editor.Environment
 
         public void AddOrReplace(T key, RuntimeBootstrapEnvironmentAsset environment)
         {
-            Cleanup();
-            foreach (MappedEnvironment<T> map in Maps)
+            if (key == null)
             {
-                if (EqualityComparer<T>.Default.Equals(map.Key, key))
-                {
-                    map.Environment = environment;
-                    return;
-                }
+                throw new ArgumentNullException(nameof(key));
             }
 
-            Maps.Add(
-                new MappedEnvironment<T>
+            Cleanup();
+
+            if (TryFindIndexForKey(key, out int keyIndex))
+            {
+                MappedEnvironment<T> map = Maps[keyIndex];
+                if (environment == null)
                 {
-                    Key = key,
-                    Environment = environment,
-                });
+                    Maps.RemoveAt(keyIndex);
+                }
+                else
+                {
+                    map.Environment = environment;
+                }
+            }
+            else if (environment != null)
+            {
+                Maps.Add(
+                    new MappedEnvironment<T>
+                    {
+                        Key = key,
+                        Environment = environment,
+                    });
+            }
         }
 
         public IEnumerator<MappedEnvironment<T>> GetEnumerator()
@@ -46,9 +63,37 @@ namespace BeardPhantom.Bootstrap.Editor.Environment
             return Maps.GetEnumerator();
         }
 
+        public bool TryFindEnvironmentForKey(T key, out RuntimeBootstrapEnvironmentAsset environment)
+        {
+            if (TryFindIndexForKey(key, out int keyIndex))
+            {
+                environment = Maps[keyIndex].Environment;
+                return true;
+            }
+
+            environment = default;
+            return false;
+        }
+
+        private bool TryFindIndexForKey(T key, out int keyIndex)
+        {
+            for (var i = 0; i < Maps.Count; i++)
+            {
+                MappedEnvironment<T> map = Maps[i];
+                if (KeyEquals(key, map.Key))
+                {
+                    keyIndex = i;
+                    return true;
+                }
+            }
+
+            keyIndex = -1;
+            return false;
+        }
+
         private bool ShouldRemove(MappedEnvironment<T> map)
         {
-            return EqualityComparer<T>.Default.Equals(map.Key, default) || map.Environment == default;
+            return KeyEquals(map.Key, default) || map.Environment == default;
         }
 
         IEnumerator IEnumerable.GetEnumerator()

@@ -33,7 +33,7 @@ namespace BeardPhantom.Bootstrap.Editor
                 return;
             }
 
-            using var _ = EditModePlayerLoopScope.Create();
+            using var _ = EditModeAwaitableSupportScope.Create();
 
             int progressId = Progress.Start(
                 $"Edit Mode Bootstrapping @ {DateTime.Now}",
@@ -57,6 +57,12 @@ namespace BeardPhantom.Bootstrap.Editor
                     Progress.Finish(progressId);
                     BootstrappingComplete?.Invoke();
                     return;
+                }
+
+                if (editModeEnvironment.IsNoOp)
+                {
+                    Progress.Report(progressId, 1f, "Edit Mode Environment does not have a services prefab.");
+                    Progress.Finish(progressId, Progress.Status.Failed);
                 }
 
                 GameObject servicesInstance = editModeEnvironment.StartEnvironment();

@@ -29,18 +29,10 @@ namespace BeardPhantom.Bootstrap.Editor.Environment
         {
             string platformId = BuildProfileUtility.GetPlatformIdForProfile(profile);
 
-            RuntimeBootstrapEnvironmentAsset environmentAsset = default;
             MappedEnvironmentCollection<string> platformEnvironments = BootstrapEditorSettingsUtility.GetValue(
                 s => s.PlatformEnvironments,
                 out SettingsScope scope);
-            foreach (MappedEnvironment<string> map in platformEnvironments)
-            {
-                if (map.Key == platformId)
-                {
-                    environmentAsset = map.Environment;
-                    break;
-                }
-            }
+            platformEnvironments.TryFindEnvironmentForKey(platformId, out RuntimeBootstrapEnvironmentAsset environmentAsset);
 
             using var changeCheckScope = new EditorGUI.ChangeCheckScope();
             environmentAsset = (RuntimeBootstrapEnvironmentAsset)EditorGUILayout.ObjectField(
@@ -57,18 +49,11 @@ namespace BeardPhantom.Bootstrap.Editor.Environment
 
         private static void DrawEditorForBuildProfile(BuildProfile profile)
         {
-            RuntimeBootstrapEnvironmentAsset environmentAsset = default;
             MappedEnvironmentCollection<BuildProfile> buildProfileEnvironments = BootstrapEditorSettingsUtility.GetValue(
                 s => s.BuildProfileEnvironments,
                 out SettingsScope scope);
-            foreach (MappedEnvironment<BuildProfile> map in buildProfileEnvironments)
-            {
-                if (map.Key == profile)
-                {
-                    environmentAsset = map.Environment;
-                    break;
-                }
-            }
+
+            buildProfileEnvironments.TryFindEnvironmentForKey(profile, out RuntimeBootstrapEnvironmentAsset environmentAsset);
 
             using var changeCheckScope = new EditorGUI.ChangeCheckScope();
             environmentAsset = (RuntimeBootstrapEnvironmentAsset)EditorGUILayout.ObjectField(

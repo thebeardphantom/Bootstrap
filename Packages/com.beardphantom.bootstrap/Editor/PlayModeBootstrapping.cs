@@ -6,18 +6,15 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
-using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.SceneManagement;
-using UnityEngine.Windows;
-using Object = UnityEngine.Object;
 
 namespace BeardPhantom.Bootstrap.Editor
 {
     [InitializeOnLoad]
-    public static class EditorBootstrapFlow
+    public static class PlayModeBootstrapping
     {
-        static EditorBootstrapFlow()
+        static PlayModeBootstrapping()
         {
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
         }
@@ -49,23 +46,11 @@ namespace BeardPhantom.Bootstrap.Editor
         {
             EditModeBootstrapping.Cleanup();
             SessionState.EraseString(EditorBootstrapHandler.EditModeState);
-            File.Delete(EditorBootstrapHandler.TempBootstrapperPath);
 
             if (!BootstrapEditorSettingsUtility.GetValue(a => a.EditorFlowEnabled))
             {
                 return;
             }
-
-            if (!FindActiveSceneEnvironment(out RuntimeBootstrapEnvironmentAsset environment))
-            {
-                environment = BootstrapEditorSettingsUtility.GetValue(a => a.DefaultPlayModEnvironment);
-                if (environment == null)
-                {
-                    return;
-                }
-            }
-
-            EditorSceneManager.playModeStartScene = default;
 
             if (!EditorSceneManager.EnsureUntitledSceneHasBeenSaved("Bootstrapper does not support untitled scenes."))
             {
@@ -73,6 +58,17 @@ namespace BeardPhantom.Bootstrap.Editor
                 return;
             }
 
+            if (!TryFindActiveSceneEnvironment(out RuntimeBootstrapEnvironmentAsset environment))
+            {
+                environment = BootstrapEditorSettingsUtility.GetValue(a => a.DefaultPlayModeEnvironment);
+            }
+
+            if (environment == null)
+            {
+                return;
+            }
+
+            EditorSceneManager.playModeStartScene = default;
             EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
 
             Log.Verbose("BootstrapEditorHelper prepping for playmode.");
@@ -84,8 +80,8 @@ namespace BeardPhantom.Bootstrap.Editor
                 return;
             }
 
-            var sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(bootstrapScene.path);
-            EditorSceneManager.playModeStartScene = sceneAsset;
+            var bootstrapSceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(bootstrapScene.path);
+            EditorSceneManager.playModeStartScene = bootstrapSceneAsset;
 
             using (ListPool<string>.Get(out List<string> scenePaths))
             {
@@ -113,32 +109,13 @@ namespace BeardPhantom.Bootstrap.Editor
             }
         }
 
-        private static bool FindActiveSceneEnvironment(out RuntimeBootstrapEnvironmentAsset environment)
+        private static bool TryFindActiveSceneEnvironment(out RuntimeBootstrapEnvironmentAsset environment)
         {
             Scene activeScene = SceneManager.GetActiveScene();
             var sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(activeScene.path);
             MappedEnvironmentCollection<SceneAsset> sceneEnvironments = BootstrapEditorSettingsUtility.GetValue(
                 a => a.EditorSceneEnvironments);
-            foreach (MappedEnvironment<SceneAsset> mappedEnvironment in sceneEnvironments)
-            {
-                if (mappedEnvironment.Key == sceneAsset)
-                {
-                    environment = mappedEnvironment.Environment;
-                    return true;
-                }
-            }
-
-            environment = default;
-            return false;
-        }
-
-        private static Bootstrapper FindActiveSceneBootstrapper()
-        {
-            Bootstrapper[] bootstrappers = Object.FindObjectsByType<Bootstrapper>(
-                FindObjectsInactive.Exclude,
-                FindObjectsSortMode.None);
-            Scene activeScene = SceneManager.GetActiveScene();
-            return bootstrappers.FirstOrDefault(bootstrapper => bootstrapper.gameObject.scene.path == activeScene.path);
+            return sceneEnvironments.TryFindEnvironmentForKey(sceneAsset, out environment);
         }
     }
 }

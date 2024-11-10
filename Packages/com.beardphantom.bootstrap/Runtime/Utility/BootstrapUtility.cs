@@ -1,7 +1,11 @@
-﻿using System.Diagnostics;
+﻿// #undef UNITY_EDITOR
+
+using System.Diagnostics;
 using UnityEngine;
 #if UNITY_EDITOR
+using Newtonsoft.Json;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 #endif
 
 namespace BeardPhantom.Bootstrap
@@ -57,4 +61,49 @@ namespace BeardPhantom.Bootstrap
 
         static partial void ClearDirtyFlagInEditor(Object obj);
     }
+
+#if UNITY_EDITOR
+    public static partial class BootstrapUtility
+    {
+        internal static bool IsFromPrefab(Object obj)
+        {
+            return PrefabUtility.IsPartOfAnyPrefab(obj) || IsPartOfPrefabStage(obj);
+        }
+
+        internal static bool IsPartOfPrefabStage(Object obj)
+        {
+            var gameObject = obj as GameObject;
+            if (obj is Component cmp)
+            {
+                gameObject = cmp.gameObject;
+            }
+
+            if (gameObject == null)
+            {
+                return false;
+            }
+
+            PrefabStage stage = PrefabStageUtility.GetPrefabStage(gameObject);
+            return stage != null;
+        }
+
+        internal static bool TryLoadEditModeState(out EditModeState editModeState)
+        {
+            string json = SessionState.GetString(EditorBootstrapHandler.EditModeState, default);
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                editModeState = default;
+                return false;
+            }
+
+            editModeState = JsonConvert.DeserializeObject<EditModeState>(json);
+            return editModeState != null;
+        }
+
+        static partial void ClearDirtyFlagInEditor(Object obj)
+        {
+            EditorUtility.ClearDirty(obj);
+        }
+    }
+#endif
 }

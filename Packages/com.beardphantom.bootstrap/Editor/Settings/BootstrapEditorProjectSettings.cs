@@ -18,8 +18,6 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         {
             EditorFlowEnabled.OverrideEnabled = true;
             EditModeEnvironment.OverrideEnabled = true;
-            DefaultPlayModEnvironment.OverrideEnabled = true;
-            DefaultBuildEnvironment.OverrideEnabled = true;
             EditorSceneEnvironments.OverrideEnabled = true;
             BuildProfileEnvironments.OverrideEnabled = true;
             PlatformEnvironments.OverrideEnabled = true;

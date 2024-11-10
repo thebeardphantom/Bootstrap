@@ -12,9 +12,9 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace BeardPhantom.Bootstrap.ZLogger
 {
-    public class LogService : MonoBehaviour, IEarlyInitBootstrapService, IMultiboundBootstrapService, IDisposable, ILogService
+    public class DefaultLogService : MonoBehaviour, IEarlyInitBootstrapService, IMultiboundBootstrapService, IDisposable, ILogService
     {
-        private static readonly ILogger s_logger = LogUtility.GetStaticLogger<LogService>();
+        private static readonly ILogger s_logger = LogUtility.GetStaticLogger<DefaultLogService>();
 
         private ILoggerFactory _loggerFactory;
 
@@ -27,7 +27,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         [field: SerializeField]
         private string FilePath { get; set; } = "Temp/log.txt";
 
-        private static string GetLogLevelAbbreviated(Microsoft.Extensions.Logging.LogLevel logLevel)
+        public virtual string GetLogLevelAbbreviated(Microsoft.Extensions.Logging.LogLevel logLevel)
         {
             return logLevel switch
             {
@@ -107,7 +107,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
 
         void IDisposable.Dispose()
         {
-            _loggerFactory.Dispose();
+            _loggerFactory?.Dispose();
             _loggerFactory = default;
         }
 
@@ -125,9 +125,10 @@ namespace BeardPhantom.Bootstrap.ZLogger
             return AwaitableUtility.GetCompleted();
         }
 
-        void IMultiboundBootstrapService.GetExtraBindableTypes(List<Type> extraTypes)
+        void IMultiboundBootstrapService.GetOverrideBindingTypes(List<Type> bindingTypes)
         {
-            extraTypes.Add(typeof(ILogService));
+            bindingTypes.Add(GetType());
+            bindingTypes.Add(typeof(ILogService));
         }
     }
 }
