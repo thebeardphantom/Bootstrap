@@ -2,6 +2,8 @@
 
 using BeardPhantom.Bootstrap.Environment;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Assertions;
 #if UNITY_EDITOR
@@ -49,6 +51,8 @@ namespace BeardPhantom.Bootstrap
 
         public static bool IsRunningTests { get; internal set; }
 
+        public static AsyncTaskScheduler AsyncTaskScheduler { get; private set; }
+
         public static bool CanLocateServices => ServiceLocator is { CanLocateServices: true, };
 
         public static BootstrapEnvironmentAsset SessionEnvironment { get; private set; }
@@ -84,14 +88,15 @@ namespace BeardPhantom.Bootstrap
             }
             finally
             {
-                SessionEnvironment = default;
-                ServiceLocator = default;
-                SessionGuid = default;
+                AsyncTaskScheduler = null;
+                SessionEnvironment = null;
+                ServiceLocator = null;
+                SessionGuid = Guid.Empty;
                 IsPlaying = false;
                 IsQuitting = false;
                 BootstrapState = AppBootstrapState.None;
                 InitMode = AppInitMode.Uninitialized;
-                AppBootstrapStateChanged = default;
+                AppBootstrapStateChanged = null;
             }
         }
 
@@ -112,15 +117,18 @@ namespace BeardPhantom.Bootstrap
             IsPlaying = InitMode == AppInitMode.PlayMode;
             SessionGuid = Guid.NewGuid();
             ServiceLocator = new ServiceLocator();
-
-            if (!Application.isEditor)
-            {
-                Application.quitting += OnApplicationQuitting;
-            }
+            AsyncTaskScheduler = new AsyncTaskScheduler();
 
             if (InitMode != AppInitMode.PlayMode)
             {
                 return;
+            }
+
+            UpdateInPlayMode().Forget();
+
+            if (!Application.isEditor)
+            {
+                Application.quitting += OnApplicationQuitting;
             }
 
             if (TryDetermineSessionEnvironment(out RuntimeBootstrapEnvironmentAsset environment))
@@ -135,6 +143,17 @@ namespace BeardPhantom.Bootstrap
             else
             {
                 Log.Info("No environment selected.");
+            }
+        }
+
+        private static async Awaitable UpdateInPlayMode()
+        {
+            CancellationToken cancellationToken = Application.exitCancellationToken;
+            while (Application.isPlaying)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                await AsyncTaskScheduler.FlushQueueAsync(cancellationToken);
+                await Awaitable.NextFrameAsync(cancellationToken);
             }
         }
 

@@ -11,7 +11,7 @@ namespace BeardPhantom.Bootstrap
     {
         public static async Awaitable GetCompleted()
         {
-            await Task.CompletedTask;
+            await new ValueTask();
         }
 
         public static async void Forget(this Awaitable awaitable)
@@ -36,6 +36,28 @@ namespace BeardPhantom.Bootstrap
         {
             await GetCompleted();
             return result;
+        }
+
+        public static async Awaitable WaitWhile(Func<bool> predicate, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            while (predicate())
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                await Task.Yield();
+            }
+        }
+
+        public static async Awaitable WaitUntil(Func<bool> predicate, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            while (!predicate())
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                await Task.Yield();
+            }
         }
 
         internal static async Awaitable WhenAll(IEnumerable<Awaitable> awaitables, CancellationToken cancellationToken = default)

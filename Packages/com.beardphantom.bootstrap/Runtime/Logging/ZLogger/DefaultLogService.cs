@@ -12,7 +12,7 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace BeardPhantom.Bootstrap.ZLogger
 {
-    public class DefaultLogService : MonoBehaviour, IEarlyInitBootstrapService, IMultiboundBootstrapService, IDisposable, ILogService
+    public class DefaultLogService : MonoBehaviour, IMultiboundBootstrapService, IDisposable, ILogService
     {
         private static readonly ILogger s_logger = LogUtility.GetStaticLogger<DefaultLogService>();
 
@@ -110,19 +110,11 @@ namespace BeardPhantom.Bootstrap.ZLogger
             _loggerFactory?.Dispose();
             _loggerFactory = default;
         }
-
-        /// <inheritdoc />
-        Awaitable IEarlyInitBootstrapService.EarlyInitServiceAsync(BootstrapContext context)
+        
+        void IBootstrapService.InitService(AsyncTaskScheduler scheduler)
         {
             _loggerFactory = CreateLoggerFactory();
             s_logger.ZLogInformation($"Log system setup complete.");
-            return AwaitableUtility.GetCompleted();
-        }
-
-        /// <inheritdoc />
-        Awaitable IBootstrapService.InitServiceAsync(BootstrapContext context)
-        {
-            return AwaitableUtility.GetCompleted();
         }
 
         void IMultiboundBootstrapService.GetOverrideBindingTypes(List<Type> bindingTypes)

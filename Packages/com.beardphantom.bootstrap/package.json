@@ -1,7 +1,7 @@
 {
   "name": "com.beardphantom.bootstrap",
   "displayName": "Bootstrap",
-  "version": "4.2.1",
+  "version": "4.3.0",
   "unity": "6000.0",
   "description": "An async-first bootstrapping framework for Unity projects.",
   "keywords": [

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Pool;
 using Object = UnityEngine.Object;
@@ -12,12 +11,9 @@ namespace BeardPhantom.Bootstrap
         public delegate void OnServiceEvent(IBootstrapService service);
 
         public event OnServiceEvent ServiceDiscovered;
-
-        public event OnServiceEvent ServiceEarlyInitialized;
-
+        
         public event OnServiceEvent ServiceInitialized;
 
-        public event OnServiceEvent ServiceLateInitialized;
 
         private readonly Dictionary<Type, IBootstrapService> _typeToServices = new();
 
@@ -25,7 +21,7 @@ namespace BeardPhantom.Bootstrap
 
         private GameObject _servicesInstance;
 
-        public bool CanLocateServices => App.BootstrapState > AppBootstrapState.ServiceEarlyInit;
+        public bool CanLocateServices => App.BootstrapState > AppBootstrapState.ServiceBinding;
 
         private static async Awaitable WaitThenFireEvent(
             OnServiceEvent onServiceEvent,
@@ -102,72 +98,15 @@ namespace BeardPhantom.Bootstrap
             }
 
             /*
-             * Service Early Init
-             */
-            App.BootstrapState = AppBootstrapState.ServiceEarlyInit;
-            Log.Verbose("Early initializing services.");
-            using (ListPool<Awaitable>.Get(out List<Awaitable> tasks))
-            {
-                foreach (IEarlyInitBootstrapService service in _services.OfType<IEarlyInitBootstrapService>())
-                {
-                    async Awaitable EarlyInitService()
-                    {
-                        Log.Verbose($"Begin EarlyInitServiceAsync on {service.GetType()}.");
-                        Awaitable awaitable = service.EarlyInitServiceAsync(context);
-                        await WaitThenFireEvent(ServiceEarlyInitialized, awaitable, service);
-                        Log.Verbose($"End EarlyInitServiceAsync on {service.GetType()}.");
-                    }
-
-                    tasks.Add(EarlyInitService());
-                }
-
-                await AwaitableUtility.WhenAll(tasks);
-            }
-
-            /*
              * Service Init
              */
             App.BootstrapState = AppBootstrapState.ServiceInit;
+            AsyncTaskScheduler asyncTaskScheduler = App.AsyncTaskScheduler;
             Log.Verbose("Initializing services.");
-            using (ListPool<Awaitable>.Get(out List<Awaitable> tasks))
+            foreach (IBootstrapService service in _services)
             {
-                foreach (IBootstrapService service in _services)
-                {
-                    async Awaitable InitService()
-                    {
-                        Log.Verbose($"Begin InitServiceAsync on {service.GetType()}.");
-                        Awaitable awaitable = service.InitServiceAsync(context);
-                        await WaitThenFireEvent(ServiceInitialized, awaitable, service);
-                        Log.Verbose($"End InitServiceAsync on {service.GetType()}.");
-                    }
-
-                    tasks.Add(InitService());
-                }
-
-                await AwaitableUtility.WhenAll(tasks);
-            }
-
-            /*
-             * Service Post Init
-             */
-            App.BootstrapState = AppBootstrapState.ServiceLateInit;
-            Log.Verbose("Late initializing services.");
-            using (ListPool<Awaitable>.Get(out List<Awaitable> tasks))
-            {
-                foreach (ILateInitBootstrapService service in _services.OfType<ILateInitBootstrapService>())
-                {
-                    async Awaitable LateInitService()
-                    {
-                        Log.Verbose($"Begin LateInitServiceAsync on {service.GetType()}.");
-                        Awaitable awaitable = service.LateInitServiceAsync(context);
-                        await WaitThenFireEvent(ServiceLateInitialized, awaitable, service);
-                        Log.Verbose($"End LateInitServiceAsync on {service.GetType()}.");
-                    }
-
-                    tasks.Add(LateInitService());
-                }
-
-                await AwaitableUtility.WhenAll(tasks);
+                Log.Verbose($"InitService on {service.GetType()}.");
+                service.InitService(asyncTaskScheduler);
             }
 
             App.BootstrapState = AppBootstrapState.ServiceActivation;
