@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using System.Threading;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace BeardPhantom.Bootstrap
 {
-    public sealed partial class Bootstrapper : MonoBehaviour
+    public sealed class Bootstrapper : MonoBehaviour
     {
         private IPreBootstrapHandler _preHandler;
 
@@ -41,6 +42,8 @@ namespace BeardPhantom.Bootstrap
                 return;
             }
 
+            CancellationToken cancellationToken = destroyCancellationToken;
+            
             var context = new BootstrapContext(this);
             Assert.IsNotNull(PrefabProvider, "ServicesPrefabLoader != null");
 
@@ -51,7 +54,7 @@ namespace BeardPhantom.Bootstrap
             App.BootstrapState = AppBootstrapState.PreBootstrap;
             Log.Verbose("Beginning pre-bootstrapping.", this);
             await _preHandler.OnPreBootstrapAsync(context);
-            await Awaitable.NextFrameAsync();
+            await Awaitable.NextFrameAsync(cancellationToken);
 
             App.BootstrapState = AppBootstrapState.ServicePrefabLoad;
             Log.Verbose($"Loading services prefab via loader {PrefabProvider}.", this);
@@ -65,17 +68,19 @@ namespace BeardPhantom.Bootstrap
             servicesInstance.name = servicesPrefab.name;
             servicesPrefab.SetActive(true);
             BootstrapUtility.ClearDirtyFlag(servicesPrefab);
-            await App.ServiceLocator.CreateAsync(context, servicesInstance, HideFlags.None);
-            await Awaitable.NextFrameAsync();
+            await App.ServiceLocator.CreateAsync(context, servicesInstance);
+            await Awaitable.NextFrameAsync(cancellationToken);
+
+            await AwaitableUtility.WaitUntil(() => App.AsyncTaskScheduler.IsEmpty, cancellationToken);
 
             App.BootstrapState = AppBootstrapState.PostBootstrap;
             Log.Verbose("Beginning post-bootstrapping.", this);
             await _postHandler.OnPostBootstrapAsync(context, this);
-            await Awaitable.NextFrameAsync();
+            await Awaitable.NextFrameAsync(cancellationToken);
 
             App.BootstrapState = AppBootstrapState.Ready;
             Log.Info("Bootstrapping complete.", this);
-            await Awaitable.NextFrameAsync();
+            await Awaitable.NextFrameAsync(cancellationToken);
         }
     }
 }
