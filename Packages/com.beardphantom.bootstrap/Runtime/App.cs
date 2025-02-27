@@ -1,5 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
-using System;
+﻿using System;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -81,14 +80,14 @@ namespace BeardPhantom.Bootstrap
             }
         }
         
-        private static async UniTaskVoid UpdateInPlayMode()
+        private static async Awaitable UpdateInPlayMode()
         {
             CancellationToken cancellationToken = Application.exitCancellationToken;
             while (Application.isPlaying)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await AsyncTaskScheduler.FlushQueueAsync(cancellationToken);
-                await UniTask.NextFrame(cancellationToken);
+                await Awaitable.NextFrameAsync(cancellationToken);
             }
         }
 

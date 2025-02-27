@@ -1,7 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -17,7 +15,7 @@ namespace BeardPhantom.Bootstrap
 
         public bool IsIdle => !_isFlushingQueue && _tasks.Count == 0;
 
-        private static async UniTask ExecuteTaskAsync(ScheduledTask task)
+        private static async Awaitable ExecuteTaskAsync(ScheduledTask task)
         {
             Log.Verbose($"Invoking scheduled task {task}.");
             await task.InvokeAsync();
@@ -28,7 +26,7 @@ namespace BeardPhantom.Bootstrap
             _tasks.Enqueue(scheduledTask, scheduledTask.Priority);
         }
 
-        public async UniTask FlushQueueAsync(CancellationToken token = default)
+        public async Awaitable FlushQueueAsync(CancellationToken token = default)
         {
             if (_isFlushingQueue)
             {

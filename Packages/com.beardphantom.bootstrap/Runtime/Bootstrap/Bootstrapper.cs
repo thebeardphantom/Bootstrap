@@ -1,5 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -34,7 +33,7 @@ namespace BeardPhantom.Bootstrap
 
         [SuppressMessage("ReSharper", "UnusedMember.Local")]
         [SuppressMessage("ReSharper", "Unity.IncorrectMethodSignature")]
-        private async UniTaskVoid Start()
+        private async Awaitable Start()
         {
             Assert.IsTrue(gameObject.scene.buildIndex == 0, "gameObject.scene.buildIndex == 0");
 
@@ -50,7 +49,7 @@ namespace BeardPhantom.Bootstrap
             }
 #endif
 
-            CancellationToken cancellationToken = gameObject.GetCancellationTokenOnDestroy();
+            CancellationToken cancellationToken = destroyCancellationToken;
 
             var context = new BootstrapContext(this, App.AsyncTaskScheduler);
             Assert.IsNotNull(PrefabProvider, "ServicesPrefabLoader != null");
@@ -62,7 +61,7 @@ namespace BeardPhantom.Bootstrap
             App.BootstrapState = AppBootstrapState.PreBootstrap;
             Log.Verbose("Beginning pre-bootstrapping.", this);
             await _preHandler.OnPreBootstrapAsync(context);
-            await UniTask.NextFrame(cancellationToken);
+            await Awaitable.NextFrameAsync(cancellationToken);
 
             App.BootstrapState = AppBootstrapState.ServicePrefabLoad;
             Log.Verbose($"Loading services prefab via loader {PrefabProvider}.", this);
@@ -77,15 +76,15 @@ namespace BeardPhantom.Bootstrap
             servicesPrefab.SetActive(true);
             BootstrapUtility.ClearDirtyFlag(servicesPrefab);
             App.ServiceLocator.Create(context, servicesInstance, HideFlags.None);
-            await UniTask.NextFrame(cancellationToken);
+            await Awaitable.NextFrameAsync(cancellationToken);
 
             Log.Verbose($"Waiting for idle {nameof(AsyncTaskScheduler)}.", this);
-            await UniTask.WaitUntil(() => App.AsyncTaskScheduler.IsIdle, cancellationToken: cancellationToken);
+            await AwaitableUtility.WaitUntil(() => App.AsyncTaskScheduler.IsIdle, cancellationToken);
 
             App.BootstrapState = AppBootstrapState.PostBoostrap;
             Log.Verbose("Beginning post-bootstrapping.", this);
             await _postHandler.OnPostBootstrapAsync(context, this);
-            await UniTask.NextFrame(cancellationToken);
+            await Awaitable.NextFrameAsync(cancellationToken);
 
             App.BootstrapState = AppBootstrapState.Ready;
             Log.Info("Bootstrapping complete.", this);

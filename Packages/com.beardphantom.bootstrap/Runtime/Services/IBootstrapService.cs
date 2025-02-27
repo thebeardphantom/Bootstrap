@@ -1,6 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
-
-namespace BeardPhantom.Bootstrap
+﻿namespace BeardPhantom.Bootstrap
 {
     public interface IBootstrapService
     {

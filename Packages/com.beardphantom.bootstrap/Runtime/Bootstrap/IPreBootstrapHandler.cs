@@ -1,9 +1,9 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using UnityEngine;
 
 namespace BeardPhantom.Bootstrap
 {
     public interface IPreBootstrapHandler
     {
-        UniTask OnPreBootstrapAsync(in BootstrapContext context);
+        Awaitable OnPreBootstrapAsync(in BootstrapContext context);
     }
 }

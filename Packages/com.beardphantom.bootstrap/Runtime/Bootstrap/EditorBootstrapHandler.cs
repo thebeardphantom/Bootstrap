@@ -1,5 +1,4 @@
 ﻿#if UNITY_EDITOR
-using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,20 +47,20 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <inheritdoc />
-        UniTask IPreBootstrapHandler.OnPreBootstrapAsync(in BootstrapContext context)
+        Awaitable IPreBootstrapHandler.OnPreBootstrapAsync(in BootstrapContext context)
         {
             string editModeStateJson = SessionState.GetString(EditModeState, "");
             if (string.IsNullOrWhiteSpace(editModeStateJson))
             {
-                return default;
+                return AwaitableUtility.GetCompleted();
             }
 
             context.EditModeState = JsonConvert.DeserializeObject<EditModeState>(editModeStateJson);
-            return default;
+            return AwaitableUtility.GetCompleted();
         }
 
         /// <inheritdoc />
-        async UniTask IPostBootstrapHandler.OnPostBootstrapAsync(BootstrapContext context, Bootstrapper bootstrapper)
+        async Awaitable IPostBootstrapHandler.OnPostBootstrapAsync(BootstrapContext context, Bootstrapper bootstrapper)
         {
             if (App.IsRunningTests)
             {
@@ -84,7 +83,7 @@ namespace BeardPhantom.Bootstrap
                 return;
             }
 
-            await UniTask.NextFrame();
+            await Awaitable.NextFrameAsync();
 
             // Restore editor selection
             using (HashSetPool<Object>.Get(out HashSet<Object> selectedObjs))
@@ -114,7 +113,7 @@ namespace BeardPhantom.Bootstrap
                     }
                 }
 
-                await UniTask.NextFrame();
+                await Awaitable.NextFrameAsync();
                 Selection.objects = selectedObjs.ToArray();
             }
         }
