@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using System;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -39,6 +41,8 @@ namespace BeardPhantom.Bootstrap
         public static bool IsQuitting { get; private set; }
 
         public static bool IsRunningTests { get; internal set; }
+        
+        public static AsyncTaskScheduler AsyncTaskScheduler { get; private set; }
 
         public static bool CanLocateServices => ServiceLocator is { CanLocateServices: true, };
 
@@ -66,13 +70,26 @@ namespace BeardPhantom.Bootstrap
             s_bootstrapState = AppBootstrapState.None;
             IsQuitting = false;
             IsPlaying = InitMode == AppInitMode.PlayMode;
+            ServiceLocator = new ServiceLocator();
+            AsyncTaskScheduler = new AsyncTaskScheduler();
+            
             if (InitMode == AppInitMode.PlayMode)
             {
+                UpdateInPlayMode().Forget();
                 Application.quitting -= OnApplicationQuitting;
                 Application.quitting += OnApplicationQuitting;
             }
-
-            ServiceLocator = new ServiceLocator();
+        }
+        
+        private static async UniTaskVoid UpdateInPlayMode()
+        {
+            CancellationToken cancellationToken = Application.exitCancellationToken;
+            while (Application.isPlaying)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                await AsyncTaskScheduler.FlushQueueAsync(cancellationToken);
+                await UniTask.NextFrame(cancellationToken);
+            }
         }
 
         private static void OnApplicationQuitting()

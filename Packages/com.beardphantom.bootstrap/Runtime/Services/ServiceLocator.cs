@@ -1,7 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Pool;
 using Object = UnityEngine.Object;
@@ -28,16 +26,7 @@ namespace BeardPhantom.Bootstrap
 
         public bool CanLocateServices => App.BootstrapState > AppBootstrapState.ServiceEarlyInit;
 
-        private static async UniTask WaitThenFireEvent(
-            OnServiceEvent onServiceEvent,
-            UniTask serviceTask,
-            IBootstrapService bootstrapService)
-        {
-            await serviceTask;
-            onServiceEvent?.Invoke(bootstrapService);
-        }
-
-        public async UniTask CreateAsync(BootstrapContext context, GameObject servicesInstance, HideFlags hideFlags = HideFlags.DontSave)
+        public void Create(BootstrapContext context, GameObject servicesInstance, HideFlags hideFlags = HideFlags.DontSave)
         {
             _servicesInstance = servicesInstance;
             _servicesInstance.hideFlags = hideFlags;
@@ -54,6 +43,7 @@ namespace BeardPhantom.Bootstrap
                     var component = (Component)service;
                     component.hideFlags = hideFlags;
                     _services.Add(service);
+                    ServiceDiscovered?.Invoke(service);
                 }
             }
 
@@ -63,38 +53,22 @@ namespace BeardPhantom.Bootstrap
             App.BootstrapState = AppBootstrapState.ServiceBinding;
             foreach (IBootstrapService service in _services)
             {
-                Type serviceType = service.GetType();
-                _typeToServices.Add(serviceType, service);
-
                 if (service is IMultiboundBootstrapService multiboundService)
                 {
                     using (ListPool<Type>.Get(out List<Type> extraBindableTypes))
                     {
-                        multiboundService.GetExtraBindableTypes(extraBindableTypes);
+                        multiboundService.GetOverrideBindingTypes(extraBindableTypes);
                         foreach (Type extraType in extraBindableTypes)
                         {
                             _typeToServices.Add(extraType, service);
                         }
                     }
                 }
-
-                ServiceDiscovered?.Invoke(service);
-            }
-
-            /*
-             * Service Early Init
-             */
-            App.BootstrapState = AppBootstrapState.ServiceEarlyInit;
-            Log.Verbose("Early initializing services.");
-            using (ListPool<UniTask>.Get(out List<UniTask> tasks))
-            {
-                foreach (IEarlyInitBootstrapService service in _services.OfType<IEarlyInitBootstrapService>())
+                else
                 {
-                    UniTask earlyInitTask = service.EarlyInitServiceAsync(context);
-                    tasks.Add(WaitThenFireEvent(ServiceEarlyInitialized, earlyInitTask, service));
+                    Type serviceType = service.GetType();
+                    _typeToServices.Add(serviceType, service);
                 }
-
-                await UniTask.WhenAll(tasks);
             }
 
             /*
@@ -102,38 +76,15 @@ namespace BeardPhantom.Bootstrap
              */
             App.BootstrapState = AppBootstrapState.ServiceInit;
             Log.Verbose("Initializing services.");
-            using (ListPool<UniTask>.Get(out List<UniTask> tasks))
+            foreach (IBootstrapService service in _services)
             {
-                foreach (IBootstrapService service in _services)
-                {
-                    UniTask initTask = service.InitServiceAsync(context);
-                    tasks.Add(WaitThenFireEvent(ServiceInitialized, initTask, service));
-                }
-
-                await UniTask.WhenAll(tasks);
-            }
-
-            /*
-             * Service Post Init
-             */
-            App.BootstrapState = AppBootstrapState.ServiceLateInit;
-            Log.Verbose("Late initializing services.");
-            using (ListPool<UniTask>.Get(out List<UniTask> tasks))
-            {
-                foreach (ILateInitBootstrapService service in _services.OfType<ILateInitBootstrapService>())
-                {
-                    UniTask lateInitTask = service.LateInitServiceAsync(context);
-                    tasks.Add(WaitThenFireEvent(ServiceLateInitialized, lateInitTask, service));
-                }
-
-                await UniTask.WhenAll(tasks);
+                Log.Verbose($"InitService on {service.GetType()}.");
+                service.InitService(context);
             }
 
             App.BootstrapState = AppBootstrapState.ServiceActivation;
             Log.Verbose("Activating services.");
             _servicesInstance.SetActive(true);
-            // Give the object one frame to run awake/start
-            await UniTask.NextFrame();
         }
 
         public void Dispose()
