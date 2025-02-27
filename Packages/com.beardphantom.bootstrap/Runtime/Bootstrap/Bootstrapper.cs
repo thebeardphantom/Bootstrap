@@ -43,7 +43,7 @@ namespace BeardPhantom.Bootstrap
             }
 
             CancellationToken cancellationToken = destroyCancellationToken;
-            
+
             var context = new BootstrapContext(this);
             Assert.IsNotNull(PrefabProvider, "ServicesPrefabLoader != null");
 
@@ -71,7 +71,8 @@ namespace BeardPhantom.Bootstrap
             await App.ServiceLocator.CreateAsync(context, servicesInstance);
             await Awaitable.NextFrameAsync(cancellationToken);
 
-            await AwaitableUtility.WaitUntil(() => App.AsyncTaskScheduler.IsEmpty, cancellationToken);
+            Log.Verbose($"Waiting for idle {nameof(AsyncTaskScheduler)}.", this);
+            await AwaitableUtility.WaitUntil(() => App.AsyncTaskScheduler.IsIdle, cancellationToken);
 
             App.BootstrapState = AppBootstrapState.PostBootstrap;
             Log.Verbose("Beginning post-bootstrapping.", this);
