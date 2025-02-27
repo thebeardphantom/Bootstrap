@@ -1,5 +1,4 @@
 ﻿#if UNITY_ADDRESSABLES
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -17,9 +16,9 @@ namespace BeardPhantom.Bootstrap.Addressables
         #region Methods
 
         /// <inheritdoc />
-        public override UniTask<GameObject> LoadPrefabAsync()
+        public override async Awaitable<GameObject> LoadPrefabAsync()
         {
-            return UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(PrefabReference).ToUniTask();
+            return await UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(PrefabReference).Task;
         }
 
         protected override void SetPrefab(GameObject prefab)

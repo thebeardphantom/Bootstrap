@@ -1,5 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace BeardPhantom.Bootstrap
@@ -8,17 +7,17 @@ namespace BeardPhantom.Bootstrap
     {
         internal readonly int Priority;
 
-        private readonly Func<UniTask> _task;
+        private readonly Func<Awaitable> _task;
 
-        public ScheduledTask(Func<UniTask> task, int priority = 0) : this(task, priority, 0) { }
+        public ScheduledTask(Func<Awaitable> task, int priority = 0) : this(task, priority, 0) { }
 
-        private ScheduledTask(Func<UniTask> task, int priority, uint id)
+        private ScheduledTask(Func<Awaitable> task, int priority, uint id)
         {
             _task = task;
             Priority = priority;
         }
 
-        public UniTask InvokeAsync()
+        public Awaitable InvokeAsync()
         {
             return _task.Invoke();
         }
@@ -59,7 +58,7 @@ namespace BeardPhantom.Bootstrap
             return !left.Equals(right);
         }
 
-        public static implicit operator ScheduledTask(Func<UniTask> task)
+        public static implicit operator ScheduledTask(Func<Awaitable> task)
         {
             return new ScheduledTask(task);
         }

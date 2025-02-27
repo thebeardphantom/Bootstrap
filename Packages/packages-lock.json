@@ -8,13 +8,6 @@
         "com.unity.nuget.newtonsoft-json": "0.0.0"
       }
     },
-    "com.cysharp.unitask": {
-      "version": "2.2.5",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://package.openupm.com"
-    },
     "com.unity.addressables": {
       "version": "2.2.2",
       "depth": 0,

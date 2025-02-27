@@ -1,5 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -21,7 +20,7 @@ namespace BeardPhantom.Bootstrap.Editor
             BootstrapEditorUserSettings.instance.EditModeServices.ValueChanged += OnEditModeServicesChanged;
         }
 
-        public static async UniTaskVoid PerformBootstrapping()
+        public static async Awaitable PerformBootstrapping()
         {
             if (EditorApplication.isCompiling || EditorApplication.isPlayingOrWillChangePlaymode)
             {
