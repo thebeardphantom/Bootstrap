@@ -14,9 +14,7 @@ namespace BeardPhantom.Bootstrap
 
         public long QueueFlushTimeoutMs { get; set; } = 1000;
 
-        public int QueueCount => _tasks.Count;
-
-        public bool IsEmpty => _tasks.Count == 0;
+        public bool IsIdle => !_isFlushingQueue && _tasks.Count == 0;
 
         private static async Task ExecuteTaskAsync(ScheduledTask task)
         {
