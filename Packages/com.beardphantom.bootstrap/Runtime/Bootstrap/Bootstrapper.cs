@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -21,7 +22,9 @@ namespace BeardPhantom.Bootstrap
             bool foundPreHandler = TryGetComponent(out _preHandler);
             bool foundPostHandler = TryGetComponent(out _postHandler);
 
-            BootstrapUtility.GetDefaultBootstrapHandlers(out IPreBootstrapHandler defautlPreHandler, out IPostBootstrapHandler defaultPostHandler);
+            BootstrapUtility.GetDefaultBootstrapHandlers(
+                out IPreBootstrapHandler defautlPreHandler,
+                out IPostBootstrapHandler defaultPostHandler);
             _preHandler = foundPreHandler ? _preHandler : defautlPreHandler;
             _postHandler = foundPostHandler ? _postHandler : defaultPostHandler;
 
@@ -47,7 +50,9 @@ namespace BeardPhantom.Bootstrap
             }
 #endif
 
-            var context = new BootstrapContext(this);
+            CancellationToken cancellationToken = gameObject.GetCancellationTokenOnDestroy();
+
+            var context = new BootstrapContext(this, App.AsyncTaskScheduler);
             Assert.IsNotNull(PrefabProvider, "ServicesPrefabLoader != null");
 
             App.BootstrapState = AppBootstrapState.BootstrapHandlerDiscovery;
@@ -57,7 +62,7 @@ namespace BeardPhantom.Bootstrap
             App.BootstrapState = AppBootstrapState.PreBootstrap;
             Log.Verbose("Beginning pre-bootstrapping.", this);
             await _preHandler.OnPreBootstrapAsync(context);
-            await UniTask.NextFrame();
+            await UniTask.NextFrame(cancellationToken);
 
             App.BootstrapState = AppBootstrapState.ServicePrefabLoad;
             Log.Verbose($"Loading services prefab via loader {PrefabProvider}.", this);
@@ -71,18 +76,21 @@ namespace BeardPhantom.Bootstrap
             servicesInstance.name = servicesPrefab.name;
             servicesPrefab.SetActive(true);
             BootstrapUtility.ClearDirtyFlag(servicesPrefab);
-            await App.ServiceLocator.CreateAsync(context, servicesInstance, HideFlags.None);
-            await UniTask.NextFrame();
+            App.ServiceLocator.Create(context, servicesInstance, HideFlags.None);
+            await UniTask.NextFrame(cancellationToken);
+
+            Log.Verbose($"Waiting for idle {nameof(AsyncTaskScheduler)}.", this);
+            await UniTask.WaitUntil(() => App.AsyncTaskScheduler.IsIdle, cancellationToken: cancellationToken);
 
             App.BootstrapState = AppBootstrapState.PostBoostrap;
             Log.Verbose("Beginning post-bootstrapping.", this);
             await _postHandler.OnPostBootstrapAsync(context, this);
-            await UniTask.NextFrame();
+            await UniTask.NextFrame(cancellationToken);
 
             App.BootstrapState = AppBootstrapState.Ready;
             Log.Info("Bootstrapping complete.", this);
         }
-        
+
         partial void TryReplaceWithOverrideInstance();
     }
 }

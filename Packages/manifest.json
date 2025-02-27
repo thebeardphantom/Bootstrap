@@ -1,9 +1,9 @@
 {
   "dependencies": {
     "com.cysharp.unitask": "2.2.5",
-    "com.unity.addressables": "1.21.21",
+    "com.unity.addressables": "1.22.3",
     "com.unity.ai.navigation": "1.1.5",
-    "com.unity.ide.rider": "3.0.28",
+    "com.unity.ide.rider": "3.0.34",
     "com.unity.test-framework": "1.1.33",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",

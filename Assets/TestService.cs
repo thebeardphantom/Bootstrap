@@ -4,15 +4,8 @@ using UnityEngine;
 
 public class TestService : MonoBehaviour, IBootstrapService
 {
-    /// <param name="context"></param>
-    /// <inheritdoc />
-    public async UniTask InitServiceAsync(BootstrapContext context)
+    private static async UniTask AsyncTask()
     {
-        if (Application.isPlaying)
-        {
-            return;
-        }
-
         var timer = 0f;
         const float Duration = 0.5f;
         while (timer < Duration)
@@ -20,5 +13,15 @@ public class TestService : MonoBehaviour, IBootstrapService
             await UniTask.NextFrame();
             timer += Time.deltaTime;
         }
+    }
+
+    void IBootstrapService.InitService(BootstrapContext context)
+    {
+        if (Application.isPlaying)
+        {
+            return;
+        }
+
+        context.Scheduler.Schedule(new ScheduledTask(AsyncTask));
     }
 }

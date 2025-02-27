@@ -39,11 +39,16 @@ namespace BeardPhantom.Bootstrap.Editor
                 var sw = Stopwatch.StartNew();
                 Cleanup();
 
-                EditModeServices servicesCmp = BootstrapEditorSettingsUtility.GetValue(asset => asset.EditModeServices, out SettingsScope definedScope);
+                EditModeServices servicesCmp = BootstrapEditorSettingsUtility.GetValue(
+                    asset => asset.EditModeServices,
+                    out SettingsScope definedScope);
                 if (servicesCmp == null)
                 {
                     sw.Stop();
-                    Progress.Report(progressId, 1f, $"Finished in {sw.Elapsed.TotalMilliseconds:0.00}ms. No edit mode services defined in {definedScope} scope.");
+                    Progress.Report(
+                        progressId,
+                        1f,
+                        $"Finished in {sw.Elapsed.TotalMilliseconds:0.00}ms. No edit mode services defined in {definedScope} scope.");
                     Progress.Finish(progressId);
                     return;
                 }
@@ -60,15 +65,25 @@ namespace BeardPhantom.Bootstrap.Editor
 
                 App.Init();
 
-                var context = new BootstrapContext(default);
+                var context = new BootstrapContext(null, App.AsyncTaskScheduler);
                 var description = $"Creating edit mode services from prefab '{servicesPrefab.name}' from {definedScope} scope.";
                 Progress.Report(progressId, 1f, description);
                 EditorUtility.DisplayProgressBar("Edit Mode Bootstrapping", description, 1f);
-                await App.ServiceLocator.CreateAsync(context, servicesInstance, HideFlags.HideAndDontSave);
+                App.ServiceLocator.Create(context, servicesInstance, HideFlags.HideAndDontSave);
+
+                Log.Verbose($"Waiting for idle {nameof(AsyncTaskScheduler)}.");
+                while (!App.AsyncTaskScheduler.IsIdle)
+                {
+                    await App.AsyncTaskScheduler.FlushQueueAsync();
+                }
+
                 EditorUtility.ClearProgressBar();
                 App.BootstrapState = AppBootstrapState.Ready;
                 sw.Stop();
-                Progress.Report(progressId, 1f, $"Finished in {sw.Elapsed.TotalMilliseconds:0.00}ms with instance '{servicesInstance.name}' from {definedScope} scope.");
+                Progress.Report(
+                    progressId,
+                    1f,
+                    $"Finished in {sw.Elapsed.TotalMilliseconds:0.00}ms with instance '{servicesInstance.name}' from {definedScope} scope.");
                 Progress.Finish(progressId);
             }
             catch (Exception ex)

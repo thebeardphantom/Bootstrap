@@ -8,6 +8,6 @@ namespace BeardPhantom.Bootstrap
     /// </summary>
     public interface IMultiboundBootstrapService : IBootstrapService
     {
-        void GetExtraBindableTypes(List<Type> extraTypes);
+        void GetOverrideBindingTypes(List<Type> extraTypes);
     }
 }
