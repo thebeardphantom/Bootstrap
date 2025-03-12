@@ -6,7 +6,7 @@ namespace BeardPhantom.Bootstrap
         public static void Deinitialize(AppInitMode mode)
         {
             // Log.Info($"{nameof(DeinitializeIfInMode)} not in mode {mode}.");
-            Log.Info($"{nameof(DeinitializeIfInMode)}({mode})");
+            Logging.Info($"{nameof(DeinitializeIfInMode)}({mode})");
             try
             {
                 ServiceLocator?.Dispose();

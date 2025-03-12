@@ -75,26 +75,26 @@ namespace BeardPhantom.Bootstrap
              * Service Init
              */
             App.BootstrapState = AppBootstrapState.ServiceInit;
-            Log.Verbose("Initializing services.");
+            Logging.Trace("Initializing services.");
             foreach (IBootstrapService service in _services)
             {
-                Log.Verbose($"InitService on {service.GetType()}.");
+                Logging.Trace($"InitService on {service.GetType()}.");
                 service.InitService(context);
             }
 
             App.BootstrapState = AppBootstrapState.ServiceActivation;
-            Log.Verbose("Activating services.");
+            Logging.Trace("Activating services.");
             _servicesInstance.SetActive(true);
         }
 
         public void Dispose()
         {
-            Log.Verbose("Disposing ServiceLocator.");
+            Logging.Trace("Disposing ServiceLocator.");
             foreach (IBootstrapService service in _services)
             {
                 if (service is IDisposable disposable)
                 {
-                    Log.Verbose($"Disposing service {service.GetType()}.");
+                    Logging.Trace($"Disposing service {service.GetType()}.");
                     disposable.Dispose();
                 }
             }

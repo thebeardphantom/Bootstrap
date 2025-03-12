@@ -10,6 +10,9 @@ namespace BeardPhantom.Bootstrap.Editor
 
         [field: SerializeField]
         public SettingsProperty<EditModeServices> EditModeServices { get; set; } = new();
+        
+        [field: SerializeField]
+        public SettingsProperty<LogLevel> MinLogLevel { get; set; } = new(LogLevel.Information);
 
         public void Save()
         {
