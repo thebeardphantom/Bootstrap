@@ -46,7 +46,7 @@ namespace BeardPhantom.Bootstrap
                 return;
             }
 
-            Log.Info($"Loading custom bootstrapper from path '{EditorBootstrapHandler.TempBootstrapperPath}'.");
+            Logging.Info($"Loading custom bootstrapper from path '{EditorBootstrapHandler.TempBootstrapperPath}'.");
             GameObject overrideInstance = Instantiate(overridePrefab);
             overrideInstance.name = overridePrefab.name;
             overrideInstance.GetComponent<Bootstrapper>()._isOverrideInstance = true;

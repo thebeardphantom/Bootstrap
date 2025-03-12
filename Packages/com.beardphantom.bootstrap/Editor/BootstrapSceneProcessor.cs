@@ -29,7 +29,7 @@ namespace BeardPhantom.Bootstrap.Editor
                     continue;
                 }
 
-                Log.Info($"Destroying Bootstrapper {bootstrapper.name} in non-bootstrap scene '{scene.path}'");
+                Logging.Info($"Destroying Bootstrapper {bootstrapper.name} in non-bootstrap scene '{scene.path}'");
                 Object.DestroyImmediate(bootstrapper.gameObject);
             }
         }

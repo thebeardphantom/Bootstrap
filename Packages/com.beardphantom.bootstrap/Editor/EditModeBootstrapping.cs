@@ -70,7 +70,7 @@ namespace BeardPhantom.Bootstrap.Editor
                 EditorUtility.DisplayProgressBar("Edit Mode Bootstrapping", description, 1f);
                 App.ServiceLocator.Create(context, servicesInstance, HideFlags.HideAndDontSave);
 
-                Log.Verbose($"Waiting for idle {nameof(AsyncTaskScheduler)}.");
+                Logging.Trace($"Waiting for idle {nameof(AsyncTaskScheduler)}.");
                 while (!App.AsyncTaskScheduler.IsIdle)
                 {
                     await App.AsyncTaskScheduler.FlushQueueAsync();
@@ -112,24 +112,10 @@ namespace BeardPhantom.Bootstrap.Editor
             }
         }
 
-        public static void UpdateScriptingDefinesIfNecessary()
+        public static void UpdateLogLevelIfNecessary()
         {
-            BuildTargetGroup selectedBuildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
-            var namedBuildTarget = NamedBuildTarget.FromBuildTargetGroup(selectedBuildTargetGroup);
-
-            PlayerSettings.GetScriptingDefineSymbols(namedBuildTarget, out string[] defines);
-
-            HashSet<string> set = defines.ToHashSet();
-            if (BootstrapEditorProjectSettings.instance.VerboseLogging)
-            {
-                set.Add(Log.VerboseLogDefine);
-            }
-            else
-            {
-                set.Remove(Log.VerboseLogDefine);
-            }
-
-            PlayerSettings.SetScriptingDefineSymbols(namedBuildTarget, set.ToArray());
+            LogLevel minLogLevel = BootstrapEditorSettingsUtility.GetValue(asset => asset.MinLogLevel);
+            Logging.MinLogLevel = minLogLevel;
         }
 
         public static void Cleanup()

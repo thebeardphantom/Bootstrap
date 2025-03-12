@@ -67,12 +67,12 @@ namespace BeardPhantom.Bootstrap.Editor
 
             EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
 
-            Log.Verbose("BootstrapEditorHelper prepping for playmode.");
+            Logging.Trace("BootstrapEditorHelper prepping for playmode.");
             EditorBuildSettingsScene bootstrapScene = EditorBuildSettings.scenes.FirstOrDefault(
                 s => AssetDatabase.LoadAssetAtPath<SceneAsset>(s.path) != default);
             if (bootstrapScene == default)
             {
-                Log.Info("No valid first scene in EditorBuildSettings");
+                Logging.Info("No valid first scene in EditorBuildSettings");
             }
             else
             {
@@ -92,7 +92,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
                     if (bootstrapper.gameObject.scene.buildIndex != 0)
                     {
-                        Log.Info(
+                        Logging.Info(
                             $"BootstrapEditorHelper saving custom bootstrapper from scene '{bootstrapper.gameObject.scene.path}' to path '{EditorBootstrapHandler.TempBootstrapperPath}'.");
                         GameObject bootstrapperClone = Object.Instantiate(bootstrapper.gameObject);
                         PrefabUtility.SaveAsPrefabAsset(bootstrapperClone, EditorBootstrapHandler.TempBootstrapperPath);

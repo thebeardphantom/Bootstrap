@@ -17,7 +17,7 @@ namespace BeardPhantom.Bootstrap
 
         private static async Awaitable ExecuteTaskAsync(ScheduledTask task)
         {
-            Log.Verbose($"Invoking scheduled task {task}.");
+            Logging.Trace($"Invoking scheduled task {task}.");
             await task.InvokeAsync();
         }
 

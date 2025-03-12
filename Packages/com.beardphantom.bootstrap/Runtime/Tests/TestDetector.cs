@@ -16,7 +16,7 @@ namespace BeardPhantom.Bootstrap.Tests
                 return;
             }
 
-            Log.Info("Playmode test execution start detected.");
+            Logging.Info("Playmode test execution start detected.");
             App.IsRunningTests = true;
         }
 
@@ -27,7 +27,7 @@ namespace BeardPhantom.Bootstrap.Tests
                 return;
             }
 
-            Log.Info("Playmode test execution finish detected.");
+            Logging.Info("Playmode test execution finish detected.");
             App.IsRunningTests = false;
         }
 

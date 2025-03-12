@@ -4,11 +4,9 @@ using UnityEngine;
 namespace BeardPhantom.Bootstrap.Editor
 {
     [FilePath("ProjectSettings/BootstrapProjectSettings.asset", FilePathAttribute.Location.ProjectFolder)]
-    public class BootstrapEditorProjectSettings : BootstrapEditorSettingsAsset<BootstrapEditorProjectSettings>, ISerializationCallbackReceiver
+    public class BootstrapEditorProjectSettings : BootstrapEditorSettingsAsset<BootstrapEditorProjectSettings>,
+        ISerializationCallbackReceiver
     {
-        [field: SerializeField]
-        public bool VerboseLogging { get; private set; }
-
         /// <inheritdoc />
         void ISerializationCallbackReceiver.OnBeforeSerialize() { }
 
@@ -17,6 +15,7 @@ namespace BeardPhantom.Bootstrap.Editor
         {
             EditorFlowEnabled.OverrideEnabled = true;
             EditModeServices.OverrideEnabled = true;
+            MinLogLevel.OverrideEnabled = true;
         }
     }
 }
