@@ -43,7 +43,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         {
             var settingsAsset = (IBootstrapEditorSettingsAsset)obj.targetObject;
             settingsAsset.Save();
-            EditModeBootstrapping.UpdateScriptingDefinesIfNecessary();
+            EditModeBootstrapping.UpdateLogLevelIfNecessary();
             EditModeBootstrapping.PerformBootstrappingIfNecessary();
         }
 

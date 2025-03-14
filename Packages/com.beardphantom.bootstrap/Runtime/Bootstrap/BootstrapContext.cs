@@ -6,9 +6,12 @@ namespace BeardPhantom.Bootstrap
     {
         public readonly Bootstrapper Bootstrapper;
 
-        public BootstrapContext(Bootstrapper bootstrapper)
+        public readonly AsyncTaskScheduler Scheduler;
+
+        public BootstrapContext(Bootstrapper bootstrapper, AsyncTaskScheduler scheduler)
         {
             Bootstrapper = bootstrapper;
+            Scheduler = scheduler;
         }
     }
 

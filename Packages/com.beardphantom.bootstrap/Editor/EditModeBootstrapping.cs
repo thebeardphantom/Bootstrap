@@ -1,11 +1,8 @@
 ﻿using BeardPhantom.Bootstrap.Editor.Settings;
 using BeardPhantom.Bootstrap.Environment;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using UnityEditor;
-using UnityEditor.Build;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Progress = UnityEditor.Progress;
@@ -71,12 +68,18 @@ namespace BeardPhantom.Bootstrap.Editor
                 SessionState.SetInt(EditModeServicesIIdKey, editModeServicesInstance.GetInstanceID());
                 App.Init();
 
-                var context = new BootstrapContext(default);
-                var description =
-                    $"Creating edit mode services from prefab '{editModeEnvironment.ServicesPrefab.name}' from {definedScope} scope.";
+                var context = new BootstrapContext(null, App.AsyncTaskScheduler);
+                var description = $"Creating edit mode services from prefab '{editModeEnvironment.ServicesPrefab.name}' from {definedScope} scope.";
                 Progress.Report(progressId, 1f, description);
                 EditorUtility.DisplayProgressBar("Edit Mode Bootstrapping", description, 1f);
-                await App.ServiceLocator.CreateAsync(context, servicesInstance, HideFlags.HideAndDontSave);
+                App.ServiceLocator.Create(context, servicesInstance, HideFlags.HideAndDontSave);
+
+                Logging.Trace($"Waiting for idle {nameof(AsyncTaskScheduler)}.");
+                while (!App.AsyncTaskScheduler.IsIdle)
+                {
+                    await App.AsyncTaskScheduler.FlushQueueAsync();
+                }
+
                 EditorUtility.ClearProgressBar();
                 App.BootstrapState = AppBootstrapState.Ready;
 
@@ -129,24 +132,10 @@ namespace BeardPhantom.Bootstrap.Editor
             }
         }
 
-        public static void UpdateScriptingDefinesIfNecessary()
+        public static void UpdateLogLevelIfNecessary()
         {
-            BuildTargetGroup selectedBuildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
-            var namedBuildTarget = NamedBuildTarget.FromBuildTargetGroup(selectedBuildTargetGroup);
-
-            PlayerSettings.GetScriptingDefineSymbols(namedBuildTarget, out string[] defines);
-
-            HashSet<string> set = defines.ToHashSet();
-            if (BootstrapEditorProjectSettings.instance.VerboseLogging)
-            {
-                set.Add(Log.VerboseLogDefine);
-            }
-            else
-            {
-                set.Remove(Log.VerboseLogDefine);
-            }
-
-            PlayerSettings.SetScriptingDefineSymbols(namedBuildTarget, set.ToArray());
+            LogLevel minLogLevel = BootstrapEditorSettingsUtility.GetValue(asset => asset.MinLogLevel);
+            Logging.MinLogLevel = minLogLevel;
         }
 
         public static void Cleanup()

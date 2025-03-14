@@ -14,13 +14,13 @@ public class TestService : MonoBehaviour, IBootstrapService
         }
     }
 
-    void IBootstrapService.InitService(AsyncTaskScheduler scheduler)
+    void IBootstrapService.InitService(BootstrapContext context)
     {
         if (Application.isPlaying)
         {
             return;
         }
 
-        scheduler.Schedule(new ScheduledTask(AsyncTask));
+        context.Scheduler.Schedule(new ScheduledTask(AsyncTask));
     }
 }

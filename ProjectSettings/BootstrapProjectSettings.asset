@@ -18,4 +18,7 @@ MonoBehaviour:
   <EditModeServices>k__BackingField:
     <OverrideEnabled>k__BackingField: 1
     <Value>k__BackingField: {fileID: -287972145902696257, guid: f0c84ec3f698caf4c9cbff54d19b2d13, type: 3}
+  <MinLogLevel>k__BackingField:
+    <OverrideEnabled>k__BackingField: 0
+    <Value>k__BackingField: 0
   <VerboseLogging>k__BackingField: 1
