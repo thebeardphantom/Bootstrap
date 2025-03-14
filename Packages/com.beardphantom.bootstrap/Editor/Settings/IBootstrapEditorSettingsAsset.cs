@@ -20,6 +20,8 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         SettingsProperty<MappedEnvironmentCollection<SceneAsset>> EditorSceneEnvironments { get; }
 
         SettingsProperty<MappedEnvironmentCollection<BuildProfile>> BuildProfileEnvironments { get; }
+        
+        SettingsProperty<LogLevel> MinLogLevel { get; }
 
         void Save();
     }

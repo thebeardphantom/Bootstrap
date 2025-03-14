@@ -3,7 +3,6 @@
 using BeardPhantom.Bootstrap.Environment;
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Assertions;
 #if UNITY_EDITOR
@@ -50,7 +49,7 @@ namespace BeardPhantom.Bootstrap
         public static bool IsQuitting { get; private set; }
 
         public static bool IsRunningTests { get; internal set; }
-
+        
         public static AsyncTaskScheduler AsyncTaskScheduler { get; private set; }
 
         public static bool CanLocateServices => ServiceLocator is { CanLocateServices: true, };
@@ -81,7 +80,7 @@ namespace BeardPhantom.Bootstrap
 
         public static void Deinitialize(AppInitMode mode)
         {
-            Log.Info($"{nameof(DeinitializeIfInMode)}({mode})");
+            Logging.Info($"{nameof(DeinitializeIfInMode)}({mode})");
             try
             {
                 ServiceLocator?.Dispose();
@@ -134,7 +133,7 @@ namespace BeardPhantom.Bootstrap
             if (TryDetermineSessionEnvironment(out RuntimeBootstrapEnvironmentAsset environment))
             {
                 SessionEnvironment = environment;
-                Log.Info($"Selected environment {SessionEnvironment}.");
+                Logging.Info($"Selected environment {SessionEnvironment}.");
                 if (!environment.IsNoOp)
                 {
                     environment.StartEnvironment();
@@ -142,7 +141,7 @@ namespace BeardPhantom.Bootstrap
             }
             else
             {
-                Log.Info("No environment selected.");
+                Logging.Info("No environment selected.");
             }
         }
 

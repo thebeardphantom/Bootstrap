@@ -71,12 +71,12 @@ namespace BeardPhantom.Bootstrap.Editor
             EditorSceneManager.playModeStartScene = default;
             EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
 
-            Log.Verbose("BootstrapEditorHelper prepping for playmode.");
+            Logging.Trace("BootstrapEditorHelper prepping for playmode.");
             EditorBuildSettingsScene bootstrapScene = EditorBuildSettings.scenes.FirstOrDefault(
                 s => AssetDatabase.LoadAssetAtPath<SceneAsset>(s.path) != default);
             if (bootstrapScene == default)
             {
-                Log.Info("No valid first scene in EditorBuildSettings");
+                Logging.Info("No valid first scene in EditorBuildSettings");
                 return;
             }
 

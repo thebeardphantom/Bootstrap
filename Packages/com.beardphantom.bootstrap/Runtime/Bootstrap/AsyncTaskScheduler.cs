@@ -16,19 +16,14 @@ namespace BeardPhantom.Bootstrap
 
         public bool IsIdle => !_isFlushingQueue && _tasks.Count == 0;
 
-        private static async Task ExecuteTaskAsync(ScheduledTask task)
+        private static async Awaitable ExecuteTaskAsync(ScheduledTask task)
         {
-            Log.Verbose($"Invoking scheduled task {task}.");
+            Logging.Trace($"Invoking scheduled task {task}.");
             await task.InvokeAsync();
         }
 
-        // private uint _nextTaskId = 1;
-
         public void Schedule(in ScheduledTask scheduledTask)
         {
-            // ScheduledTask scheduledTaskWithId = scheduledTask.WithId(_nextTaskId);
-            // _nextTaskId++;
-            // _tasks.Sort();
             _tasks.Enqueue(scheduledTask, scheduledTask.Priority);
         }
 

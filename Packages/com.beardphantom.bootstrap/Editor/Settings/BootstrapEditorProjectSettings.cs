@@ -7,9 +7,6 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
     public class BootstrapEditorProjectSettings : BootstrapEditorSettingsAsset<BootstrapEditorProjectSettings>,
         ISerializationCallbackReceiver
     {
-        [field: SerializeField]
-        public bool VerboseLogging { get; private set; }
-
         /// <inheritdoc />
         void ISerializationCallbackReceiver.OnBeforeSerialize() { }
 
@@ -18,9 +15,12 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         {
             EditorFlowEnabled.OverrideEnabled = true;
             EditModeEnvironment.OverrideEnabled = true;
+            DefaultPlayModeEnvironment.OverrideEnabled = true;
+            DefaultBuildEnvironment.OverrideEnabled = true;
+            PlatformEnvironments.OverrideEnabled = true;
             EditorSceneEnvironments.OverrideEnabled = true;
             BuildProfileEnvironments.OverrideEnabled = true;
-            PlatformEnvironments.OverrideEnabled = true;
+            MinLogLevel.OverrideEnabled = true;
         }
     }
 }

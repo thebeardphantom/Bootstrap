@@ -33,6 +33,9 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         public SettingsProperty<MappedEnvironmentCollection<BuildProfile>> BuildProfileEnvironments { get; private set; } =
             new(new MappedEnvironmentCollection<BuildProfile>());
 
+        [field: SerializeField]
+        public SettingsProperty<LogLevel> MinLogLevel { get; private set; } = new(LogLevel.Information);
+
         public void Save()
         {
             base.Save(true);

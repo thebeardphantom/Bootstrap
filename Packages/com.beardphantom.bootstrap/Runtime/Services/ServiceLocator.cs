@@ -52,7 +52,7 @@ namespace BeardPhantom.Bootstrap
             _services.Add(service);
         }
 
-        public async Awaitable CreateAsync(BootstrapContext context, GameObject servicesInstance, HideFlags hideFlags = HideFlags.None)
+        public void Create(BootstrapContext context, GameObject servicesInstance, HideFlags hideFlags = HideFlags.None)
         {
             _servicesInstance = servicesInstance;
             _servicesInstance.hideFlags = hideFlags;
@@ -101,29 +101,26 @@ namespace BeardPhantom.Bootstrap
              * Service Init
              */
             App.BootstrapState = AppBootstrapState.ServiceInit;
-            AsyncTaskScheduler asyncTaskScheduler = App.AsyncTaskScheduler;
-            Log.Verbose("Initializing services.");
+            Logging.Trace("Initializing services.");
             foreach (IBootstrapService service in _services)
             {
-                Log.Verbose($"InitService on {service.GetType()}.");
-                service.InitService(asyncTaskScheduler);
+                Logging.Trace($"InitService on {service.GetType()}.");
+                service.InitService(context);
             }
 
             App.BootstrapState = AppBootstrapState.ServiceActivation;
-            Log.Verbose("Activating services.");
+            Logging.Trace("Activating services.");
             _servicesInstance.SetActive(true);
-            // Give the object one frame to run awake/start
-            await Awaitable.NextFrameAsync();
         }
 
         public void Dispose()
         {
-            Log.Verbose("Disposing ServiceLocator.");
+            Logging.Trace("Disposing ServiceLocator.");
             foreach (IBootstrapService service in _services)
             {
                 if (service is IDisposable disposable)
                 {
-                    Log.Verbose($"Disposing service {service.GetType()}.");
+                    Logging.Trace($"Disposing service {service.GetType()}.");
                     disposable.Dispose();
                 }
             }

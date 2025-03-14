@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using UnityEngine;
 using ZLogger;
@@ -12,6 +13,7 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace BeardPhantom.Bootstrap.ZLogger
 {
+    [SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
     public class DefaultLogService : MonoBehaviour, IMultiboundBootstrapService, IDisposable, ILogService
     {
         private static readonly ILogger s_logger = LogUtility.GetStaticLogger<DefaultLogService>();
@@ -27,6 +29,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         [field: SerializeField]
         private string FilePath { get; set; } = "Temp/log.txt";
 
+        [SuppressMessage("ReSharper", "MemberCanBeProtected.Global")]
         public virtual string GetLogLevelAbbreviated(Microsoft.Extensions.Logging.LogLevel logLevel)
         {
             return logLevel switch
@@ -47,6 +50,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
             return GetLogger(typeof(T));
         }
 
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
         public ILogger GetLogger(Type type)
         {
             return _loggerFactory.CreateLogger(type.Name);
@@ -56,7 +60,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         {
             if (_loggerFactory == null)
             {
-                logger = default;
+                logger = null;
                 return false;
             }
 
@@ -108,10 +112,10 @@ namespace BeardPhantom.Bootstrap.ZLogger
         void IDisposable.Dispose()
         {
             _loggerFactory?.Dispose();
-            _loggerFactory = default;
+            _loggerFactory = null;
         }
-        
-        void IBootstrapService.InitService(AsyncTaskScheduler scheduler)
+
+        void IBootstrapService.InitService(BootstrapContext context)
         {
             _loggerFactory = CreateLoggerFactory();
             s_logger.ZLogInformation($"Log system setup complete.");
