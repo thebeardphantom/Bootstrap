@@ -13,7 +13,12 @@ namespace BeardPhantom.Bootstrap.ZLogger
 
         public static ILogger GetStaticLogger(Type type)
         {
-            return new StaticSafeLogger(type);
+            return new StaticSafeLogger(type.Name);
+        }
+
+        public static ILogger GetStaticLogger(string category)
+        {
+            return new StaticSafeLogger(category);
         }
     }
 }

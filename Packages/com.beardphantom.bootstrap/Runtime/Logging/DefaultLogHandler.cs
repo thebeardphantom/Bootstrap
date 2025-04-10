@@ -18,17 +18,6 @@ namespace BeardPhantom.Bootstrap
             $"[CRT] {LogFormatString}",
         };
 
-        public static LogType GetLogType(in BootstrapLogLevel logLevel)
-        {
-            return logLevel switch
-            {
-                BootstrapLogLevel.Trace or BootstrapLogLevel.Debug or BootstrapLogLevel.Information => LogType.Log,
-                BootstrapLogLevel.Warning => LogType.Warning,
-                BootstrapLogLevel.Error or BootstrapLogLevel.Critical => LogType.Error,
-                _ => throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null),
-            };
-        }
-
         public static string GetFormatString(in BootstrapLogLevel logLevel)
         {
             if (logLevel == BootstrapLogLevel.None)
@@ -41,7 +30,7 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <inheritdoc />
-        public void Log(BootstrapLogLevel logLevel, object message, Object context = null)
+        public void Log(in BootstrapLogLevel logLevel, object message, Object context = null)
         {
             if (logLevel == BootstrapLogLevel.None)
             {
@@ -51,7 +40,7 @@ namespace BeardPhantom.Bootstrap
             string formatString = GetFormatString(logLevel);
             message = string.Format(formatString, message);
 
-            LogType logType = GetLogType(logLevel);
+            LogType logType = logLevel.GetUnityLogType();
             Debug.unityLogger.Log(logType, message, context);
         }
     }

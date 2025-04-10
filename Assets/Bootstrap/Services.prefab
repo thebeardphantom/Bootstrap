@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4230430909945298563}
   - component: {fileID: 8842763892432107307}
+  - component: {fileID: 2047256624358613797}
   m_Layer: 0
   m_Name: Services
   m_TagString: Untagged
@@ -44,3 +45,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8287acdc770a4265be305738d3ba4c29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2047256624358613797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7096623501582644862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f3ee006c14c84b49bbd096e135a38df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <ConsoleMinLogLevel>k__BackingField: 1
+  <FileMinLogLevel>k__BackingField: 0
+  <FilePath>k__BackingField: Temp/log.txt

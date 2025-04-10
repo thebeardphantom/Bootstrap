@@ -13,24 +13,24 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "c9abcea0e61e228aaf08b07b07dbe3a35718f098"
+      "hash": "50bfc5addb1008eba0cbb2390d3e95de2de945f8"
     },
     "com.cysharp.zstring": {
       "version": "https://github.com/Cysharp/ZString.git?path=src/ZString.Unity/Assets/Scripts/ZString",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "6e4e0f035cc3d5973f31fe8c524990780dbc65dd"
+      "hash": "44c68580f85b203b015350dacf73830c876f2dbf"
     },
     "com.github-glitchenzo.nugetforunity": {
       "version": "https://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnity",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "a011c51ed65c9abc3151a7a408bc70d408352933"
+      "hash": "fe31ad0904abee296b5ea72c6073157accba59e8"
     },
     "com.unity.addressables": {
-      "version": "2.4.1",
+      "version": "2.4.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -40,13 +40,13 @@
         "com.unity.modules.jsonserialize": "1.0.0",
         "com.unity.modules.imageconversion": "1.0.0",
         "com.unity.modules.unitywebrequest": "1.0.0",
-        "com.unity.scriptablebuildpipeline": "2.3.0",
+        "com.unity.scriptablebuildpipeline": "2.3.2",
         "com.unity.modules.unitywebrequestassetbundle": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
     "com.unity.ai.navigation": {
-      "version": "2.0.6",
+      "version": "2.0.7",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -61,7 +61,7 @@
       "dependencies": {}
     },
     "com.unity.ide.rider": {
-      "version": "3.0.34",
+      "version": "3.0.35",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -84,7 +84,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.scriptablebuildpipeline": {
-      "version": "2.3.0",
+      "version": "2.3.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {
