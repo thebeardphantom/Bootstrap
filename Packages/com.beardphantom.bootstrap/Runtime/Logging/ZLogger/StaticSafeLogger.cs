@@ -10,7 +10,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
     {
         private static readonly ServiceRef<ILogService> s_logService = new();
 
-        private readonly Type _loggerType;
+        private readonly string _loggerCategory;
 
         private readonly Queue<IQueuedLog> _logQueue = new();
 
@@ -18,9 +18,9 @@ namespace BeardPhantom.Bootstrap.ZLogger
 
         private Guid? _acquisitionGuid;
 
-        public StaticSafeLogger(Type loggerType)
+        public StaticSafeLogger(string category)
         {
-            _loggerType = loggerType;
+            _loggerCategory = category;
             ReacquireLogger(true);
         }
 
@@ -61,9 +61,9 @@ namespace BeardPhantom.Bootstrap.ZLogger
                 return;
             }
 
-            if (s_logService.TryGetValue(out ILogService logService) && logService.TryGetLogger(_loggerType, out _wrappedLogger))
+            if (s_logService.TryGetValue(out ILogService logService) && logService.TryGetLogger(_loggerCategory, out _wrappedLogger))
             {
-                _wrappedLogger = logService.GetLogger(_loggerType);
+                _wrappedLogger = logService.GetLogger(_loggerCategory);
                 _acquisitionGuid = App.SessionGuid;
                 EmptyLogQueue();
             }

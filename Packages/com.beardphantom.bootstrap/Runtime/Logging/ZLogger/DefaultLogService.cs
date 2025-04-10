@@ -45,18 +45,13 @@ namespace BeardPhantom.Bootstrap.ZLogger
             };
         }
 
-        public ILogger GetLogger<T>()
-        {
-            return GetLogger(typeof(T));
-        }
-
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-        public ILogger GetLogger(Type type)
+        public ILogger GetLogger(string category)
         {
-            return _loggerFactory.CreateLogger(type.Name);
+            return _loggerFactory.CreateLogger(category);
         }
 
-        public bool TryGetLogger(Type type, out ILogger logger)
+        public bool TryGetLogger(string category, out ILogger logger)
         {
             if (_loggerFactory == null)
             {
@@ -64,7 +59,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
                 return false;
             }
 
-            logger = GetLogger(type);
+            logger = GetLogger(category);
             return true;
         }
 
@@ -88,8 +83,13 @@ namespace BeardPhantom.Bootstrap.ZLogger
         protected virtual void SetPrefixFormatter(PlainTextZLoggerFormatter formatter)
         {
             formatter.SetPrefixFormatter(
-                $"[{0}] [{1}] ",
-                (in MessageTemplate template, in LogInfo info) => template.Format(GetLogLevelAbbreviated(info.LogLevel), info.Category));
+                $"[{0}] [{1}] [{2}] ",
+                (in MessageTemplate template, in LogInfo info) =>
+                {
+                    string logLevelAbbreviated = GetLogLevelAbbreviated(info.LogLevel);
+                    int frame = Time.frameCount;
+                    template.Format(logLevelAbbreviated, frame, info.Category);
+                });
         }
 
         protected virtual void ConfigureFileProvider(ILoggingBuilder builder)
@@ -117,6 +117,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
 
         void IBootstrapService.InitService(BootstrapContext context)
         {
+            Logging.LogHandler = BootstrapZLogHandler.Instance;
             _loggerFactory = CreateLoggerFactory();
             s_logger.ZLogInformation($"Log system setup complete.");
         }
