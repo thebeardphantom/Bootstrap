@@ -4,6 +4,6 @@ namespace BeardPhantom.Bootstrap
 {
     internal interface ILogHandler
     {
-        void Log(LogLevel logLevel, object message, Object context = default);
+        void Log(BootstrapLogLevel logLevel, object message, Object context = default);
     }
 }

@@ -18,20 +18,20 @@ namespace BeardPhantom.Bootstrap
             $"[CRT] {LogFormatString}",
         };
 
-        public static LogType GetLogType(in LogLevel logLevel)
+        public static LogType GetLogType(in BootstrapLogLevel logLevel)
         {
             return logLevel switch
             {
-                LogLevel.Trace or LogLevel.Debug or LogLevel.Information => LogType.Log,
-                LogLevel.Warning => LogType.Warning,
-                LogLevel.Error or LogLevel.Critical => LogType.Error,
+                BootstrapLogLevel.Trace or BootstrapLogLevel.Debug or BootstrapLogLevel.Information => LogType.Log,
+                BootstrapLogLevel.Warning => LogType.Warning,
+                BootstrapLogLevel.Error or BootstrapLogLevel.Critical => LogType.Error,
                 _ => throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null),
             };
         }
 
-        public static string GetFormatString(in LogLevel logLevel)
+        public static string GetFormatString(in BootstrapLogLevel logLevel)
         {
-            if (logLevel == LogLevel.None)
+            if (logLevel == BootstrapLogLevel.None)
             {
                 throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null);
             }
@@ -41,9 +41,9 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <inheritdoc />
-        public void Log(LogLevel logLevel, object message, Object context = null)
+        public void Log(BootstrapLogLevel logLevel, object message, Object context = null)
         {
-            if (logLevel == LogLevel.None)
+            if (logLevel == BootstrapLogLevel.None)
             {
                 return;
             }

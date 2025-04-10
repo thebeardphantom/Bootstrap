@@ -1,7 +1,6 @@
 using BeardPhantom.Bootstrap;
 using BeardPhantom.Bootstrap.Tests;
 using NUnit.Framework;
-using Assert = NUnit.Framework.Assert;
 
 namespace Tests
 {

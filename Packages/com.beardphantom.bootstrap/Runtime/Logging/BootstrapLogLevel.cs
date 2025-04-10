@@ -3,7 +3,7 @@
     /// <summary>
     /// Aligns with LogLevel in Microsoft.Extensions.Logging.Abstractions
     /// </summary>
-    public enum LogLevel
+    public enum BootstrapLogLevel
     {
         Trace = 0,
         Debug = 1,
