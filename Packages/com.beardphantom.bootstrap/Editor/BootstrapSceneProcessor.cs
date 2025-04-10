@@ -4,7 +4,6 @@ using UnityEditor.Build.Reporting;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 
 namespace BeardPhantom.Bootstrap.Editor
 {

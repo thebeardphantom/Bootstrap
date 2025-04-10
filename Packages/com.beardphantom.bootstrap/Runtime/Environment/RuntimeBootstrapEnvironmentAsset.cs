@@ -8,7 +8,7 @@ using System;
 namespace BeardPhantom.Bootstrap.Environment
 {
     [CreateAssetMenu(menuName = "Bootstrap/Runtime Environment")]
-    public partial class RuntimeBootstrapEnvironmentAsset : BootstrapEnvironmentAsset
+    public class RuntimeBootstrapEnvironmentAsset : BootstrapEnvironmentAsset
     {
         public override bool IsNoOp => BootstrapperPrefab == null;
 

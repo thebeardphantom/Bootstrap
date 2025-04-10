@@ -34,7 +34,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
             new(new MappedEnvironmentCollection<BuildProfile>());
 
         [field: SerializeField]
-        public SettingsProperty<LogLevel> MinLogLevel { get; private set; } = new(LogLevel.Information);
+        public SettingsProperty<BootstrapLogLevel> MinLogLevel { get; private set; } = new(BootstrapLogLevel.Information);
 
         public void Save()
         {

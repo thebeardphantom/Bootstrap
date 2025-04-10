@@ -21,26 +21,26 @@ namespace BeardPhantom.Bootstrap.ZLogger
         private ILoggerFactory _loggerFactory;
 
         [field: SerializeField]
-        private Microsoft.Extensions.Logging.LogLevel ConsoleMinLogLevel { get; set; } = Microsoft.Extensions.Logging.LogLevel.Debug;
+        private LogLevel ConsoleMinLogLevel { get; set; } = LogLevel.Debug;
 
         [field: SerializeField]
-        private Microsoft.Extensions.Logging.LogLevel FileMinLogLevel { get; set; } = Microsoft.Extensions.Logging.LogLevel.Trace;
+        private LogLevel FileMinLogLevel { get; set; } = LogLevel.Trace;
 
         [field: SerializeField]
         private string FilePath { get; set; } = "Temp/log.txt";
 
         [SuppressMessage("ReSharper", "MemberCanBeProtected.Global")]
-        public virtual string GetLogLevelAbbreviated(Microsoft.Extensions.Logging.LogLevel logLevel)
+        public virtual string GetLogLevelAbbreviated(LogLevel logLevel)
         {
             return logLevel switch
             {
-                Microsoft.Extensions.Logging.LogLevel.Trace => "TRC",
-                Microsoft.Extensions.Logging.LogLevel.Debug => "DBG",
-                Microsoft.Extensions.Logging.LogLevel.Information => "INF",
-                Microsoft.Extensions.Logging.LogLevel.Warning => "WRN",
-                Microsoft.Extensions.Logging.LogLevel.Error => "ERR",
-                Microsoft.Extensions.Logging.LogLevel.Critical => "CRT",
-                Microsoft.Extensions.Logging.LogLevel.None => "NNE",
+                LogLevel.Trace => "TRC",
+                LogLevel.Debug => "DBG",
+                LogLevel.Information => "INF",
+                LogLevel.Warning => "WRN",
+                LogLevel.Error => "ERR",
+                LogLevel.Critical => "CRT",
+                LogLevel.None => "NNE",
                 _ => throw new ArgumentOutOfRangeException(),
             };
         }
@@ -74,7 +74,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
                 builder =>
                 {
                     builder
-                        .SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace)
+                        .SetMinimumLevel(LogLevel.Trace)
                         .AddZLoggerUnityDebug(
                             options =>
                             {

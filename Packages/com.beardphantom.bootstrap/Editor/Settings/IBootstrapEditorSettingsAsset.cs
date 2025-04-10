@@ -21,7 +21,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
 
         SettingsProperty<MappedEnvironmentCollection<BuildProfile>> BuildProfileEnvironments { get; }
         
-        SettingsProperty<LogLevel> MinLogLevel { get; }
+        SettingsProperty<BootstrapLogLevel> MinLogLevel { get; }
 
         void Save();
     }

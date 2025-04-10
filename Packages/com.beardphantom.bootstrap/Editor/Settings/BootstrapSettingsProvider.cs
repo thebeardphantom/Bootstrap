@@ -3,8 +3,6 @@ using UnityEditor.Compilation;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using ObjectField = UnityEditor.UIElements.ObjectField;
-using SettingsProvider = UnityEditor.SettingsProvider;
 
 namespace BeardPhantom.Bootstrap.Editor.Settings
 {

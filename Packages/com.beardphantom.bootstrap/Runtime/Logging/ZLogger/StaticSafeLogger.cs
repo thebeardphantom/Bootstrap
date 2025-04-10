@@ -25,7 +25,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         }
 
         public void Log<TState>(
-            Microsoft.Extensions.Logging.LogLevel logLevel,
+            LogLevel logLevel,
             EventId eventId,
             TState state,
             Exception exception,
@@ -42,7 +42,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
             }
         }
 
-        public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel)
+        public bool IsEnabled(LogLevel logLevel)
         {
             ReacquireLogger();
             return _wrappedLogger.IsEnabled(logLevel);
@@ -89,7 +89,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
 
         private class QueuedLog<TState> : IQueuedLog
         {
-            private readonly Microsoft.Extensions.Logging.LogLevel _logLevel;
+            private readonly LogLevel _logLevel;
 
             private readonly EventId _eventId;
 
@@ -100,7 +100,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
             private readonly Func<TState, Exception, string> _formatter;
 
             public QueuedLog(
-                Microsoft.Extensions.Logging.LogLevel logLevel,
+                LogLevel logLevel,
                 EventId eventId,
                 TState state,
                 Exception exception,

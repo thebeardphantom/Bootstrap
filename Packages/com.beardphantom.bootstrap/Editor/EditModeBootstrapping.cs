@@ -5,7 +5,6 @@ using System.Diagnostics;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using Progress = UnityEditor.Progress;
 
 namespace BeardPhantom.Bootstrap.Editor
 {
@@ -134,7 +133,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
         public static void UpdateLogLevelIfNecessary()
         {
-            LogLevel minLogLevel = BootstrapEditorSettingsUtility.GetValue(asset => asset.MinLogLevel);
+            BootstrapLogLevel minLogLevel = BootstrapEditorSettingsUtility.GetValue(asset => asset.MinLogLevel);
             Logging.MinLogLevel = minLogLevel;
         }
 

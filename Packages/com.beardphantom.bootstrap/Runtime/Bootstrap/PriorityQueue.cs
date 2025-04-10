@@ -1,5 +1,12 @@
 ﻿#nullable enable
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+
 namespace BeardPhantom.Bootstrap
 {
 // Licensed to the .NET Foundation under one or more agreements.
@@ -7,15 +14,7 @@ namespace BeardPhantom.Bootstrap
 
 // ported from:
 // https://github.com/dotnet/runtime/blob/main/src/libraries/System.Collections/src/System/Collections/Generic/PriorityQueue.cs
-
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Runtime.CompilerServices;
-
-    internal sealed class PriorityQueueDebugView<TElement, TPriority>
+internal sealed class PriorityQueueDebugView<TElement, TPriority>
     {
         private readonly PriorityQueue<TElement, TPriority> _queue;
         private readonly bool _sort;
@@ -45,7 +44,7 @@ namespace BeardPhantom.Bootstrap
 
         public PriorityQueueDebugView(PriorityQueue<TElement, TPriority>.UnorderedItemsCollection collection)
         {
-            _queue = collection?._queue ?? throw new System.ArgumentNullException(nameof(collection));
+            _queue = collection?._queue ?? throw new ArgumentNullException(nameof(collection));
         }
     }
 
