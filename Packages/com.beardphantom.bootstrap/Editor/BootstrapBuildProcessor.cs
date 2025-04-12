@@ -53,7 +53,7 @@ namespace BeardPhantom.Bootstrap.Editor
             NamedBuildTarget namedBuildTarget = BuildProfileUtility.NamedBuildTargetFromTargetAndSubTarget(
                 buildSummary.platform,
                 subtarget);
-            string platformId = BuildProfileUtility.GetGuidFromBuildTarget(namedBuildTarget, buildSummary.platform);
+            string platformId = BuildProfileUtility.GetGuidFromBuildTarget(namedBuildTarget, buildSummary.platform).ToString();
 
             MappedEnvironmentCollection<string> platformEnvironments =
                 BootstrapEditorSettingsUtility.GetValue(a => a.PlatformEnvironments);

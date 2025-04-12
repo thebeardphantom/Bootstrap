@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.Build;
@@ -66,9 +67,11 @@ namespace BeardPhantom.Bootstrap.Editor
                 BindingFlags.NonPublic | BindingFlags.Static);
 
             Type buildTargetDiscoveryType = editorAssembly.GetType("UnityEditor.BuildTargetDiscovery");
-            s_getGUIDFromBuildTargetMethod = buildTargetDiscoveryType.GetMethod(
-                "GetGUIDFromBuildTarget",
-                BindingFlags.Static | BindingFlags.NonPublic);
+            MethodInfo[] methods = buildTargetDiscoveryType.GetMethods(
+                BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
+            s_getGUIDFromBuildTargetMethod = methods
+                .Where(n => n.Name == "GetGUIDFromBuildTarget")
+                .Single(m => m.GetParameters().Length == 2);
 
             s_fromTargetAndSubTargetMethod = typeof(NamedBuildTarget).GetMethod(
                 "FromTargetAndSubtarget",
@@ -105,13 +108,13 @@ namespace BeardPhantom.Bootstrap.Editor
             }
         }
 
-        public static string GetGuidFromBuildTarget(NamedBuildTarget namedBuildTarget, BuildTarget buildTarget)
+        public static GUID GetGuidFromBuildTarget(NamedBuildTarget namedBuildTarget, BuildTarget buildTarget)
         {
             try
             {
                 s_twoArgArray[0] = namedBuildTarget;
                 s_twoArgArray[1] = buildTarget;
-                return (string)s_getGUIDFromBuildTargetMethod.Invoke(null, s_twoArgArray);
+                return (GUID)s_getGUIDFromBuildTargetMethod.Invoke(null, s_twoArgArray);
             }
             finally
             {
