@@ -49,7 +49,7 @@ namespace BeardPhantom.Bootstrap
         public static bool IsQuitting { get; private set; }
 
         public static bool IsRunningTests { get; internal set; }
-        
+
         public static AsyncTaskScheduler AsyncTaskScheduler { get; private set; }
 
         public static bool CanLocateServices => ServiceLocator is { CanLocateServices: true, };
@@ -169,7 +169,7 @@ namespace BeardPhantom.Bootstrap
         {
             IsQuitting = true;
         }
-
+#if UNITY_EDITOR
         private static bool TryDetermineSessionEnvironmentInEditor(out RuntimeBootstrapEnvironmentAsset environment)
         {
             if (!BootstrapUtility.TryLoadEditModeState(out EditModeState editModeState))
@@ -181,8 +181,7 @@ namespace BeardPhantom.Bootstrap
             environment = editModeState.Environment;
             return editModeState.Environment != null;
         }
-
-#if !UNITY_EDITOR
+#else
         private static bool TryDetermineSessionEnvironmentInBuild(out RuntimeBootstrapEnvironmentAsset environment)
         {
             environment = RuntimeBootstrapEnvironmentAsset.Instance;

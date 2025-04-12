@@ -1,15 +1,13 @@
-// #undef UNITY_EDITOR
-
-using UnityEngine;
-#if !UNITY_EDITOR
 using System;
-#endif
+using UnityEngine;
 
 namespace BeardPhantom.Bootstrap.Environment
 {
     [CreateAssetMenu(menuName = "Bootstrap/Runtime Environment")]
     public class RuntimeBootstrapEnvironmentAsset : BootstrapEnvironmentAsset
     {
+        public static RuntimeBootstrapEnvironmentAsset Instance { get; private set; }
+
         public override bool IsNoOp => BootstrapperPrefab == null;
 
         [field: SerializeField]
@@ -23,12 +21,6 @@ namespace BeardPhantom.Bootstrap.Environment
             DontDestroyOnLoad(instance);
             return instance;
         }
-    }
-
-#if !UNITY_EDITOR
-    public partial class RuntimeBootstrapEnvironmentAsset
-    {
-        public static RuntimeBootstrapEnvironmentAsset Instance { get; private set; }
 
         private void OnEnable()
         {
@@ -40,5 +32,4 @@ namespace BeardPhantom.Bootstrap.Environment
             Instance = this;
         }
     }
-#endif
 }
