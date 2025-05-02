@@ -9,12 +9,12 @@ using System.Runtime.CompilerServices;
 
 namespace BeardPhantom.Bootstrap
 {
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
+    // Licensed to the .NET Foundation under one or more agreements.
+    // The .NET Foundation licenses this file to you under the MIT license.
 
-// ported from:
-// https://github.com/dotnet/runtime/blob/main/src/libraries/System.Collections/src/System/Collections/Generic/PriorityQueue.cs
-internal sealed class PriorityQueueDebugView<TElement, TPriority>
+    // ported from:
+    // https://github.com/dotnet/runtime/blob/main/src/libraries/System.Collections/src/System/Collections/Generic/PriorityQueue.cs
+    internal sealed class PriorityQueueDebugView<TElement, TPriority>
     {
         private readonly PriorityQueue<TElement, TPriority> _queue;
         private readonly bool _sort;
@@ -115,7 +115,7 @@ internal sealed class PriorityQueueDebugView<TElement, TPriority>
                     if (en.MoveNext())
                     {
                         const int DefaultCapacity = 4;
-                        T[] arr = new T[DefaultCapacity];
+                        var arr = new T[DefaultCapacity];
                         arr[0] = en.Current;
                         var count = 1;
 

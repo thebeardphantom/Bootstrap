@@ -10,6 +10,7 @@ namespace BeardPhantom.Bootstrap
         ServiceDiscovery,
         ServiceBinding,
         ServiceInit,
+        AsyncTaskFlush,
         ServiceActivation,
         PostBootstrap,
         Ready,

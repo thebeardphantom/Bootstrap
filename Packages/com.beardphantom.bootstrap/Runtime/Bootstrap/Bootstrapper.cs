@@ -68,11 +68,15 @@ namespace BeardPhantom.Bootstrap
             servicesInstance.name = servicesPrefab.name;
             servicesPrefab.SetActive(true);
             BootstrapUtility.ClearDirtyFlag(servicesPrefab);
+            
             App.ServiceLocator.Create(context, servicesInstance);
             await Awaitable.NextFrameAsync(cancellationToken);
 
+            App.BootstrapState = AppBootstrapState.AsyncTaskFlush;
             Logging.Trace($"Waiting for idle {nameof(AsyncTaskScheduler)}.", this);
             await AwaitableUtility.WaitUntil(() => App.AsyncTaskScheduler.IsIdle, cancellationToken);
+            
+            App.ServiceLocator.ActivateServicesObject();
 
             App.BootstrapState = AppBootstrapState.PostBootstrap;
             Logging.Trace("Beginning post-bootstrapping.", this);
