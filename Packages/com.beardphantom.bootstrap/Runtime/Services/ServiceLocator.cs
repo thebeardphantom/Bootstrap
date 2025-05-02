@@ -11,9 +11,8 @@ namespace BeardPhantom.Bootstrap
         public delegate void OnServiceEvent(IBootstrapService service);
 
         public event OnServiceEvent ServiceDiscovered;
-        
-        public event OnServiceEvent ServiceInitialized;
 
+        public event OnServiceEvent ServiceInitialized;
 
         private readonly Dictionary<Type, IBootstrapService> _typeToServices = new();
 
@@ -107,10 +106,6 @@ namespace BeardPhantom.Bootstrap
                 Logging.Trace($"InitService on {service.GetType()}.");
                 service.InitService(context);
             }
-
-            App.BootstrapState = AppBootstrapState.ServiceActivation;
-            Logging.Trace("Activating services.");
-            _servicesInstance.SetActive(true);
         }
 
         public void Dispose()
@@ -163,6 +158,13 @@ namespace BeardPhantom.Bootstrap
             }
 
             throw new Exception($"Service of type {serviceType} not found.");
+        }
+
+        internal void ActivateServicesObject()
+        {
+            App.BootstrapState = AppBootstrapState.ServiceActivation;
+            Logging.Trace("Activating services.");
+            _servicesInstance.SetActive(true);
         }
     }
 }
