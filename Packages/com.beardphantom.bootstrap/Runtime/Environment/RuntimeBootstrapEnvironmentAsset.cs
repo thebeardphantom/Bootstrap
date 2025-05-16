@@ -1,4 +1,8 @@
+// #undef UNITY_EDITOR
+
+#if !UNITY_EDITOR
 using System;
+#endif
 using UnityEngine;
 
 namespace BeardPhantom.Bootstrap.Environment
@@ -22,6 +26,7 @@ namespace BeardPhantom.Bootstrap.Environment
             return instance;
         }
 
+#if !UNITY_EDITOR
         private void OnEnable()
         {
             if (Instance != null)
@@ -31,5 +36,6 @@ namespace BeardPhantom.Bootstrap.Environment
 
             Instance = this;
         }
+#endif
     }
 }
