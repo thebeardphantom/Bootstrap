@@ -14,7 +14,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             EditorFlowEnabled.OverrideEnabled = true;
-            EditModeEnvironment.OverrideEnabled = true;
+            EditModeServices.OverrideEnabled = true;
             DefaultPlayModeEnvironment.OverrideEnabled = true;
             DefaultBuildEnvironment.OverrideEnabled = true;
             PlatformEnvironments.OverrideEnabled = true;

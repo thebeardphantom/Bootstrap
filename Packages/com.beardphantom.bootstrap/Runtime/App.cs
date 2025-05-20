@@ -130,7 +130,7 @@ namespace BeardPhantom.Bootstrap
                 Application.quitting += OnApplicationQuitting;
             }
 
-            if (TryDetermineSessionEnvironment(out RuntimeBootstrapEnvironmentAsset environment))
+            if (TryDetermineSessionEnvironment(out BootstrapEnvironmentAsset environment))
             {
                 SessionEnvironment = environment;
                 Logging.Info($"Selected environment {SessionEnvironment}.");
@@ -156,7 +156,7 @@ namespace BeardPhantom.Bootstrap
             }
         }
 
-        private static bool TryDetermineSessionEnvironment(out RuntimeBootstrapEnvironmentAsset environment)
+        private static bool TryDetermineSessionEnvironment(out BootstrapEnvironmentAsset environment)
         {
 #if UNITY_EDITOR
             return TryDetermineSessionEnvironmentInEditor(out environment);
@@ -170,7 +170,7 @@ namespace BeardPhantom.Bootstrap
             IsQuitting = true;
         }
 #if UNITY_EDITOR
-        private static bool TryDetermineSessionEnvironmentInEditor(out RuntimeBootstrapEnvironmentAsset environment)
+        private static bool TryDetermineSessionEnvironmentInEditor(out BootstrapEnvironmentAsset environment)
         {
             if (!BootstrapUtility.TryLoadEditModeState(out EditModeState editModeState))
             {

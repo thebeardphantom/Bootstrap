@@ -28,6 +28,8 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
 
         private VisualElement _rootElement;
 
+        private Button _reinitializeButton;
+
         /// <inheritdoc />
         private BootstrapSettingsProvider() : base(SettingsPath, SettingsScope.Project) { }
 
@@ -47,11 +49,10 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
 
         private static void OnObjectFieldSelectorMouseDown(MouseDownEvent evt, ObjectField objectField)
         {
-            BootstrapEditorUtility.PickAsset<GameObject>(
-                result =>
-                {
-                    objectField.value = result;
-                });
+            BootstrapEditorUtility.PickAsset<GameObject>(result =>
+            {
+                objectField.value = result;
+            });
         }
 
         private static void FixComponentObjectFields(VisualElement root)
@@ -72,6 +73,11 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
             selectorParent.Add(selector);
         }
 
+        private static void OnReinitializeButtonClicked()
+        {
+            EditModeBootstrapping.PerformBootstrappingAsync().Forget();
+        }
+
         /// <inheritdoc />
         public override void OnActivate(string searchContext, VisualElement rootElement)
         {
@@ -86,6 +92,10 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
             _tabViewContent = _content.Q(className: "tab-view-content");
             _projectToggle = _content.Q<ToolbarToggle>("project-toggle");
             _userToggle = _content.Q<ToolbarToggle>("user-toggle");
+
+            _reinitializeButton = _content.Q<Button>("reinitialize-button");
+            _reinitializeButton.clicked += OnReinitializeButtonClicked;
+
             _servicesInstance = _content.Q<ObjectField>("services-instance");
             _servicesInstance.SetEnabled(false);
             SetupTabViewTab(_projectToggle, SettingsScope.Project, _userToggle);
@@ -119,19 +129,18 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
 
         private void SetupTabViewTab(ToolbarToggle toggle, SettingsScope ownedScope, ToolbarToggle otherToggle)
         {
-            toggle.RegisterValueChangedCallback(
-                evt =>
+            toggle.RegisterValueChangedCallback(evt =>
+            {
+                if (!evt.newValue)
                 {
-                    if (!evt.newValue)
-                    {
-                        // With current setup this can only happen if user clicked the active tab
-                        toggle.SetValueWithoutNotify(true);
-                        return;
-                    }
+                    // With current setup this can only happen if user clicked the active tab
+                    toggle.SetValueWithoutNotify(true);
+                    return;
+                }
 
-                    otherToggle.SetValueWithoutNotify(false);
-                    BindToScope(ownedScope);
-                });
+                otherToggle.SetValueWithoutNotify(false);
+                BindToScope(ownedScope);
+            });
         }
 
         private void BindToScope(SettingsScope bindingScope)

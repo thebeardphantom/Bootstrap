@@ -16,7 +16,7 @@ namespace BeardPhantom.Bootstrap
         public SelectedObjectPath[] SelectedObjects { get; set; } = Array.Empty<SelectedObjectPath>();
 
         [JsonIgnore]
-        public RuntimeBootstrapEnvironmentAsset Environment { get; set; }
+        public BootstrapEnvironmentAsset Environment { get; set; }
 
         public string EnvironmentGuid { get; set; }
 
@@ -29,7 +29,7 @@ namespace BeardPhantom.Bootstrap
                 return;
             }
 
-            Environment = AssetDatabase.LoadAssetAtPath<RuntimeBootstrapEnvironmentAsset>(assetPath);
+            Environment = AssetDatabase.LoadAssetAtPath<BootstrapEnvironmentAsset>(assetPath);
         }
 
         [OnSerializing]

@@ -18,8 +18,8 @@ namespace BeardPhantom.Bootstrap.Editor
         static EditModeBootstrapping()
         {
             EditorApplication.delayCall += () => PerformBootstrappingAsync().Forget();
-            BootstrapEditorProjectSettings.instance.EditModeEnvironment.ValueChanged += OnEditModeServicesChanged;
-            BootstrapEditorUserSettings.instance.EditModeEnvironment.ValueChanged += OnEditModeServicesChanged;
+            BootstrapEditorProjectSettings.instance.EditModeServices.ValueChanged += OnEditModeServicesChanged;
+            BootstrapEditorUserSettings.instance.EditModeServices.ValueChanged += OnEditModeServicesChanged;
         }
 
         public static async Awaitable PerformBootstrappingAsync()
@@ -40,10 +40,10 @@ namespace BeardPhantom.Bootstrap.Editor
                 var sw = Stopwatch.StartNew();
                 Cleanup();
 
-                EditModeBootstrapEnvironmentAsset editModeEnvironment = BootstrapEditorSettingsUtility.GetValue(
-                    asset => asset.EditModeEnvironment,
+                GameObject servicesPrefab = BootstrapEditorSettingsUtility.GetValue(
+                    asset => asset.EditModeServices,
                     out SettingsScope definedScope);
-                if (editModeEnvironment == null)
+                if (!servicesPrefab)
                 {
                     sw.Stop();
                     Progress.Report(
@@ -55,20 +55,15 @@ namespace BeardPhantom.Bootstrap.Editor
                     return;
                 }
 
-                if (editModeEnvironment.IsNoOp)
-                {
-                    Progress.Report(progressId, 1f, "Edit Mode Environment does not have a services prefab.");
-                    Progress.Finish(progressId, Progress.Status.Failed);
-                }
-
-                GameObject servicesInstance = editModeEnvironment.StartEnvironment();
+                GameObject servicesInstance = CreateEditModeServicesInstance(servicesPrefab);
                 var editModeServicesInstance = servicesInstance.AddComponent<EditModeServicesInstance>();
-                editModeServicesInstance.SourcePrefab = editModeEnvironment.ServicesPrefab;
+                editModeServicesInstance.SourcePrefab = servicesPrefab;
                 SessionState.SetInt(EditModeServicesIIdKey, editModeServicesInstance.GetInstanceID());
                 App.Init();
 
                 var context = new BootstrapContext(null, App.AsyncTaskScheduler);
-                var description = $"Creating edit mode services from prefab '{editModeEnvironment.ServicesPrefab.name}' from {definedScope} scope.";
+                var description =
+                    $"Creating edit mode services from prefab '{servicesPrefab.name}' from {definedScope} scope.";
                 Progress.Report(progressId, 1f, description);
                 EditorUtility.DisplayProgressBar("Edit Mode Bootstrapping", description, 1f);
                 App.ServiceLocator.Create(context, servicesInstance, HideFlags.HideAndDontSave);
@@ -116,7 +111,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
         public static void PerformBootstrappingIfNecessary()
         {
-            EditModeBootstrapEnvironmentAsset env = BootstrapEditorSettingsUtility.GetValue(asset => asset.EditModeEnvironment);
+            GameObject servicesPrefab = BootstrapEditorSettingsUtility.GetValue(asset => asset.EditModeServices);
 
             /*
              * Bootstrap if:
@@ -125,7 +120,7 @@ namespace BeardPhantom.Bootstrap.Editor
              *     3. The prefab has changed.
              */
             bool hasExistingInstance = TryGetServicesInstance(out EditModeServicesInstance instance);
-            if (!hasExistingInstance || env == null || env.ServicesPrefab != instance.SourcePrefab)
+            if (!hasExistingInstance || !servicesPrefab || servicesPrefab != instance.SourcePrefab)
             {
                 PerformBootstrappingAsync().Forget();
             }
@@ -149,9 +144,16 @@ namespace BeardPhantom.Bootstrap.Editor
             SessionState.EraseInt(EditModeServicesIIdKey);
         }
 
-        private static void OnEditModeServicesChanged(EditModeBootstrapEnvironmentAsset obj)
+        private static void OnEditModeServicesChanged(GameObject servicesPrefab)
         {
             PerformBootstrappingIfNecessary();
+        }
+
+        private static GameObject CreateEditModeServicesInstance(GameObject servicesPrefab)
+        {
+            GameObject servicesInstance = BootstrapUtility.InstantiateAsInactive(servicesPrefab);
+            servicesInstance.name = $"{servicesPrefab.name} Instance";
+            return servicesInstance;
         }
     }
 }

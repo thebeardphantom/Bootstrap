@@ -32,13 +32,13 @@ namespace BeardPhantom.Bootstrap.Editor.Environment
             MappedEnvironmentCollection<string> platformEnvironments = BootstrapEditorSettingsUtility.GetValue(
                 s => s.PlatformEnvironments,
                 out SettingsScope scope);
-            platformEnvironments.TryFindEnvironmentForKey(platformId, out RuntimeBootstrapEnvironmentAsset environmentAsset);
+            platformEnvironments.TryFindEnvironmentForKey(platformId, out BootstrapEnvironmentAsset environmentAsset);
 
             using var changeCheckScope = new EditorGUI.ChangeCheckScope();
-            environmentAsset = (RuntimeBootstrapEnvironmentAsset)EditorGUILayout.ObjectField(
+            environmentAsset = (BootstrapEnvironmentAsset)EditorGUILayout.ObjectField(
                 "Bootstrap Environment",
                 environmentAsset,
-                typeof(RuntimeBootstrapEnvironmentAsset),
+                typeof(BootstrapEnvironmentAsset),
                 false);
             if (changeCheckScope.changed)
             {
@@ -53,13 +53,13 @@ namespace BeardPhantom.Bootstrap.Editor.Environment
                 s => s.BuildProfileEnvironments,
                 out SettingsScope scope);
 
-            buildProfileEnvironments.TryFindEnvironmentForKey(profile, out RuntimeBootstrapEnvironmentAsset environmentAsset);
+            buildProfileEnvironments.TryFindEnvironmentForKey(profile, out BootstrapEnvironmentAsset environmentAsset);
 
             using var changeCheckScope = new EditorGUI.ChangeCheckScope();
-            environmentAsset = (RuntimeBootstrapEnvironmentAsset)EditorGUILayout.ObjectField(
+            environmentAsset = (BootstrapEnvironmentAsset)EditorGUILayout.ObjectField(
                 "Bootstrap Environment",
                 environmentAsset,
-                typeof(RuntimeBootstrapEnvironmentAsset),
+                typeof(BootstrapEnvironmentAsset),
                 false);
             if (changeCheckScope.changed)
             {

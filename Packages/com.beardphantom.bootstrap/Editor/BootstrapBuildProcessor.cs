@@ -15,12 +15,12 @@ namespace BeardPhantom.Bootstrap.Editor
     {
         int IOrderedCallback.callbackOrder { get; }
 
-        private static bool TryGetEnvironmentForBuildProfile(out RuntimeBootstrapEnvironmentAsset environment)
+        private static bool TryGetEnvironmentForBuildProfile(out BootstrapEnvironmentAsset environment)
         {
-            environment = default;
+            environment = null;
 
             var buildProfile = BuildProfile.GetActiveBuildProfile();
-            if (buildProfile == null)
+            if (!buildProfile)
             {
                 return false;
             }
@@ -32,12 +32,12 @@ namespace BeardPhantom.Bootstrap.Editor
                 return false;
             }
 
-            foreach (MappedEnvironment<BuildProfile> mappedEnvironment in buildProfileEnvironments)
+            foreach (KeyValuePair<BuildProfile, BootstrapEnvironmentAsset> mappedEnvironment in buildProfileEnvironments)
             {
                 if (mappedEnvironment.Key == buildProfile)
                 {
-                    Debug.Log($"Using build environment for build profile {buildProfile.name}.");
-                    environment = mappedEnvironment.Environment;
+                    Logging.Debug($"Using build environment for build profile {buildProfile.name}.");
+                    environment = mappedEnvironment.Value;
                     return true;
                 }
             }
@@ -45,15 +45,15 @@ namespace BeardPhantom.Bootstrap.Editor
             return false;
         }
 
-        private static bool TryGetEnvironmentForBuildTarget(BuildSummary buildSummary, out RuntimeBootstrapEnvironmentAsset environment)
+        private static bool TryGetEnvironmentForBuildTarget(BuildSummary buildSummary, out BootstrapEnvironmentAsset environment)
         {
-            environment = default;
+            environment = null;
 
             int subtarget = BuildProfileUtility.GetSubtarget(buildSummary);
             NamedBuildTarget namedBuildTarget = BuildProfileUtility.NamedBuildTargetFromTargetAndSubTarget(
                 buildSummary.platform,
                 subtarget);
-            string platformId = BuildProfileUtility.GetGuidFromBuildTarget(namedBuildTarget, buildSummary.platform).ToString();
+            var platformId = BuildProfileUtility.GetGuidFromBuildTarget(namedBuildTarget, buildSummary.platform).ToString();
 
             MappedEnvironmentCollection<string> platformEnvironments =
                 BootstrapEditorSettingsUtility.GetValue(a => a.PlatformEnvironments);
@@ -62,22 +62,22 @@ namespace BeardPhantom.Bootstrap.Editor
                 return false;
             }
 
-            foreach (MappedEnvironment<string> mappedEnvironment in platformEnvironments)
+            foreach (KeyValuePair<string, BootstrapEnvironmentAsset> mappedEnvironment in platformEnvironments)
             {
                 if (mappedEnvironment.Key == platformId)
                 {
-                    Debug.Log($"Using build environment for build target {platformId}.");
-                    environment = mappedEnvironment.Environment;
+                    Logging.Debug($"Using build environment for build target {platformId}.");
+                    environment = mappedEnvironment.Value;
                     return true;
                 }
             }
 
             return false;
         }
-        
+
         private static void PackEnvironmentAsset(BootstrapEnvironmentAsset environment)
         {
-            Debug.Log($"Packing environment {environment.name}.");
+            Logging.Debug($"Packing environment {environment.name}.");
             Object[] preloadedAssets = PlayerSettings.GetPreloadedAssets();
             using (ListPool<Object>.Get(out List<Object> list))
             {
@@ -100,7 +100,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
         void IPreprocessBuildWithReport.OnPreprocessBuild(BuildReport report)
         {
-            if (TryGetEnvironmentForBuildProfile(out RuntimeBootstrapEnvironmentAsset environment))
+            if (TryGetEnvironmentForBuildProfile(out BootstrapEnvironmentAsset environment))
             {
                 PackEnvironmentAsset(environment);
                 return;
@@ -112,7 +112,7 @@ namespace BeardPhantom.Bootstrap.Editor
                 return;
             }
 
-            Debug.LogWarning("Unable to determine suitable environment for build.");
+            Logging.Warn("Unable to determine suitable environment for build.");
         }
 
         void IPostprocessBuildWithReport.OnPostprocessBuild(BuildReport report)

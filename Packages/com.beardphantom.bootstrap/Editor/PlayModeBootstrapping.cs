@@ -58,7 +58,7 @@ namespace BeardPhantom.Bootstrap.Editor
                 return;
             }
 
-            if (!TryFindActiveSceneEnvironment(out RuntimeBootstrapEnvironmentAsset environment))
+            if (!TryFindActiveSceneEnvironment(out BootstrapEnvironmentAsset environment))
             {
                 environment = BootstrapEditorSettingsUtility.GetValue(a => a.DefaultPlayModeEnvironment);
             }
@@ -109,7 +109,7 @@ namespace BeardPhantom.Bootstrap.Editor
             }
         }
 
-        private static bool TryFindActiveSceneEnvironment(out RuntimeBootstrapEnvironmentAsset environment)
+        private static bool TryFindActiveSceneEnvironment(out BootstrapEnvironmentAsset environment)
         {
             Scene activeScene = SceneManager.GetActiveScene();
             var sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(activeScene.path);
