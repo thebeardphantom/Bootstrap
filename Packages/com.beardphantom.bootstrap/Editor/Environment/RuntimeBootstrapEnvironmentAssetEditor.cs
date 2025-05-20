@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace BeardPhantom.Bootstrap.Editor.Environment
 {
-    [CustomEditor(typeof(RuntimeBootstrapEnvironmentAsset))]
+    [CustomEditor(typeof(BootstrapEnvironmentAsset))]
     public class RuntimeBootstrapEnvironmentAssetEditor : UnityEditor.Editor
     {
         public override VisualElement CreateInspectorGUI()
@@ -14,7 +14,7 @@ namespace BeardPhantom.Bootstrap.Editor.Environment
             InspectorElement.FillDefaultInspector(root, serializedObject, this);
             root.Add(
                 new HelpBox(
-                    $"This {nameof(RuntimeBootstrapEnvironmentAsset)} has no assigned Bootstrapper Prefab. It will act as an environment that performs no bootstrapping and provides no services.",
+                    $"This {nameof(BootstrapEnvironmentAsset)} has no assigned Bootstrapper Prefab. It will act as an environment that performs no bootstrapping and provides no services.",
                     HelpBoxMessageType.Info));
             PropertyField objectField = root.Query<PropertyField>()
                 .Where(pf => pf.bindingPath.EndsWith("<BootstrapperPrefab>k__BackingField"))

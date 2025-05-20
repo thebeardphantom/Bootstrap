@@ -2,6 +2,7 @@
 using BeardPhantom.Bootstrap.Environment;
 using UnityEditor;
 using UnityEditor.Build.Profile;
+using UnityEngine;
 
 namespace BeardPhantom.Bootstrap.Editor.Settings
 {
@@ -9,11 +10,11 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
     {
         SettingsProperty<bool> EditorFlowEnabled { get; set; }
 
-        SettingsProperty<EditModeBootstrapEnvironmentAsset> EditModeEnvironment { get; }
+        SettingsProperty<GameObject> EditModeServices { get; }
 
-        SettingsProperty<RuntimeBootstrapEnvironmentAsset> DefaultPlayModeEnvironment { get; }
+        SettingsProperty<BootstrapEnvironmentAsset> DefaultPlayModeEnvironment { get; }
 
-        SettingsProperty<RuntimeBootstrapEnvironmentAsset> DefaultBuildEnvironment { get; }
+        SettingsProperty<BootstrapEnvironmentAsset> DefaultBuildEnvironment { get; }
 
         SettingsProperty<MappedEnvironmentCollection<string>> PlatformEnvironments { get; }
 

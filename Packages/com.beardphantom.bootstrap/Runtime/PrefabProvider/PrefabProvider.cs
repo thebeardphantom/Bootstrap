@@ -12,7 +12,11 @@ namespace BeardPhantom.Bootstrap
                 cmp = host.AddComponent<T>();
             }
 
-            cmp.SetPrefab(prefab);
+            if (prefab)
+            {
+                cmp.SetPrefab(prefab);
+            }
+
             return cmp;
         }
 
