@@ -11,24 +11,24 @@ namespace BeardPhantom.Bootstrap.Tests
     {
         void ITestRunCallback.RunStarted(ITest testsToRun)
         {
-            if (App.IsRunningTests)
+            if (!App.TryGetInstance(out AppInstance appInstance) || appInstance.IsRunningTests)
             {
                 return;
             }
 
             Logging.Info("Playmode test execution start detected.");
-            App.IsRunningTests = true;
+            appInstance.IsRunningTests = true;
         }
 
         void ITestRunCallback.RunFinished(ITestResult testResults)
         {
-            if (!App.IsRunningTests)
+            if (!App.TryGetInstance(out AppInstance appInstance) || !appInstance.IsRunningTests)
             {
                 return;
             }
 
             Logging.Info("Playmode test execution finish detected.");
-            App.IsRunningTests = false;
+            appInstance.IsRunningTests = false;
         }
 
         void ITestRunCallback.TestStarted(ITest test) { }

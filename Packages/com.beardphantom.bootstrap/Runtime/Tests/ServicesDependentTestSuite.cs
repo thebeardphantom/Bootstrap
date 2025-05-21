@@ -10,13 +10,19 @@ namespace BeardPhantom.Bootstrap.Tests
         [UnitySetUp]
         public IEnumerator SetUp()
         {
-            if (App.BootstrapState == AppBootstrapState.Ready)
+            AppInstance appInstance;
+            while (!App.TryGetInstance(out appInstance))
+            {
+                yield return null;
+            }
+
+            if (appInstance.BootstrapState == AppBootstrapState.Ready)
             {
                 yield break;
             }
 
             yield return SceneManager.LoadSceneAsync(0, LoadSceneMode.Additive);
-            while (App.BootstrapState != AppBootstrapState.Ready)
+            while (appInstance.BootstrapState != AppBootstrapState.Ready)
             {
                 yield return null;
             }

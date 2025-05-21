@@ -56,7 +56,13 @@ namespace BeardPhantom.Bootstrap.ZLogger
 
         private void ReacquireLogger(bool force = false)
         {
-            if (_acquisitionGuid.HasValue && _acquisitionGuid.Value == App.SessionGuid && !force)
+            if (!App.TryGetInstance(out AppInstance appInstance))
+            {
+                ClearWrappedLogger();
+                return;
+            }
+
+            if (_acquisitionGuid.HasValue && _acquisitionGuid.Value == appInstance.SessionGuid && !force)
             {
                 return;
             }
@@ -64,14 +70,19 @@ namespace BeardPhantom.Bootstrap.ZLogger
             if (s_logService.TryGetValue(out ILogService logService) && logService.TryGetLogger(_loggerCategory, out _wrappedLogger))
             {
                 _wrappedLogger = logService.GetLogger(_loggerCategory);
-                _acquisitionGuid = App.SessionGuid;
+                _acquisitionGuid = appInstance.SessionGuid;
                 EmptyLogQueue();
             }
             else
             {
-                _wrappedLogger = NullLogger.Instance;
-                _acquisitionGuid = default;
+                ClearWrappedLogger();
             }
+        }
+
+        private void ClearWrappedLogger()
+        {
+            _wrappedLogger = NullLogger.Instance;
+            _acquisitionGuid = null;
         }
 
         private void EmptyLogQueue()

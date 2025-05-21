@@ -1,4 +1,5 @@
-﻿using BeardPhantom.Bootstrap.Editor.Environment;
+﻿using BeardPhantom.Bootstrap.EditMode;
+using BeardPhantom.Bootstrap.Editor.Environment;
 using BeardPhantom.Bootstrap.Editor.Settings;
 using BeardPhantom.Bootstrap.Environment;
 using System.Collections.Generic;
@@ -117,9 +118,9 @@ namespace BeardPhantom.Bootstrap.Editor
             GameObject bootstrapperPrefab = null;
             if (CreateBootstrapperPrefab)
             {
-                var bootstrapperObj = new GameObject("Bootstrapper");
+                var bootstrapperObj = new GameObject("RuntimeBootstrapper");
                 SceneManager.MoveGameObjectToScene(bootstrapperObj, bootstrapScene);
-                var bootstrapper = bootstrapperObj.AddComponent<Bootstrapper>();
+                var bootstrapper = bootstrapperObj.AddComponent<RuntimeBootstrapper>();
                 var prefabLoader = PrefabProvider.Create<DirectPrefabProvider>(bootstrapperObj, servicesPrefab);
                 bootstrapper.PrefabProvider = prefabLoader;
                 bootstrapperPrefab = PrefabUtility.SaveAsPrefabAsset(

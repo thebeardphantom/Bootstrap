@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using BeardPhantom.Bootstrap.EditMode;
+using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -43,8 +45,13 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         {
             var settingsAsset = (IBootstrapEditorSettingsAsset)obj.targetObject;
             settingsAsset.Save();
-            EditModeBootstrapping.UpdateLogLevelIfNecessary();
-            EditModeBootstrapping.PerformBootstrappingIfNecessary();
+            BootstrapLogLevel minLogLevel = BootstrapEditorSettingsUtility.GetValue(asset => asset.MinLogLevel);
+            Logging.MinLogLevel = minLogLevel;
+
+            if (App.TryGetInstance(out EditModeAppInstance editModeAppInstance))
+            {
+                editModeAppInstance.ReinitializeIfNecessary();
+            }
         }
 
         private static void OnObjectFieldSelectorMouseDown(MouseDownEvent evt, ObjectField objectField)
@@ -75,14 +82,21 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
 
         private static void OnReinitializeButtonClicked()
         {
-            EditModeBootstrapping.PerformBootstrappingAsync().Forget();
+            if (App.TryGetInstance(out EditModeAppInstance _))
+            {
+                App.Deinitialize();
+                App.Initialize<EditModeAppInstance>();
+            }
         }
 
         /// <inheritdoc />
         public override void OnActivate(string searchContext, VisualElement rootElement)
         {
             CompilationPipeline.compilationStarted += OnCompilationStarted;
-            EditModeBootstrapping.BootstrappingComplete += OnEditModeBootstrappingComplete;
+            if (App.TryGetInstance(out EditModeAppInstance _))
+            {
+                App.BootstrappingComplete += OnEditModeBootstrappingComplete;
+            }
 
             _rootElement = rootElement;
 
@@ -108,7 +122,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         public override void OnDeactivate()
         {
             CompilationPipeline.compilationStarted -= OnCompilationStarted;
-            EditModeBootstrapping.BootstrappingComplete -= OnEditModeBootstrappingComplete;
+            App.BootstrappingComplete -= OnEditModeBootstrappingComplete;
         }
 
         private void OnCompilationStarted(object obj)
@@ -177,3 +191,4 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         }
     }
 }
+#endif

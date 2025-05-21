@@ -3,6 +3,7 @@
 using System.Diagnostics;
 using UnityEngine;
 #if UNITY_EDITOR
+using BeardPhantom.Bootstrap.EditMode;
 using Newtonsoft.Json;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -10,6 +11,10 @@ using UnityEditor.SceneManagement;
 
 namespace BeardPhantom.Bootstrap
 {
+    /// <summary>
+    /// Centralizes all of the ifdef checks for editor/build into one location to keep the rest of the codebase as clean as
+    /// possible.
+    /// </summary>
     public static partial class BootstrapUtility
     {
         public static void GetDefaultBootstrapHandlers(
@@ -17,8 +22,8 @@ namespace BeardPhantom.Bootstrap
             out IPostBootstrapHandler postHandler)
         {
 #if UNITY_EDITOR
-            preHandler = EditorBootstrapHandler.Instance;
-            postHandler = EditorBootstrapHandler.Instance;
+            preHandler = PlayModeBootstrapHandler.Instance;
+            postHandler = PlayModeBootstrapHandler.Instance;
 #else
             preHandler = BuildBootstrapHandler.Instance;
             postHandler = BuildBootstrapHandler.Instance;
@@ -42,6 +47,15 @@ namespace BeardPhantom.Bootstrap
             }
 
             return instance;
+        }
+
+        internal static RuntimeAppInstance GetRuntimeAppInstance()
+        {
+#if UNITY_EDITOR
+            return new PlayModeAppInstance();
+#else
+            return new BuildAppInstance();
+#endif
         }
 
         internal static bool IsInPlayMode()
@@ -89,10 +103,10 @@ namespace BeardPhantom.Bootstrap
 
         internal static bool TryLoadEditModeState(out EditModeState editModeState)
         {
-            string json = SessionState.GetString(EditorBootstrapHandler.EditModeState, default);
+            string json = SessionState.GetString(EditModeAppInstance.EditModeStateSessionStateKey, null);
             if (string.IsNullOrWhiteSpace(json))
             {
-                editModeState = default;
+                editModeState = null;
                 return false;
             }
 
