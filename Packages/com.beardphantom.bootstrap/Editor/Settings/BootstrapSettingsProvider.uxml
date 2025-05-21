@@ -7,7 +7,7 @@
         <ui:Label name="edit-model-label" text="Edit Mode" class="header-label-1"/>
         <ui:VisualElement class="row">
             <uie:ObjectField name="services-instance" label="Services Instance"
-                             type="BeardPhantom.Bootstrap.EditModeServicesInstance, BeardPhantom.Bootstrap"/>
+                             type="BeardPhantom.Bootstrap.EditMode.EditModeServicesInstance, BeardPhantom.Bootstrap"/>
             <ui:Button name="reinitialize-button" text="Re-Bootstrap Edit Mode"/>
         </ui:VisualElement>
         <uie:Toolbar class="tab-view">

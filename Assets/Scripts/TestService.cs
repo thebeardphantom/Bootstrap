@@ -21,6 +21,6 @@ public class TestService : MonoBehaviour, IBootstrapService
             return;
         }
 
-        context.Scheduler.Schedule(new ScheduledTask(AsyncTask));
+        context.Scheduler.Schedule(new AsyncScheduledTask(AsyncTask));
     }
 }
