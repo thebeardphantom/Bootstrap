@@ -1,5 +1,4 @@
 using BeardPhantom.Bootstrap.EditMode;
-using BeardPhantom.Bootstrap.Editor.Settings;
 using BeardPhantom.Bootstrap.Environment;
 using System;
 using System.Reflection;

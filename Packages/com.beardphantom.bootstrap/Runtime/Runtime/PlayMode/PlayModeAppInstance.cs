@@ -1,13 +1,8 @@
 ﻿#if UNITY_EDITOR
 using BeardPhantom.Bootstrap.EditMode;
 using BeardPhantom.Bootstrap.Environment;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
-using UnityEngine.Pool;
-using UnityEngine.SceneManagement;
 
 namespace BeardPhantom.Bootstrap
 {
