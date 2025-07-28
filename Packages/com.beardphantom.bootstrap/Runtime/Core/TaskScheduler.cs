@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -19,6 +20,11 @@ namespace BeardPhantom.Bootstrap
         {
             Logging.Trace($"Invoking scheduled task {task}.");
             await task.InvokeAsync();
+        }
+
+        public void Schedule(in Func<Awaitable> asyncScheduledTask, int priority = 0)
+        {
+            Schedule(new AsyncScheduledTask(asyncScheduledTask, priority));
         }
 
         public void Schedule(in AsyncScheduledTask asyncScheduledTask)

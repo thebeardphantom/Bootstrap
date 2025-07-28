@@ -22,17 +22,14 @@ namespace BeardPhantom.Bootstrap.EditMode
         public SettingsProperty<BootstrapEnvironmentAsset> DefaultBuildEnvironment { get; private set; } = new();
 
         [field: SerializeField]
-        [field: HideInInspector]
         public SettingsProperty<MappedEnvironmentCollection<SceneAsset>> EditorSceneEnvironments { get; private set; } =
             new(new MappedEnvironmentCollection<SceneAsset>());
 
         [field: SerializeField]
-        [field: HideInInspector]
         public SettingsProperty<MappedEnvironmentCollection<string>> PlatformEnvironments { get; private set; } =
             new(new MappedEnvironmentCollection<string>());
 
         [field: SerializeField]
-        [field: HideInInspector]
         public SettingsProperty<MappedEnvironmentCollection<BuildProfile>> BuildProfileEnvironments { get; private set; } =
             new(new MappedEnvironmentCollection<BuildProfile>());
 
