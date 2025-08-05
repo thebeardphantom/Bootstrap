@@ -10,7 +10,7 @@ namespace BeardPhantom.Bootstrap.SourceGen
         {
             importsStringBuilder.AppendLine("using BeardPhantom.Bootstrap.ZLogger;");
             featuresStringBuilder.AppendLine(
-                $"\t\tprivate static readonly Microsoft.Extensions.Logging.ILogger s_logger = LogUtility.GetStaticLogger<{className}>();");
+                $"\t\tprivate static readonly Microsoft.Extensions.Logging.ILogger s_logger = LogUtility.GetStaticLogger(nameof({className}));");
         }
     }
 }
