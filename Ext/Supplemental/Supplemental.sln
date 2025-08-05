@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceGen", "SourceGen\SourceGen.csproj", "{3DE72989-D280-486F-A1BE-E5FEFFF5853C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceGenAttributes", "SourceGenAttributes\SourceGenAttributes.csproj", "{CA2D155D-B245-4DD2-9604-63094043B63D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceGenTest", "SourceGenTest\SourceGenTest.csproj", "{78EFADDC-1933-4E94-A69E-CB9510C5EB0E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3DE72989-D280-486F-A1BE-E5FEFFF5853C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DE72989-D280-486F-A1BE-E5FEFFF5853C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DE72989-D280-486F-A1BE-E5FEFFF5853C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DE72989-D280-486F-A1BE-E5FEFFF5853C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA2D155D-B245-4DD2-9604-63094043B63D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA2D155D-B245-4DD2-9604-63094043B63D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA2D155D-B245-4DD2-9604-63094043B63D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA2D155D-B245-4DD2-9604-63094043B63D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78EFADDC-1933-4E94-A69E-CB9510C5EB0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78EFADDC-1933-4E94-A69E-CB9510C5EB0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78EFADDC-1933-4E94-A69E-CB9510C5EB0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78EFADDC-1933-4E94-A69E-CB9510C5EB0E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
