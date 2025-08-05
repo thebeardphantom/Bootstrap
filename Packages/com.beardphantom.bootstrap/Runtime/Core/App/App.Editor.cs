@@ -9,8 +9,11 @@ namespace BeardPhantom.Bootstrap
     {
         internal static void InitializeEditorDelayed<T>() where T : AppInstance, new()
         {
-            Logging.Info($"{nameof(InitializeEditorDelayed)} with type {typeof(T)}.");
-            EditorApplication.delayCall += Initialize<T>;
+            EditorApplication.delayCall += () =>
+            {
+                Logging.Info($"{nameof(InitializeEditorDelayed)} with type {typeof(T)}.");
+                Initialize<T>();
+            };
         }
 
         [InitializeOnLoadMethod]
