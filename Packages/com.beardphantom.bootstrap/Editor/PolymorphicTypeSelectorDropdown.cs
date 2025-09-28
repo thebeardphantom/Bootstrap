@@ -5,23 +5,23 @@ using System.Reflection;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 
-public class PolymorphicClassSelectorDropdown : AdvancedDropdown
+public class PolymorphicTypeSelectorDropdown : AdvancedDropdown
 {
     public event Action<Type> ComponentTypeSelected;
     private readonly Type _baseType;
     private readonly IEnumerable<Type> _disabledTypes;
     private readonly List<SelectableType> _selectableTypes = new();
 
-    public PolymorphicClassSelectorDropdown(Type baseType)
+    public PolymorphicTypeSelectorDropdown(Type baseType)
         : this(baseType, Enumerable.Empty<Type>(), new AdvancedDropdownState()) { }
 
-    public PolymorphicClassSelectorDropdown(Type baseType, IEnumerable<Type> disabledTypes)
+    public PolymorphicTypeSelectorDropdown(Type baseType, IEnumerable<Type> disabledTypes)
         : this(baseType, disabledTypes, new AdvancedDropdownState()) { }
 
-    public PolymorphicClassSelectorDropdown(Type baseType, AdvancedDropdownState state) :
+    public PolymorphicTypeSelectorDropdown(Type baseType, AdvancedDropdownState state) :
         this(baseType, Enumerable.Empty<Type>(), state) { }
 
-    public PolymorphicClassSelectorDropdown(
+    public PolymorphicTypeSelectorDropdown(
         Type baseType,
         IEnumerable<Type> disabledTypes,
         AdvancedDropdownState state) : base(state)
