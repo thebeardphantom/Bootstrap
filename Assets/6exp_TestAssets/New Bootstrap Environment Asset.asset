@@ -16,7 +16,7 @@ MonoBehaviour:
     rid: 4282680888252432434
   <PostBootstrapHandler>k__BackingField:
     rid: 4282680888252432435
-  <ServicesListAsset>k__BackingField: {fileID: 0}
+  <ServicesListAsset>k__BackingField: {fileID: 11400000, guid: 9ac48a61e96e0f54a8a0d2befa211fa3, type: 2}
   references:
     version: 2
     RefIds:

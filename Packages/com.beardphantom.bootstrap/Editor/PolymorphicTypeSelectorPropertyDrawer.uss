@@ -1,0 +1,13 @@
+.delete-button {
+    background-color: #d13f52;
+    -unity-font-style: bold;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    right: -4px;
+    border-radius: 100px;
+    width: 20px;
+    height: 20px;
+    scale: 0.8;
+    font-size: 13px;
+}

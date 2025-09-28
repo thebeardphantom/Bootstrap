@@ -66,7 +66,7 @@ public class PolymorphicClassSelectorDropdown : AdvancedDropdown
 
         _selectableTypes.Sort();
 
-        var root = new AdvancedDropdownItem($"Select {nameof(_baseType.Name)}")
+        var root = new AdvancedDropdownItem($"{_baseType.Name}")
         {
             id = -1,
         };
