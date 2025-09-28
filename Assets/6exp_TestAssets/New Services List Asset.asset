@@ -13,13 +13,9 @@ MonoBehaviour:
   m_Name: New Services List Asset
   m_EditorClassIdentifier: 
   <Services>k__BackingField:
-  - rid: 4282680886272983233
+  - rid: -2
   references:
     version: 2
     RefIds:
-    - rid: 4282680886272983233
-      type: {class: TestService, ns: , asm: Bootstrap.Project}
-      data:
-        <IntProperty>k__BackingField: 114
-        <FloatProperty>k__BackingField: 6.4
-        <StringProperty>k__BackingField: 
+    - rid: -2
+      type: {class: , ns: , asm: }
