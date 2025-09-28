@@ -13,16 +13,12 @@ MonoBehaviour:
   m_Name: New Bootstrap Environment Asset
   m_EditorClassIdentifier: 
   <PreBootstrapHandler>k__BackingField:
-    rid: 4282680888252432434
+    rid: -2
   <PostBootstrapHandler>k__BackingField:
-    rid: 4282680888252432435
+    rid: -2
   <ServicesListAsset>k__BackingField: {fileID: 11400000, guid: 9ac48a61e96e0f54a8a0d2befa211fa3, type: 2}
   references:
     version: 2
     RefIds:
-    - rid: 4282680888252432434
-      type: {class: BuildBootstrapHandler, ns: BeardPhantom.Bootstrap, asm: BeardPhantom.Bootstrap}
-      data: 
-    - rid: 4282680888252432435
-      type: {class: PlayModeBootstrapHandler, ns: BeardPhantom.Bootstrap, asm: BeardPhantom.Bootstrap}
-      data: 
+    - rid: -2
+      type: {class: , ns: , asm: }
