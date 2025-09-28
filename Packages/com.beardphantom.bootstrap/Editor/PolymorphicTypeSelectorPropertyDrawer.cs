@@ -13,8 +13,7 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
     {
         return new StatefulElement(
             (PolymorphicTypeSelectorAttribute)attribute,
-            property.serializedObject,
-            property.propertyPath,
+            property,
             fieldInfo);
     }
 
@@ -24,24 +23,18 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
 
         private readonly Type _baseType;
 
-        private readonly string _propertyPath;
-        
         private readonly FieldInfo _fieldInfo;
 
-        private readonly SerializedObject _serializedObject;
-
-        private SerializedProperty _property;
+        private readonly SerializedProperty _property;
 
         private Button _deleteButton;
 
         public StatefulElement(
             PolymorphicTypeSelectorAttribute attribute,
-            SerializedObject serializedObject,
-            string propertyPath,
+            SerializedProperty property,
             FieldInfo fieldInfo)
         {
-            _serializedObject = serializedObject;
-            _propertyPath = propertyPath;
+            _property = property.Copy();
             _fieldInfo = fieldInfo;
             _baseType = attribute.BaseType;
             name = "root";
@@ -65,7 +58,6 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
         private void RebuildUI()
         {
             Clear();
-            _property = _serializedObject.FindProperty(_propertyPath);
 
             string label = GetLabel(_property);
             if (_property.managedReferenceValue == null)
@@ -102,7 +94,7 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
                 Add(_deleteButton);
             }
 
-            this.Bind(_serializedObject);
+            this.Bind(_property.serializedObject);
         }
 
         private void OnMouseEnterRoot(MouseEnterEvent _)
@@ -118,7 +110,7 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
         private void OnDeleteButtonClicked(EventBase obj)
         {
             _property.managedReferenceValue = null;
-            _serializedObject.ApplyModifiedProperties();
+            _property.serializedObject.ApplyModifiedProperties();
         }
 
         private void OnSerializedPropertyValueChanged(SerializedProperty obj)
@@ -131,7 +123,7 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
             var target = (Button)obj.currentTarget;
             Rect rect = target.worldBound;
             // rect.position = obj.originalMousePosition;
-            var dropdown = new PolymorphicClassSelectorDropdown(_baseType);
+            var dropdown = new PolymorphicTypeSelectorDropdown(_baseType);
             dropdown.ComponentTypeSelected += OnComponentTypeSelected;
             dropdown.Show(rect);
         }
@@ -140,7 +132,7 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
         {
             object instance = Activator.CreateInstance(type);
             _property.managedReferenceValue = instance;
-            _serializedObject.ApplyModifiedProperties();
+            _property.serializedObject.ApplyModifiedProperties();
             RebuildUI();
         }
     }
