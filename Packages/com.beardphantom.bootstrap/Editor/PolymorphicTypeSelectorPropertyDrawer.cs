@@ -1,5 +1,6 @@
 ﻿using BeardPhantom.Bootstrap;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -43,42 +44,39 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
             RebuildUI();
         }
 
-        private static string GetLabel(SerializedProperty componentProperty)
+        private string GetLabel()
         {
-            object managedReferenceValue = componentProperty.managedReferenceValue;
+            object managedReferenceValue = _property.managedReferenceValue;
             if (managedReferenceValue == null)
             {
-                return componentProperty.displayName;
+                return _property.displayName;
             }
 
-            string name = managedReferenceValue.GetType().Name;
-            return ObjectNames.NicifyVariableName(name);
+            string typeName = managedReferenceValue.GetType().Name;
+            typeName = ObjectNames.NicifyVariableName(typeName);
+            return $"{_property.displayName} ({typeName})";
         }
 
         private void RebuildUI()
         {
             Clear();
 
-            string label = GetLabel(_property);
+            string label = GetLabel();
+
             if (_property.managedReferenceValue == null)
             {
                 UnregisterCallback<MouseEnterEvent>(OnMouseEnterRoot);
                 UnregisterCallback<MouseLeaveEvent>(OnMouseLeaveRoot);
-
-                var createButton = new Button
-                {
-                    text = $"Create New {_baseType.Name}",
-                    name = "create-button",
-                };
-                createButton.AddToClassList("create-button");
-                createButton.clickable.clickedWithEventInfo += OnCreateNewButtonClicked;
-                Add(createButton);
+                var buttonField = ButtonField.Create(label, $"Create New {_baseType.Name}");
+                buttonField.name = "create-button";
+                buttonField.Button.AddToClassList("create-button");
+                buttonField.Button.clickable.clickedWithEventInfo += OnCreateNewButtonClicked;
+                Add(buttonField);
             }
             else
             {
                 RegisterCallback<MouseEnterEvent>(OnMouseEnterRoot);
                 RegisterCallback<MouseLeaveEvent>(OnMouseLeaveRoot);
-
                 var propertyField = new PropertyField(_property, label);
                 propertyField.TrackPropertyValue(_property, OnSerializedPropertyValueChanged);
                 Add(propertyField);
@@ -134,6 +132,26 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
             _property.managedReferenceValue = instance;
             _property.serializedObject.ApplyModifiedProperties();
             RebuildUI();
+        }
+
+        private class ButtonField : BaseField<bool>
+        {
+            public readonly Button Button;
+
+            private ButtonField(string label, string buttonText, Button button) : base(label, button)
+            {
+                AddToClassList(alignedFieldUssClassName);
+                Button = button;
+                button.text = buttonText;
+                button.style.flexGrow = 1f;
+                button.style.marginTop = 0f;
+                button.style.marginBottom = 0f;
+            }
+
+            public static ButtonField Create(string label, string buttonText)
+            {
+                return new ButtonField(label, buttonText, new Button());
+            }
         }
     }
 }
