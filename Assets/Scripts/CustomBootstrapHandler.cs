@@ -1,11 +1,22 @@
 ﻿using BeardPhantom.Bootstrap;
+using System;
 using UnityEngine;
 
-public class CustomBootstrapHandler : MonoBehaviour, IPreBootstrapHandler, IPostBootstrapHandler
+[Serializable]
+public class CustomBootstrapHandler : IPreBootstrapHandler, IPostBootstrapHandler
 {
     private IPreBootstrapHandler _defaultPreHandler;
 
     private IPostBootstrapHandler _defaultPostHandler;
+
+    [field: SerializeField]
+    private int IntProperty { get; set; }
+
+    [field: SerializeField]
+    private float FloatProperty { get; set; }
+
+    [field: SerializeField]
+    private string StringProperty { get; set; }
 
     /// <inheritdoc />
     Awaitable IPreBootstrapHandler.OnPreBootstrapAsync(in BootstrapContext context)

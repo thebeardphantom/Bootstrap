@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using BeardPhantom.Bootstrap.EditMode;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -9,9 +10,11 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Pool;
 using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 namespace BeardPhantom.Bootstrap
 {
+    [Serializable]
     public class PlayModeBootstrapHandler : IPreBootstrapHandler, IPostBootstrapHandler
     {
         public static readonly PlayModeBootstrapHandler Instance = new();

@@ -11,12 +11,10 @@ namespace BeardPhantom.Bootstrap.Editor.Environment
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             var propertyField = new PropertyField(property);
-            propertyField.schedule.Execute(
-                    () =>
-                    {
-                        propertyField.Q<ObjectField>().allowSceneObjects = false;
-                    })
-                .StartingIn(50);
+            propertyField.RegisterCallbackOnce<GeometryChangedEvent>(_ =>
+            {
+                propertyField.Q<ObjectField>().allowSceneObjects = false;
+            });
             return propertyField;
         }
     }

@@ -1,41 +1,34 @@
 // #undef UNITY_EDITOR
 
-#if !UNITY_EDITOR
-using System;
-#endif
 using UnityEngine;
 
 namespace BeardPhantom.Bootstrap.Environment
 {
-    [CreateAssetMenu(menuName = "Bootstrap/Runtime Environment")]
+    [CreateAssetMenu(menuName = "Bootstrap/Environment Asset")]
     public class BootstrapEnvironmentAsset : ScriptableObject
     {
-        public static BootstrapEnvironmentAsset Instance { get; private set; }
+        public bool IsNoOp => ServicesListAsset == null || ServicesListAsset.Services.Length == 0;
 
-        public bool IsNoOp => !BootstrapperPrefab;
+        [field: SerializeReference]
+        [field: PolymorphicTypeSelector(typeof(IPreBootstrapHandler))]
+        public IPreBootstrapHandler PreBootstrapHandler { get; private set; }
+
+        [field: SerializeReference]
+        [field: PolymorphicTypeSelector(typeof(IPostBootstrapHandler))]
+        public IPostBootstrapHandler PostBootstrapHandler { get; private set; }
 
         [field: SerializeField]
-        [field: DisallowSceneObjects]
-        internal GameObject BootstrapperPrefab { get; set; }
+        public ServicesListAsset ServicesListAsset { get; private set; }
 
-        internal GameObject StartEnvironment()
+        internal BootstrapEnvironmentAsset StartEnvironment()
         {
-            GameObject instance = Instantiate(BootstrapperPrefab);
-            instance.name = $"[{name}] Bootstrapper";
-            DontDestroyOnLoad(instance);
-            return instance;
-        }
-
-#if !UNITY_EDITOR
-        private void OnEnable()
-        {
-            if (Instance)
-            {
-                throw new InvalidOperationException($"{this} cannot replace existing instance {Instance}");
-            }
-
-            Instance = this;
-        }
+#if UNITY_EDITOR
+            BootstrapEnvironmentAsset copy = Instantiate(this);
+            copy.ServicesListAsset = Instantiate(ServicesListAsset);
+            return copy;
+#else
+            return this;
 #endif
+        }
     }
 }

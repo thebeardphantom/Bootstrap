@@ -26,10 +26,7 @@ namespace BeardPhantom.Bootstrap
             {
                 SessionEnvironment = environment;
                 Logging.Info($"Selected environment {SessionEnvironment}.");
-                if (!environment.IsNoOp)
-                {
-                    environment.StartEnvironment();
-                }
+                environment.StartEnvironment();
             }
             else
             {
