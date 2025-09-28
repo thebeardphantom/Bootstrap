@@ -1,8 +1,19 @@
 ﻿using BeardPhantom.Bootstrap;
+using System;
 using UnityEngine;
 
-public class TestService : MonoBehaviour, IBootstrapService
+[Serializable]
+public class TestService : IBootstrapService
 {
+    [field: SerializeField]
+    private int IntProperty { get; set; }
+
+    [field: SerializeField]
+    private float FloatProperty { get; set; }
+
+    [field: SerializeField]
+    private string StringProperty { get; set; }
+
     private static async Awaitable AsyncTask()
     {
         var timer = 0f;

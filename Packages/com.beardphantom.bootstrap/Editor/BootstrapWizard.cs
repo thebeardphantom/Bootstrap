@@ -20,8 +20,6 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private const string BootstrapperPrefabName = EnvironmentName + "_Bootstrapper";
 
-        private const string BootstrapperPrefabPath = OutputDirectory + BootstrapperPrefabName + ".prefab";
-
         private const string ServicesPrefabName = EnvironmentName + "_Services";
 
         private const string ServicesPrefabPath = OutputDirectory + ServicesPrefabName + ".prefab";
@@ -40,12 +38,6 @@ namespace BeardPhantom.Bootstrap.Editor
 
         [field: SerializeField]
         private bool CreateDefaultEnvironment { get; set; } = true;
-
-        [field: SerializeField]
-        private bool CreateBootstrapperPrefab { get; set; } = true;
-
-        [field: SerializeField]
-        private bool CreateServicesPrefab { get; set; } = true;
 
         [field: SerializeField]
         private bool CreateEditModeServicesPrefab { get; set; } = true;
@@ -99,39 +91,6 @@ namespace BeardPhantom.Bootstrap.Editor
                 }
             }
 
-            GameObject servicesPrefab = null;
-
-            // Create services
-            if (CreateServicesPrefab)
-            {
-                var servicesObj = new GameObject(BootstrapperPrefabName);
-                servicesPrefab = PrefabUtility.SaveAsPrefabAsset(servicesObj, ServicesPrefabPath, out bool success);
-                DestroyImmediate(servicesObj);
-                if (!success)
-                {
-                    Logging.Error("Services prefab not saved.");
-                }
-            }
-
-            GameObject bootstrapperPrefab = null;
-            if (CreateBootstrapperPrefab)
-            {
-                var bootstrapperObj = new GameObject("RuntimeBootstrapper");
-                SceneManager.MoveGameObjectToScene(bootstrapperObj, bootstrapScene);
-                var bootstrapper = bootstrapperObj.AddComponent<RuntimeBootstrapper>();
-                var prefabLoader = PrefabProvider.Create<DirectPrefabProvider>(bootstrapperObj, servicesPrefab);
-                bootstrapper.PrefabProvider = prefabLoader;
-                bootstrapperPrefab = PrefabUtility.SaveAsPrefabAsset(
-                    bootstrapperObj,
-                    BootstrapperPrefabPath,
-                    out bool success);
-                DestroyImmediate(bootstrapperObj);
-                if (!success)
-                {
-                    Logging.Error("Bootstrap prefab not saved.");
-                }
-            }
-
             if (ModifyScenesList)
             {
                 List<EditorBuildSettingsScene> scenesList = EditorBuildSettings.scenes.ToList();
@@ -144,7 +103,6 @@ namespace BeardPhantom.Bootstrap.Editor
             {
                 var environmentAsset = CreateInstance<BootstrapEnvironmentAsset>();
                 environmentAsset.name = EnvironmentName;
-                environmentAsset.BootstrapperPrefab = bootstrapperPrefab;
                 AssetDatabase.CreateAsset(environmentAsset, EnvironmentPath);
 
                 var bootstrapSceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath);
