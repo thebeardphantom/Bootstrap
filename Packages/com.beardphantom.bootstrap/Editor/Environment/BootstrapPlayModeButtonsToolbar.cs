@@ -45,11 +45,11 @@ namespace BeardPhantom.Bootstrap.Editor.Environment
         private static void CreateUI(VisualElement visualElement)
         {
             VisualElement root = visualElement.panel.visualTree.Q("ToolbarZoneRightAlign");
-            s_editorToolbarDropdown = new EditorToolbarDropdown(OnOpenEnvironmentDropdown);
-            UpdateUI();
-            root.Add(s_editorToolbarDropdown);
+            // s_editorToolbarDropdown = new EditorToolbarDropdown(OnOpenEnvironmentDropdown);
+            // UpdateUI();
+            // root.Add(s_editorToolbarDropdown);
             root.Add(
-                new Button(OnShowActiveServicesButtonClicked)
+                new EditorToolbarButton(OnShowActiveServicesButtonClicked)
                 {
                     text = "Show Active Services",
                 });
