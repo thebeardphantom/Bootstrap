@@ -137,8 +137,9 @@ namespace BeardPhantom.Bootstrap.EditMode
              *     2. The environment was cleared. PerformBootstrappingAsync will cleanup any existing instances.
              *     3. The services list asset has changed.
              */
-            bool hasExistingInstance = EditModeServiceListInstance.IsNotNull();
-            if (!hasExistingInstance || serviceListAsset.IsNotNull() || serviceListAsset != EditModeServiceListInstance.SourceAsset)
+            if (EditModeServiceListInstance.IsNull()
+                || serviceListAsset.IsNull()
+                || serviceListAsset != EditModeServiceListInstance.SourceAsset)
             {
                 App.Deinitialize();
                 App.Initialize<EditModeAppInstance>();
