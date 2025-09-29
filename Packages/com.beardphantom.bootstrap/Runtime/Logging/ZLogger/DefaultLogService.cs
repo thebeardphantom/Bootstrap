@@ -13,12 +13,15 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace BeardPhantom.Bootstrap.ZLogger
 {
+    [Serializable]
     [SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
-    public class DefaultLogService : MonoBehaviour, IServiceWithCustomBindings, IDisposable, ILogService
+    public class DefaultLogService : IServiceWithCustomBindings, IServiceWithInitPriority, ILogService, IDisposable
     {
         private static readonly ILogger s_logger = LogUtility.GetStaticLogger<DefaultLogService>();
 
         private ILoggerFactory _loggerFactory;
+
+        public int InitPriority => -1000;
 
         [field: SerializeField]
         private LogLevel ConsoleMinLogLevel { get; set; } = LogLevel.Debug;
