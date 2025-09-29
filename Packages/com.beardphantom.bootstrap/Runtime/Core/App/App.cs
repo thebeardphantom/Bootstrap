@@ -56,16 +56,23 @@ namespace BeardPhantom.Bootstrap
             return Instance.Locate<T>();
         }
 
+        public static void Dispose()
+        {
+            if (TryGetInstance(out AppInstance instance))
+            {
+                Logging.Info($"Disposing instance {s_instance}.");
+                instance.Dispose();
+            }
+        }
+
         public static void Deinitialize()
         {
-            if (!TryGetInstance(out AppInstance _))
+            if (TryGetInstance(out AppInstance instance))
             {
-                return;
+                Logging.Info($"Deinitializing instance {s_instance}.");
+                instance.Dispose();
+                s_instance = null;
             }
-
-            Logging.Info($"Deinitializing instance {s_instance}.");
-            s_instance.Dispose();
-            s_instance = null;
         }
 
         internal static void Initialize<T>() where T : AppInstance, new()

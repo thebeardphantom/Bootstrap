@@ -20,7 +20,9 @@ namespace BeardPhantom.Bootstrap.EditMode
 
         public const string EditModeStateSessionStateKey = "EDIT_MODE_STATE";
 
-        public ServiceListAsset EditModeServiceListInstance { get; private set; }
+        private ServiceListAsset _editModeServiceListInstance;
+
+        public override ServiceListAsset ActiveServiceListAsset => _editModeServiceListInstance;
 
         public override bool IsQuitting => false;
 
@@ -121,9 +123,9 @@ namespace BeardPhantom.Bootstrap.EditMode
         {
             base.Dispose();
             EditorApplication.playModeStateChanged -= OnPlaymodeStateChanged;
-            if (EditModeServiceListInstance.IsNotNull())
+            if (_editModeServiceListInstance.IsNotNull())
             {
-                Object.DestroyImmediate(EditModeServiceListInstance);
+                Object.DestroyImmediate(_editModeServiceListInstance);
             }
         }
 
@@ -137,14 +139,16 @@ namespace BeardPhantom.Bootstrap.EditMode
              *     2. The environment was cleared. PerformBootstrappingAsync will cleanup any existing instances.
              *     3. The services list asset has changed.
              */
-            if (EditModeServiceListInstance.IsNull()
+            if (_editModeServiceListInstance.IsNull()
                 || serviceListAsset.IsNull()
-                || serviceListAsset != EditModeServiceListInstance.SourceAsset)
+                || serviceListAsset != _editModeServiceListInstance.SourceAsset)
             {
                 App.Deinitialize();
                 App.Initialize<EditModeAppInstance>();
             }
         }
+
+        internal override void NotifyQuitting() { }
 
         internal override async Awaitable BootstrapAsync()
         {
@@ -180,7 +184,7 @@ namespace BeardPhantom.Bootstrap.EditMode
                 }
 
                 ServiceListAsset serviceListAssetInstance = CreateEditModeServicesInstance(serviceListAssetSource);
-                SessionState.SetInt(EditModeServicesInstanceIdSessionStateKey, EditModeServiceListInstance.GetInstanceID());
+                SessionState.SetInt(EditModeServicesInstanceIdSessionStateKey, _editModeServiceListInstance.GetInstanceID());
 
                 var context = new BootstrapContext(TaskScheduler);
                 var description = $"Creating edit mode services from prefab '{serviceListAssetSource.name}' from {definedScope} scope.";

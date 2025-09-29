@@ -139,7 +139,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         {
             if (App.TryGetInstance(out EditModeAppInstance editModeAppInstance))
             {
-                _servicesInstance.SetValueWithoutNotify(editModeAppInstance.EditModeServiceListInstance);
+                _servicesInstance.SetValueWithoutNotify(editModeAppInstance.ActiveServiceListAsset);
             }
         }
 
