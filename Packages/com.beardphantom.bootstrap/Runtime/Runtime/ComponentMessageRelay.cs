@@ -96,6 +96,7 @@ namespace BeardPhantom.Bootstrap
         private void OnRenderObject()
         {
             Logging.Trace("OnRenderObject!");
+            // TODO: Add new interface for this. Replace boilerplate in this class with pre-filtered services in ServiceLocator.
         }
     }
 }
