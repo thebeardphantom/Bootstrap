@@ -4,6 +4,6 @@ namespace BeardPhantom.Bootstrap
 {
     public interface IPostBootstrapHandler
     {
-        Awaitable OnPostBootstrapAsync(BootstrapContext context, RuntimeBootstrapper runtimeBootstrapper);
+        Awaitable OnPostBootstrapAsync(BootstrapContext context);
     }
 }

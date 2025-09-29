@@ -8,13 +8,10 @@ namespace BeardPhantom.Bootstrap
 {
     public partial class BootstrapContext
     {
-        public readonly RuntimeBootstrapper RuntimeBootstrapper;
-
         public readonly TaskScheduler Scheduler;
 
-        public BootstrapContext(RuntimeBootstrapper runtimeBootstrapper, TaskScheduler scheduler)
+        public BootstrapContext(TaskScheduler scheduler)
         {
-            RuntimeBootstrapper = runtimeBootstrapper;
             Scheduler = scheduler;
         }
     }

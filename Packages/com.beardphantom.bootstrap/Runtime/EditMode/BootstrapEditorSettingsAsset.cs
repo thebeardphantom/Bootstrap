@@ -13,7 +13,7 @@ namespace BeardPhantom.Bootstrap.EditMode
         public SettingsProperty<bool> EditorFlowEnabled { get; set; } = new(true);
 
         [field: SerializeField]
-        public SettingsProperty<GameObject> EditModeServices { get; private set; } = new();
+        public SettingsProperty<ServiceListAsset> EditModeServices { get; private set; } = new();
 
         [field: SerializeField]
         public SettingsProperty<BootstrapEnvironmentAsset> DefaultPlayModeEnvironment { get; private set; } = new();

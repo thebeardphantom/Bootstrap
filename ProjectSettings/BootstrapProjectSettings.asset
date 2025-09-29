@@ -20,17 +20,15 @@ MonoBehaviour:
     <Value>k__BackingField: {fileID: 0}
   <DefaultPlayModeEnvironment>k__BackingField:
     <OverrideEnabled>k__BackingField: 1
-    <Value>k__BackingField: {fileID: 11400000, guid: 2a3d4ec437b74b744b55b8e37906aceb, type: 2}
+    <Value>k__BackingField: {fileID: 0}
   <DefaultBuildEnvironment>k__BackingField:
     <OverrideEnabled>k__BackingField: 1
-    <Value>k__BackingField: {fileID: 11400000, guid: 2a3d4ec437b74b744b55b8e37906aceb, type: 2}
+    <Value>k__BackingField: {fileID: 0}
   <EditorSceneEnvironments>k__BackingField:
     <OverrideEnabled>k__BackingField: 1
     <Value>k__BackingField:
       <Maps>k__BackingField:
-        <SerializedPairs>k__BackingField:
-        - <Key>k__BackingField: {fileID: 102900000, guid: cb5a576a08b59144bac944fe7f1b6bad, type: 3}
-          <Value>k__BackingField: {fileID: 11400000, guid: 2a3d4ec437b74b744b55b8e37906aceb, type: 2}
+        <SerializedPairs>k__BackingField: []
   <PlatformEnvironments>k__BackingField:
     <OverrideEnabled>k__BackingField: 1
     <Value>k__BackingField:

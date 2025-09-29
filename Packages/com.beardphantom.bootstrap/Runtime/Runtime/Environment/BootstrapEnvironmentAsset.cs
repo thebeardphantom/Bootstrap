@@ -7,7 +7,7 @@ namespace BeardPhantom.Bootstrap.Environment
     [CreateAssetMenu(menuName = "Bootstrap/Environment Asset")]
     public class BootstrapEnvironmentAsset : ScriptableObject
     {
-        public bool IsNoOp => ServicesListAsset == null || ServicesListAsset.Services.Length == 0;
+        public bool IsNoOp => ServiceListAsset == null || ServiceListAsset.Services.Length == 0;
 
         [field: SerializeReference]
         [field: PolymorphicTypeSelector(typeof(IPreBootstrapHandler))]
@@ -18,13 +18,13 @@ namespace BeardPhantom.Bootstrap.Environment
         public IPostBootstrapHandler PostBootstrapHandler { get; private set; }
 
         [field: SerializeField]
-        public ServicesListAsset ServicesListAsset { get; private set; }
+        public ServiceListAsset ServiceListAsset { get; private set; }
 
         internal BootstrapEnvironmentAsset StartEnvironment()
         {
 #if UNITY_EDITOR
             BootstrapEnvironmentAsset copy = Instantiate(this);
-            copy.ServicesListAsset = Instantiate(ServicesListAsset);
+            copy.ServiceListAsset = ServiceListAsset.CreateClone();
             return copy;
 #else
             return this;

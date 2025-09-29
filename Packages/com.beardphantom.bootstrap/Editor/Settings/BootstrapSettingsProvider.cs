@@ -137,8 +137,10 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
 
         private void UpdateVolatileUI()
         {
-            EditModeBootstrapping.TryGetServicesInstance(out EditModeServicesInstance instance);
-            _servicesInstance.SetValueWithoutNotify(instance);
+            if (App.TryGetInstance(out EditModeAppInstance editModeAppInstance))
+            {
+                _servicesInstance.SetValueWithoutNotify(editModeAppInstance.EditModeServiceListInstance);
+            }
         }
 
         private void SetupTabViewTab(ToolbarToggle toggle, SettingsScope ownedScope, ToolbarToggle otherToggle)

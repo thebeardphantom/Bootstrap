@@ -18,17 +18,15 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private const string EnvironmentPath = OutputDirectory + EnvironmentName + ".asset";
 
-        private const string BootstrapperPrefabName = EnvironmentName + "_Bootstrapper";
+        private const string ServiceListAssetName = EnvironmentName + "_Services";
 
-        private const string ServicesPrefabName = EnvironmentName + "_Services";
-
-        private const string ServicesPrefabPath = OutputDirectory + ServicesPrefabName + ".prefab";
+        private const string ServiceListAssetPath = OutputDirectory + ServiceListAssetName + ".asset";
 
         private const string ScenePath = OutputDirectory + "Bootstrap.unity";
 
-        private const string EditModeServicesPrefabName = "EditModeServices";
+        private const string EditModeServiceListAssetName = "EditModeServices";
 
-        private const string EditModeServicesPrefabPath = OutputDirectory + EditModeServicesPrefabName + ".prefab";
+        private const string EditModeServiceListAssetPath = OutputDirectory + EditModeServiceListAssetName + ".asset";
 
         [field: SerializeField]
         private bool CreateBootstrapScene { get; set; } = true;
@@ -40,7 +38,7 @@ namespace BeardPhantom.Bootstrap.Editor
         private bool CreateDefaultEnvironment { get; set; } = true;
 
         [field: SerializeField]
-        private bool CreateEditModeServicesPrefab { get; set; } = true;
+        private bool CreateEditModeServiceListAsset { get; set; } = true;
 
         [MenuItem("Edit/Bootstrap Wizard")]
         private static void Open()
@@ -115,24 +113,15 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private void CreateEditModeAssets()
         {
-            if (!CreateEditModeServicesPrefab)
+            if (!CreateEditModeServiceListAsset)
             {
                 return;
             }
 
-            var editModeServices = new GameObject(EditModeServicesPrefabName);
-            GameObject editModeServicesPrefab = PrefabUtility.SaveAsPrefabAsset(
-                editModeServices,
-                EditModeServicesPrefabPath,
-                out bool success);
-            if (!success)
-            {
-                Logging.Error("EditModeServices prefab not saved.");
-            }
-
-            DestroyImmediate(editModeServices);
+            var servicesListAsset = CreateInstance<ServiceListAsset>();
+            AssetDatabase.CreateAsset(servicesListAsset, EditModeServiceListAssetPath);
             IBootstrapEditorSettingsAsset settings = BootstrapEditorSettingsUtility.GetWithScope(SettingsScope.Project);
-            settings.EditModeServices.SetValue(editModeServicesPrefab);
+            settings.EditModeServices.SetValue(servicesListAsset);
         }
     }
 }

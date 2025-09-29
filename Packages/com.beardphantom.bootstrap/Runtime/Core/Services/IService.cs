@@ -1,6 +1,6 @@
 ﻿namespace BeardPhantom.Bootstrap
 {
-    public interface IBootstrapService
+    public interface IService
     {
         void InitService(BootstrapContext context);
     }

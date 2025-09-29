@@ -2,7 +2,6 @@
 using BeardPhantom.Bootstrap.Environment;
 using UnityEditor;
 using UnityEditor.Build.Profile;
-using UnityEngine;
 
 namespace BeardPhantom.Bootstrap.EditMode
 {
@@ -10,7 +9,7 @@ namespace BeardPhantom.Bootstrap.EditMode
     {
         SettingsProperty<bool> EditorFlowEnabled { get; set; }
 
-        SettingsProperty<GameObject> EditModeServices { get; }
+        SettingsProperty<ServiceListAsset> EditModeServices { get; }
 
         SettingsProperty<BootstrapEnvironmentAsset> DefaultPlayModeEnvironment { get; }
 

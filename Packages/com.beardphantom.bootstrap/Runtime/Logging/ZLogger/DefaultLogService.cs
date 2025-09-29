@@ -14,7 +14,7 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 namespace BeardPhantom.Bootstrap.ZLogger
 {
     [SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
-    public class DefaultLogService : MonoBehaviour, IMultiboundBootstrapService, IDisposable, ILogService
+    public class DefaultLogService : MonoBehaviour, IServiceWithCustomBindings, IDisposable, ILogService
     {
         private static readonly ILogger s_logger = LogUtility.GetStaticLogger<DefaultLogService>();
 
@@ -65,19 +65,17 @@ namespace BeardPhantom.Bootstrap.ZLogger
 
         protected virtual ILoggerFactory CreateLoggerFactory()
         {
-            return LoggerFactory.Create(
-                builder =>
-                {
-                    builder
-                        .SetMinimumLevel(LogLevel.Trace)
-                        .AddZLoggerUnityDebug(
-                            options =>
-                            {
-                                options.UsePlainTextFormatter(SetPrefixFormatter);
-                            })
-                        .AddFilter<ZLoggerUnityDebugLoggerProvider>(level => level >= ConsoleMinLogLevel);
-                    // ConfigureFileProvider(builder);
-                });
+            return LoggerFactory.Create(builder =>
+            {
+                builder
+                    .SetMinimumLevel(LogLevel.Trace)
+                    .AddZLoggerUnityDebug(options =>
+                    {
+                        options.UsePlainTextFormatter(SetPrefixFormatter);
+                    })
+                    .AddFilter<ZLoggerUnityDebugLoggerProvider>(level => level >= ConsoleMinLogLevel);
+                // ConfigureFileProvider(builder);
+            });
         }
 
         protected virtual void SetPrefixFormatter(PlainTextZLoggerFormatter formatter)
@@ -115,16 +113,16 @@ namespace BeardPhantom.Bootstrap.ZLogger
             _loggerFactory = null;
         }
 
-        void IBootstrapService.InitService(BootstrapContext context)
+        void IService.InitService(BootstrapContext context)
         {
             Logging.LogHandler = BootstrapZLogHandler.Instance;
             _loggerFactory = CreateLoggerFactory();
             s_logger.ZLogInformation($"Log system setup complete.");
         }
 
-        void IMultiboundBootstrapService.GetOverrideBindingTypes(List<Type> bindingTypes)
+        void IServiceWithCustomBindings.GetCustomBindings(List<Type> bindingTypes, out bool autoIncludeDeclaredType)
         {
-            bindingTypes.Add(GetType());
+            autoIncludeDeclaredType = true;
             bindingTypes.Add(typeof(ILogService));
         }
     }

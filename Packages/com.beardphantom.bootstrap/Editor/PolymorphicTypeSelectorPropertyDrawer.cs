@@ -1,7 +1,5 @@
 ﻿using BeardPhantom.Bootstrap;
 using System;
-using System.Collections.Generic;
-using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -14,8 +12,7 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
     {
         return new StatefulElement(
             (PolymorphicTypeSelectorAttribute)attribute,
-            property,
-            fieldInfo);
+            property);
     }
 
     private class StatefulElement : VisualElement
@@ -24,19 +21,15 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
 
         private readonly Type _baseType;
 
-        private readonly FieldInfo _fieldInfo;
-
         private readonly SerializedProperty _property;
 
         private Button _deleteButton;
 
         public StatefulElement(
             PolymorphicTypeSelectorAttribute attribute,
-            SerializedProperty property,
-            FieldInfo fieldInfo)
+            SerializedProperty property)
         {
             _property = property.Copy();
-            _fieldInfo = fieldInfo;
             _baseType = attribute.BaseType;
             name = "root";
             var styleSheet = AssetDatabase.LoadAssetByGUID<StyleSheet>(s_stylesheetGuid);

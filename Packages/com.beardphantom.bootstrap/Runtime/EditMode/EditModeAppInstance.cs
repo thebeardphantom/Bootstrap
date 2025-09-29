@@ -16,9 +16,11 @@ namespace BeardPhantom.Bootstrap.EditMode
 {
     public class EditModeAppInstance : AppInstance
     {
+        public const string EditModeServicesInstanceIdSessionStateKey = "EditModeServicesIId";
+
         public const string EditModeStateSessionStateKey = "EDIT_MODE_STATE";
 
-        private EditModeServicesInstance _editModeServicesInstance;
+        public ServiceListAsset EditModeServiceListInstance { get; private set; }
 
         public override bool IsQuitting => false;
 
@@ -29,11 +31,12 @@ namespace BeardPhantom.Bootstrap.EditMode
             BootstrapEditorUserSettings.instance.EditModeServices.ValueChanged += OnEditModeServicesChanged;
         }
 
-        private static GameObject CreateEditModeServicesInstance(GameObject servicesPrefab)
+        private static ServiceListAsset CreateEditModeServicesInstance(ServiceListAsset serviceListAssetSource)
         {
-            GameObject servicesInstance = BootstrapUtility.InstantiateAsInactive(servicesPrefab);
-            servicesInstance.name = $"{servicesPrefab.name} Instance";
-            return servicesInstance;
+            ServiceListAsset serviceListAssetInstance = Object.Instantiate(serviceListAssetSource);
+            serviceListAssetInstance.SourceAsset = serviceListAssetSource;
+            serviceListAssetInstance.name = $"{serviceListAssetSource.name} Instance";
+            return serviceListAssetInstance;
         }
 
         private static bool TryFindActiveSceneEnvironment(out BootstrapEnvironmentAsset environment)
@@ -67,7 +70,7 @@ namespace BeardPhantom.Bootstrap.EditMode
                     environment = BootstrapEditorSettingsUtility.GetValue(a => a.DefaultPlayModeEnvironment);
                 }
 
-                if (environment)
+                if (environment.IsNotNull())
                 {
                     EditorSceneManager.playModeStartScene = null;
                     EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
@@ -118,24 +121,24 @@ namespace BeardPhantom.Bootstrap.EditMode
         {
             base.Dispose();
             EditorApplication.playModeStateChanged -= OnPlaymodeStateChanged;
-            if (_editModeServicesInstance.IsNotNull())
+            if (EditModeServiceListInstance.IsNotNull())
             {
-                Object.DestroyImmediate(_editModeServicesInstance.gameObject);
+                Object.DestroyImmediate(EditModeServiceListInstance);
             }
         }
 
         public void ReinitializeIfNecessary()
         {
-            GameObject servicesPrefab = BootstrapEditorSettingsUtility.GetValue(asset => asset.EditModeServices);
+            ServiceListAsset serviceListAsset = BootstrapEditorSettingsUtility.GetValue(asset => asset.EditModeServices);
 
             /*
              * Bootstrap if:
              *     1. There's no existing instance already.
              *     2. The environment was cleared. PerformBootstrappingAsync will cleanup any existing instances.
-             *     3. The prefab has changed.
+             *     3. The services list asset has changed.
              */
-            bool hasExistingInstance = _editModeServicesInstance.IsNotNull();
-            if (!hasExistingInstance || !servicesPrefab || servicesPrefab != _editModeServicesInstance.SourcePrefab)
+            bool hasExistingInstance = EditModeServiceListInstance.IsNotNull();
+            if (!hasExistingInstance || serviceListAsset.IsNotNull() || serviceListAsset != EditModeServiceListInstance.SourceAsset)
             {
                 App.Deinitialize();
                 App.Initialize<EditModeAppInstance>();
@@ -161,10 +164,10 @@ namespace BeardPhantom.Bootstrap.EditMode
             {
                 var sw = Stopwatch.StartNew();
 
-                GameObject servicesPrefab = BootstrapEditorSettingsUtility.GetValue(
+                ServiceListAsset serviceListAssetSource = BootstrapEditorSettingsUtility.GetValue(
                     asset => asset.EditModeServices,
                     out SettingsScope definedScope);
-                if (!servicesPrefab)
+                if (serviceListAssetSource.IsNull())
                 {
                     sw.Stop();
                     Progress.Report(
@@ -175,19 +178,14 @@ namespace BeardPhantom.Bootstrap.EditMode
                     return;
                 }
 
-                GameObject servicesInstance = CreateEditModeServicesInstance(servicesPrefab);
-                _editModeServicesInstance = servicesInstance.AddComponent<EditModeServicesInstance>();
-                _editModeServicesInstance.SourcePrefab = servicesPrefab;
-                SessionState.SetInt(
-                    EditModeBootstrapping.EditModeServicesInstanceIdSessionStateKey,
-                    _editModeServicesInstance.GetInstanceID());
+                ServiceListAsset serviceListAssetInstance = CreateEditModeServicesInstance(serviceListAssetSource);
+                SessionState.SetInt(EditModeServicesInstanceIdSessionStateKey, EditModeServiceListInstance.GetInstanceID());
 
-                var context = new BootstrapContext(null, TaskScheduler);
-                var description =
-                    $"Creating edit mode services from prefab '{servicesPrefab.name}' from {definedScope} scope.";
+                var context = new BootstrapContext(TaskScheduler);
+                var description = $"Creating edit mode services from prefab '{serviceListAssetSource.name}' from {definedScope} scope.";
                 Progress.Report(progressId, 1f, description);
                 EditorUtility.DisplayProgressBar("Edit Mode Bootstrapping", description, 1f);
-                ServiceLocator.Create(context, servicesInstance, HideFlags.HideAndDontSave);
+                ServiceLocator.Create(context, serviceListAssetInstance);
 
                 Logging.Trace($"Waiting for idle {nameof(TaskScheduler)}.");
                 while (!TaskScheduler.IsIdle)
@@ -202,7 +200,7 @@ namespace BeardPhantom.Bootstrap.EditMode
                 Progress.Report(
                     progressId,
                     1f,
-                    $"Finished in {sw.Elapsed.TotalMilliseconds:0.00}ms with instance '{servicesInstance.name}' from {definedScope} scope.");
+                    $"Finished in {sw.Elapsed.TotalMilliseconds:0.00}ms with instance '{serviceListAssetInstance.name}' from {definedScope} scope.");
                 Progress.Finish(progressId);
             }
             catch (Exception ex)
@@ -216,7 +214,7 @@ namespace BeardPhantom.Bootstrap.EditMode
             }
         }
 
-        private void OnEditModeServicesChanged(GameObject newServicesPrefab)
+        private void OnEditModeServicesChanged(ServiceListAsset serviceListAsset)
         {
             ReinitializeIfNecessary();
         }

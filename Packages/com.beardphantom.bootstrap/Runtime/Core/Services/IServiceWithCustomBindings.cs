@@ -6,8 +6,8 @@ namespace BeardPhantom.Bootstrap
     /// <summary>
     /// For services that want to be locatable via multiple types.
     /// </summary>
-    public interface IMultiboundBootstrapService : IBootstrapService
+    public interface IServiceWithCustomBindings : IService
     {
-        void GetOverrideBindingTypes(List<Type> bindingTypes);
+        void GetCustomBindings(List<Type> bindingTypes, out bool autoIncludeDeclaredType);
     }
 }
