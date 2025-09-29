@@ -17,13 +17,13 @@ namespace BeardPhantom.Bootstrap
 
         private readonly Dictionary<Type, IService> _typeToServices = new();
 
-        private readonly SortedSet<IService> _services = new();
+        private readonly List<IService> _services = new();
 
         private ServiceListAsset _serviceListAsset;
 
         public bool CanLocateServices => App.Instance.BootstrapState > AppBootstrapState.ServiceInit;
 
-        public void Create(BootstrapContext context, ServiceListAsset serviceListAsset, HideFlags hideFlags = HideFlags.None)
+        public void Create(BootstrapContext context, ServiceListAsset serviceListAsset)
         {
             _serviceListAsset = serviceListAsset;
             AppInstance appInstance = App.Instance;
@@ -34,11 +34,11 @@ namespace BeardPhantom.Bootstrap
             appInstance.BootstrapState = AppBootstrapState.ServiceDiscovery;
             foreach (IService service in serviceListAsset.Services)
             {
-                var component = (Component)service;
-                component.hideFlags = hideFlags;
                 _services.Add(service);
                 ServiceDiscovered?.Invoke(service);
             }
+
+            _services.Sort(ServiceInitComparer.Instance);
 
             /*
              * Service Binding
@@ -68,7 +68,7 @@ namespace BeardPhantom.Bootstrap
                     _typeToServices.Add(serviceType, service);
                 }
             }
-            
+
             /*
              * Service Init
              */
@@ -98,12 +98,12 @@ namespace BeardPhantom.Bootstrap
                 return;
             }
 
-            BootstrapUtility.DestroyReference(ref _serviceListAsset);
+            BootstrapUtility.DestroyReferenceImmediate(ref _serviceListAsset);
         }
 
-        public bool TryLocateService<T>(out T service) where T : class
+        public bool TryLocateService<T>(out T service, bool throwIfCannotLocateServices = true) where T : class
         {
-            if (TryLocateService(typeof(T), out IService untypedService))
+            if (TryLocateService(typeof(T), out IService untypedService, throwIfCannotLocateServices))
             {
                 service = (T)untypedService;
                 return true;
@@ -113,11 +113,20 @@ namespace BeardPhantom.Bootstrap
             return false;
         }
 
-        public bool TryLocateService(Type serviceType, out IService service)
+        public bool TryLocateService(Type serviceType, out IService service, bool throwIfCannotLocateServices = true)
         {
-            return CanLocateServices
-                ? _typeToServices.TryGetValue(serviceType, out service)
-                : throw new InvalidOperationException($"Attempted to locate service {serviceType} before services can be located.");
+            if (CanLocateServices)
+            {
+                return _typeToServices.TryGetValue(serviceType, out service);
+            }
+
+            if (throwIfCannotLocateServices)
+            {
+                throw new InvalidOperationException($"Attempted to locate service {serviceType} before services can be located.");
+            }
+
+            service = null;
+            return false;
         }
 
         public T LocateService<T>() where T : class

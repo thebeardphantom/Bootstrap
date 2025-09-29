@@ -17,7 +17,10 @@ namespace BeardPhantom.Bootstrap.EditMode
 
         public SettingsProperty() { }
 
-        public SettingsProperty(T defaultValue = default) { }
+        public SettingsProperty(T defaultValue = default)
+        {
+            Value = defaultValue;
+        }
 
         public void SetValue(T newValue)
         {
