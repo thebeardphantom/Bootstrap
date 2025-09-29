@@ -101,7 +101,7 @@ namespace BeardPhantom.Bootstrap
             BootstrapUtility.DestroyReferenceImmediate(ref _serviceListAsset);
         }
 
-        public bool TryLocateService<T>(out T service, bool throwIfCannotLocateServices = true) where T : class
+        public bool TryLocateService<T>(out T service, bool throwIfCannotLocateServices = false) where T : class
         {
             if (TryLocateService(typeof(T), out IService untypedService, throwIfCannotLocateServices))
             {
@@ -113,7 +113,7 @@ namespace BeardPhantom.Bootstrap
             return false;
         }
 
-        public bool TryLocateService(Type serviceType, out IService service, bool throwIfCannotLocateServices = true)
+        public bool TryLocateService(Type serviceType, out IService service, bool throwIfCannotLocateServices = false)
         {
             if (CanLocateServices)
             {
