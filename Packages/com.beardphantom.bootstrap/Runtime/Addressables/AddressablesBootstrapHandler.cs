@@ -9,7 +9,7 @@ namespace BeardPhantom.Bootstrap.Addressables
         private string Key { get; set; }
 
         /// <inheritdoc />
-        public async Awaitable OnPostBootstrapAsync(BootstrapContext context, RuntimeBootstrapper runtimeBootstrapper)
+        public async Awaitable OnPostBootstrapAsync(BootstrapContext context)
         {
             await UnityEngine.AddressableAssets.Addressables.LoadSceneAsync(Key).Task;
         }

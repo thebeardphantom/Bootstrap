@@ -6,7 +6,6 @@ using UnityEngine;
 using BeardPhantom.Bootstrap.EditMode;
 using Newtonsoft.Json;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 #endif
 
 namespace BeardPhantom.Bootstrap
@@ -49,6 +48,27 @@ namespace BeardPhantom.Bootstrap
             return instance;
         }
 
+        public static bool IsPersistent(Object obj)
+        {
+#if UNITY_EDITOR
+            return EditorUtility.IsPersistent(obj);
+#else
+            return false;
+#endif
+        }
+
+        public static void DestroyReference<T>(ref T obj) where T : Object
+        {
+            Object.Destroy(obj);
+            obj = null;
+        }
+
+        public static void DestroyReferenceImmediate<T>(ref T obj, bool allowDestroyingAssets = false) where T : Object
+        {
+            Object.DestroyImmediate(obj, allowDestroyingAssets);
+            obj = null;
+        }
+
         internal static RuntimeAppInstance GetRuntimeAppInstance()
         {
 #if UNITY_EDITOR
@@ -79,28 +99,6 @@ namespace BeardPhantom.Bootstrap
 #if UNITY_EDITOR
     public static partial class BootstrapUtility
     {
-        internal static bool IsFromPrefab(Object obj)
-        {
-            return PrefabUtility.IsPartOfAnyPrefab(obj) || IsPartOfPrefabStage(obj);
-        }
-
-        internal static bool IsPartOfPrefabStage(Object obj)
-        {
-            var gameObject = obj as GameObject;
-            if (obj is Component cmp)
-            {
-                gameObject = cmp.gameObject;
-            }
-
-            if (gameObject == null)
-            {
-                return false;
-            }
-
-            PrefabStage stage = PrefabStageUtility.GetPrefabStage(gameObject);
-            return stage != null;
-        }
-
         internal static bool TryLoadEditModeState(out EditModeState editModeState)
         {
             string json = SessionState.GetString(EditModeAppInstance.EditModeStateSessionStateKey, null);

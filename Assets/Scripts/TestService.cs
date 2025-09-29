@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class TestService : IBootstrapService
+public class TestService : IService
 {
     [field: SerializeField]
     private int IntProperty { get; set; }
@@ -25,7 +25,7 @@ public class TestService : IBootstrapService
         }
     }
 
-    void IBootstrapService.InitService(BootstrapContext context)
+    void IService.InitService(BootstrapContext context)
     {
         if (Application.isPlaying)
         {

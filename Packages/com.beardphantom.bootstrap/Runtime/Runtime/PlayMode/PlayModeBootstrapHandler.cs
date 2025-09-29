@@ -60,7 +60,7 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <inheritdoc />
-        async Awaitable IPostBootstrapHandler.OnPostBootstrapAsync(BootstrapContext context, RuntimeBootstrapper runtimeBootstrapper)
+        async Awaitable IPostBootstrapHandler.OnPostBootstrapAsync(BootstrapContext context)
         {
             if (App.Instance.IsRunningTests)
             {

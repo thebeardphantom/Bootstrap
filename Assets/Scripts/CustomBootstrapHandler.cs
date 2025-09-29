@@ -27,9 +27,9 @@ public class CustomBootstrapHandler : IPreBootstrapHandler, IPostBootstrapHandle
     }
 
     /// <inheritdoc />
-    Awaitable IPostBootstrapHandler.OnPostBootstrapAsync(BootstrapContext context, RuntimeBootstrapper runtimeBootstrapper)
+    Awaitable IPostBootstrapHandler.OnPostBootstrapAsync(BootstrapContext context)
     {
         Debug.Log("USING CUSTOM OnPostBootstrapAsync");
-        return _defaultPostHandler.OnPostBootstrapAsync(context, runtimeBootstrapper);
+        return _defaultPostHandler.OnPostBootstrapAsync(context);
     }
 }

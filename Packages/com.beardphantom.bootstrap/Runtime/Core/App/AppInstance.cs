@@ -49,18 +49,11 @@ namespace BeardPhantom.Bootstrap
 
         public bool TryLocate<T>(out T service) where T : class
         {
-            if (CanLocateServices)
-            {
-                return ServiceLocator.TryLocateService(out service);
-            }
-
-            service = null;
-            return false;
+            return ServiceLocator.TryLocateService(out service);
         }
 
         public T Locate<T>() where T : class
         {
-            Assert.IsTrue(CanLocateServices, "CanLocateServices");
             return ServiceLocator.LocateService<T>();
         }
 

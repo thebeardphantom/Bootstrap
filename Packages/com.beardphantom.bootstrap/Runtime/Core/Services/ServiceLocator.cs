@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -6,88 +7,58 @@ using Object = UnityEngine.Object;
 
 namespace BeardPhantom.Bootstrap
 {
-    public class ServiceLocator : IDisposable
+    public class ServiceLocator : IDisposable, IEnumerable<IService>
     {
-        public delegate void OnServiceEvent(IBootstrapService service);
+        public delegate void OnServiceEvent(IService service);
 
         public event OnServiceEvent ServiceDiscovered;
 
         public event OnServiceEvent ServiceInitialized;
 
-        private readonly Dictionary<Type, IBootstrapService> _typeToServices = new();
+        private readonly Dictionary<Type, IService> _typeToServices = new();
 
-        private readonly HashSet<IBootstrapService> _services = new();
+        private readonly SortedSet<IService> _services = new();
 
-        private GameObject _servicesInstance;
+        private ServiceListAsset _serviceListAsset;
 
-        public bool CanLocateServices => App.Instance.BootstrapState > AppBootstrapState.ServiceBinding;
+        public bool CanLocateServices => App.Instance.BootstrapState > AppBootstrapState.ServiceInit;
 
-        private static async Awaitable WaitThenFireEvent(
-            OnServiceEvent onServiceEvent,
-            Awaitable serviceTask,
-            IBootstrapService bootstrapService)
+        public void Create(BootstrapContext context, ServiceListAsset serviceListAsset, HideFlags hideFlags = HideFlags.None)
         {
-            if (serviceTask == null)
-            {
-                throw new Exception("Service Awaitable is null.");
-            }
-
-            await serviceTask;
-            onServiceEvent?.Invoke(bootstrapService);
-        }
-
-        public void RegisterCustomService(IBootstrapService service)
-        {
-            if (service == null)
-            {
-                throw new NullReferenceException("Service cannot be null");
-            }
-
-            if (App.Instance.BootstrapState > AppBootstrapState.ServiceDiscovery)
-            {
-                throw new InvalidOperationException("Cannot register custom services after service discovery phase.");
-            }
-
-            _services.Add(service);
-        }
-
-        public void Create(BootstrapContext context, GameObject servicesInstance, HideFlags hideFlags = HideFlags.None)
-        {
-            _servicesInstance = servicesInstance;
-            _servicesInstance.hideFlags = hideFlags;
-
+            _serviceListAsset = serviceListAsset;
             AppInstance appInstance = App.Instance;
 
             /*
              * Service Discovery
              */
             appInstance.BootstrapState = AppBootstrapState.ServiceDiscovery;
-            using (ListPool<IBootstrapService>.Get(out List<IBootstrapService> serviceComponents))
+            foreach (IService service in serviceListAsset.Services)
             {
-                _servicesInstance.GetComponentsInChildren(true, serviceComponents);
-                foreach (IBootstrapService service in serviceComponents)
-                {
-                    var component = (Component)service;
-                    component.hideFlags = hideFlags;
-                    _services.Add(service);
-                    ServiceDiscovered?.Invoke(service);
-                }
+                var component = (Component)service;
+                component.hideFlags = hideFlags;
+                _services.Add(service);
+                ServiceDiscovered?.Invoke(service);
             }
 
             /*
              * Service Binding
              */
             appInstance.BootstrapState = AppBootstrapState.ServiceBinding;
-            foreach (IBootstrapService service in _services)
+            foreach (IService service in _services)
             {
-                if (service is IMultiboundBootstrapService multiboundService)
+                if (service is IServiceWithCustomBindings serviceWithCustomBindings)
                 {
-                    using (ListPool<Type>.Get(out List<Type> extraBindableTypes))
+                    using (ListPool<Type>.Get(out List<Type> bindingTypes))
                     {
-                        multiboundService.GetOverrideBindingTypes(extraBindableTypes);
-                        foreach (Type extraType in extraBindableTypes)
+                        serviceWithCustomBindings.GetCustomBindings(bindingTypes, out bool autoIncludeDeclaredType);
+                        if (autoIncludeDeclaredType)
                         {
-                            _typeToServices.Add(extraType, service);
+                            _typeToServices.Add(service.GetType(), service);
+                        }
+
+                        foreach (Type type in bindingTypes)
+                        {
+                            _typeToServices.Add(type, service);
                         }
                     }
                 }
@@ -97,13 +68,13 @@ namespace BeardPhantom.Bootstrap
                     _typeToServices.Add(serviceType, service);
                 }
             }
-
+            
             /*
              * Service Init
              */
             appInstance.BootstrapState = AppBootstrapState.ServiceInit;
             Logging.Trace("Initializing services.");
-            foreach (IBootstrapService service in _services)
+            foreach (IService service in _services)
             {
                 Logging.Trace($"InitService on {service.GetType()}.");
                 service.InitService(context);
@@ -113,7 +84,7 @@ namespace BeardPhantom.Bootstrap
         public void Dispose()
         {
             Logging.Trace("Disposing ServiceLocator.");
-            foreach (IBootstrapService service in _services)
+            foreach (IService service in _services)
             {
                 if (service is IDisposable disposable)
                 {
@@ -122,51 +93,55 @@ namespace BeardPhantom.Bootstrap
                 }
             }
 
-            Object.DestroyImmediate(_servicesInstance);
+            if (!Application.isEditor || BootstrapUtility.IsPersistent(_serviceListAsset))
+            {
+                return;
+            }
+
+            BootstrapUtility.DestroyReference(ref _serviceListAsset);
         }
 
         public bool TryLocateService<T>(out T service) where T : class
         {
-            if (TryLocateService(typeof(T), out IBootstrapService untypedService))
+            if (TryLocateService(typeof(T), out IService untypedService))
             {
                 service = (T)untypedService;
                 return true;
             }
 
-            service = default;
+            service = null;
             return false;
         }
 
-        public bool TryLocateService(Type serviceType, out IBootstrapService service)
+        public bool TryLocateService(Type serviceType, out IService service)
         {
-            return _typeToServices.TryGetValue(serviceType, out service);
+            return CanLocateServices
+                ? _typeToServices.TryGetValue(serviceType, out service)
+                : throw new InvalidOperationException($"Attempted to locate service {serviceType} before services can be located.");
         }
 
         public T LocateService<T>() where T : class
         {
-            if (TryLocateService(out T service))
-            {
-                return service;
-            }
-
-            throw new Exception($"Service of type {typeof(T)} not found.");
+            return (T)LocateService(typeof(T));
         }
 
-        public IBootstrapService LocateService(Type serviceType)
+        public IService LocateService(Type serviceType)
         {
-            if (TryLocateService(serviceType, out IBootstrapService service))
-            {
-                return service;
-            }
-
-            throw new Exception($"Service of type {serviceType} not found.");
+            return TryLocateService(serviceType, out IService service)
+                ? service
+                : throw new ServiceNotFoundException(serviceType);
         }
 
-        internal void ActivateServicesObject()
+        public IEnumerator<IService> GetEnumerator()
         {
-            App.Instance.BootstrapState = AppBootstrapState.ServiceActivation;
-            Logging.Trace("Activating services.");
-            _servicesInstance.SetActive(true);
+            return CanLocateServices
+                ? _services.GetEnumerator()
+                : throw new InvalidOperationException("Attempted to access services before services can be located.");
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

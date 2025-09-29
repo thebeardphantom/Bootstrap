@@ -38,7 +38,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
 
         private static void OnAttachToPanel(AttachToPanelEvent evt)
         {
-            // I hate that I have to do this.
+            // I hate that I have to do this. TODO Look into GeometryChangedEvent
             var propertyField = (PropertyField)evt.target;
             propertyField.schedule.Execute(
                     () =>
