@@ -12,6 +12,10 @@ namespace BeardPhantom.Bootstrap
 
         private AppBootstrapState _bootstrapState;
 
+        private bool _disposed;
+
+        public abstract ServiceListAsset ActiveServiceListAsset { get; }
+
         public AppBootstrapState BootstrapState
         {
             get => _bootstrapState;
@@ -37,13 +41,19 @@ namespace BeardPhantom.Bootstrap
         public bool IsRunningTests { get; internal set; }
 
         public abstract bool IsQuitting { get; }
-        
+
         public TaskScheduler TaskScheduler { get; private set; }
 
         public bool CanLocateServices => ServiceLocator is { CanLocateServices: true, };
 
         public virtual void Dispose()
         {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
             ServiceLocator.Dispose();
         }
 
@@ -56,6 +66,8 @@ namespace BeardPhantom.Bootstrap
         {
             return ServiceLocator.LocateService<T>();
         }
+
+        internal abstract void NotifyQuitting();
 
         internal virtual Awaitable BootstrapAsync()
         {

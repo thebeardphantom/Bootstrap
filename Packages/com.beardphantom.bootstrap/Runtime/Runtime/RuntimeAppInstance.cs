@@ -1,6 +1,7 @@
 ﻿using BeardPhantom.Bootstrap.Environment;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace BeardPhantom.Bootstrap
 {
@@ -14,18 +15,22 @@ namespace BeardPhantom.Bootstrap
 
         public BootstrapEnvironmentAsset SessionEnvironment { get; private set; }
 
+        public override ServiceListAsset ActiveServiceListAsset => SessionEnvironment.ServiceListAsset;
+
         public override bool IsQuitting => _isQuitting;
 
         protected abstract bool TryDetermineSessionEnvironment(out BootstrapEnvironmentAsset environment);
+
+        internal override void NotifyQuitting()
+        {
+            _isQuitting = true;
+        }
 
         internal override async Awaitable BootstrapAsync()
         {
             await base.BootstrapAsync();
             IsPlaying = true;
-
-            Application.quitting += OnApplicationQuitting;
-            UpdateLoopAsync().Forget();
-            FixedUpdateLoopAsync().Forget();
+            ComponentMessageRelay.Create();
 
             if (!TryDetermineSessionEnvironment(out BootstrapEnvironmentAsset environmentAssetSource))
             {
@@ -54,6 +59,7 @@ namespace BeardPhantom.Bootstrap
             await Awaitable.NextFrameAsync(cancellationToken);
 
             appInstance.BootstrapState = AppBootstrapState.AsyncTaskFlush;
+            FlushTaskSchedulerLoopAsync().Forget();
             Logging.Trace($"Waiting for idle {nameof(TaskScheduler)}.");
             await AwaitableUtility.WaitUntil(() => appInstance.TaskScheduler.IsIdle, cancellationToken);
 
@@ -79,48 +85,17 @@ namespace BeardPhantom.Bootstrap
             Logging.Trace($"Selected IPostBootstrapHandler {_postHandler}.");
         }
 
-        private async Awaitable FixedUpdateLoopAsync()
+        private async Awaitable FlushTaskSchedulerLoopAsync()
         {
+            Logging.Debug($"Starting {nameof(FlushTaskSchedulerLoopAsync)}()");
             CancellationToken cancellationToken = Application.exitCancellationToken;
             while (Application.isPlaying)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await Awaitable.FixedUpdateAsync(cancellationToken);
-                float fixedDeltaTime = Time.fixedDeltaTime;
-                foreach (IService service in ServiceLocator)
-                {
-                    if (service is IServiceWithFixedUpdateLoop serviceWithFixedUpdateLoop)
-                    {
-                        serviceWithFixedUpdateLoop.FixedUpdate(fixedDeltaTime);
-                    }
-                }
-            }
-        }
-
-        private async Awaitable UpdateLoopAsync()
-        {
-            CancellationToken cancellationToken = Application.exitCancellationToken;
-            while (Application.isPlaying)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
+                Assert.IsTrue(BootstrapState >= AppBootstrapState.AsyncTaskFlush, "BootstrapState >= AppBootstrapState.AsyncTaskFlush");
                 await TaskScheduler.FlushQueueAsync(cancellationToken);
-                float deltaTime = Time.deltaTime;
-                foreach (IService service in ServiceLocator)
-                {
-                    if (service is IServiceWithUpdateLoop serviceWithUpdateLoop)
-                    {
-                        serviceWithUpdateLoop.Update(deltaTime);
-                    }
-                }
-
                 await Awaitable.NextFrameAsync(cancellationToken);
             }
-        }
-
-        private void OnApplicationQuitting()
-        {
-            Application.quitting -= OnApplicationQuitting;
-            _isQuitting = true;
         }
     }
 }

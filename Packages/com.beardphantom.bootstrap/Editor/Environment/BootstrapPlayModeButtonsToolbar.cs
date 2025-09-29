@@ -10,13 +10,13 @@ using UnityEngine.UIElements;
 namespace BeardPhantom.Bootstrap.Editor.Environment
 {
     [InitializeOnLoad]
-    public static class EnvironmentSelectorUI
+    public static class BootstrapPlayModeButtonsToolbar
     {
         private const string SceneOverrideLabel = "Use Scene Environment";
 
         private static EditorToolbarDropdown s_editorToolbarDropdown;
 
-        static EnvironmentSelectorUI()
+        static BootstrapPlayModeButtonsToolbar()
         {
             Type playmodeButtons = typeof(EditorToolbarToggle)
                 .Assembly
@@ -35,11 +35,10 @@ namespace BeardPhantom.Bootstrap.Editor.Environment
 
         private static void OnPlayModeButtonsCreated(VisualElement visualElement)
         {
-            visualElement.schedule.Execute(
-                    () =>
-                    {
-                        CreateUI(visualElement);
-                    })
+            visualElement.schedule.Execute(() =>
+                {
+                    CreateUI(visualElement);
+                })
                 .ExecuteLater(100);
         }
 
@@ -49,6 +48,27 @@ namespace BeardPhantom.Bootstrap.Editor.Environment
             s_editorToolbarDropdown = new EditorToolbarDropdown(OnOpenEnvironmentDropdown);
             UpdateUI();
             root.Add(s_editorToolbarDropdown);
+            root.Add(
+                new Button(OnShowActiveServicesButtonClicked)
+                {
+                    text = "Show Active Services",
+                });
+        }
+
+        private static void OnShowActiveServicesButtonClicked()
+        {
+            if (!App.TryGetInstance(out AppInstance appInstance))
+            {
+                return;
+            }
+
+            ServiceListAsset activeServiceListAsset = appInstance.ActiveServiceListAsset;
+            if (activeServiceListAsset.IsNull())
+            {
+                return;
+            }
+
+            EditorUtility.OpenPropertyEditor(activeServiceListAsset);
         }
 
         private static void OnOpenEnvironmentDropdown()
@@ -69,12 +89,11 @@ namespace BeardPhantom.Bootstrap.Editor.Environment
                 false,
                 () =>
                 {
-                    BootstrapEditorUtility.PickAsset<BootstrapEnvironmentAsset>(
-                        result =>
-                        {
-                            userSettings.SelectedEnvironment = result;
-                            UpdateUI();
-                        });
+                    BootstrapEditorUtility.PickAsset<BootstrapEnvironmentAsset>(result =>
+                    {
+                        userSettings.SelectedEnvironment = result;
+                        UpdateUI();
+                    });
                 });
             menu.ShowAsContext();
         }
