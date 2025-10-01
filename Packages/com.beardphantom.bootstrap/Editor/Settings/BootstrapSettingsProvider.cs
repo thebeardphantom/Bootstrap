@@ -95,7 +95,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
             CompilationPipeline.compilationStarted += OnCompilationStarted;
             if (App.TryGetInstance(out EditModeAppInstance _))
             {
-                App.BootstrappingComplete += OnEditModeBootstrappingComplete;
+                App.Initialized += OnEditModeInitialized;
             }
 
             _rootElement = rootElement;
@@ -122,7 +122,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         public override void OnDeactivate()
         {
             CompilationPipeline.compilationStarted -= OnCompilationStarted;
-            App.BootstrappingComplete -= OnEditModeBootstrappingComplete;
+            App.Initialized -= OnEditModeInitialized;
         }
 
         private void OnCompilationStarted(object obj)
@@ -130,7 +130,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
             _rootElement.SetEnabled(false);
         }
 
-        private void OnEditModeBootstrappingComplete()
+        private void OnEditModeInitialized()
         {
             UpdateVolatileUI();
         }

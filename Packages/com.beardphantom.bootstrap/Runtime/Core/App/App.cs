@@ -5,7 +5,8 @@ namespace BeardPhantom.Bootstrap
 {
     public static partial class App
     {
-        public static event Action BootstrappingComplete;
+        public static event Action Initialized;
+        public static event Action Deinitialized;
 
         private static AppInstance s_instance;
 
@@ -58,21 +59,26 @@ namespace BeardPhantom.Bootstrap
 
         public static void Dispose()
         {
-            if (TryGetInstance(out AppInstance instance))
+            if (!TryGetInstance(out AppInstance instance))
             {
-                Logging.Info($"Disposing instance {s_instance}.");
-                instance.Dispose();
+                return;
             }
+
+            Logging.Info($"Disposing instance {s_instance}.");
+            instance.Dispose();
         }
 
         public static void Deinitialize()
         {
-            if (TryGetInstance(out AppInstance instance))
+            if (!TryGetInstance(out AppInstance instance))
             {
-                Logging.Info($"Deinitializing instance {s_instance}.");
-                instance.Dispose();
-                s_instance = null;
+                return;
             }
+
+            Logging.Info($"Deinitializing instance {s_instance}.");
+            instance.Dispose();
+            s_instance = null;
+            Deinitialized?.Invoke();
         }
 
         internal static void Initialize<T>() where T : AppInstance, new()
@@ -88,18 +94,16 @@ namespace BeardPhantom.Bootstrap
         internal static Awaitable InitializeAsync<T>() where T : AppInstance, new()
         {
             ThrowIfInitialized();
-
             return InitializeAsync(new T());
         }
 
         internal static async Awaitable InitializeAsync(AppInstance instance)
         {
             ThrowIfInitialized();
-
             Logging.Info($"Initializing instance {instance}.");
             s_instance = instance;
             await instance.BootstrapAsync();
-            BootstrappingComplete?.Invoke();
+            Initialized?.Invoke();
         }
 
         private static void ThrowIfInitialized()
