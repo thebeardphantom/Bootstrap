@@ -26,8 +26,6 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
 
         private ToolbarToggle _userToggle;
 
-        private ObjectField _servicesInstance;
-
         private VisualElement _rootElement;
 
         private Button _reinitializeButton;
@@ -93,10 +91,6 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         public override void OnActivate(string searchContext, VisualElement rootElement)
         {
             CompilationPipeline.compilationStarted += OnCompilationStarted;
-            if (App.TryGetInstance(out EditModeAppInstance _))
-            {
-                App.Initialized += OnEditModeInitialized;
-            }
 
             _rootElement = rootElement;
 
@@ -109,40 +103,23 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
 
             _reinitializeButton = _content.Q<Button>("reinitialize-button");
             _reinitializeButton.clicked += OnReinitializeButtonClicked;
-
-            _servicesInstance = _content.Q<ObjectField>("services-instance");
-            _servicesInstance.SetEnabled(false);
+            
             SetupTabViewTab(_projectToggle, SettingsScope.Project, _userToggle);
             SetupTabViewTab(_userToggle, SettingsScope.User, _projectToggle);
             BindToScope(SettingsScope.Project);
-            UpdateVolatileUI();
         }
 
         /// <inheritdoc />
         public override void OnDeactivate()
         {
             CompilationPipeline.compilationStarted -= OnCompilationStarted;
-            App.Initialized -= OnEditModeInitialized;
         }
 
         private void OnCompilationStarted(object obj)
         {
             _rootElement.SetEnabled(false);
         }
-
-        private void OnEditModeInitialized()
-        {
-            UpdateVolatileUI();
-        }
-
-        private void UpdateVolatileUI()
-        {
-            if (App.TryGetInstance(out EditModeAppInstance editModeAppInstance))
-            {
-                _servicesInstance.SetValueWithoutNotify(editModeAppInstance.ActiveServiceListAsset);
-            }
-        }
-
+        
         private void SetupTabViewTab(ToolbarToggle toggle, SettingsScope ownedScope, ToolbarToggle otherToggle)
         {
             toggle.RegisterValueChangedCallback(evt =>

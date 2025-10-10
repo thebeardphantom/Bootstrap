@@ -183,14 +183,14 @@ namespace BeardPhantom.Bootstrap.EditMode
                     return;
                 }
 
-                ServiceListAsset serviceListAssetInstance = CreateEditModeServicesInstance(serviceListAssetSource);
+                _editModeServiceListInstance = CreateEditModeServicesInstance(serviceListAssetSource);
                 SessionState.SetInt(EditModeServicesInstanceIdSessionStateKey, _editModeServiceListInstance.GetInstanceID());
 
                 var context = new BootstrapContext(TaskScheduler);
                 var description = $"Creating edit mode services from prefab '{serviceListAssetSource.name}' from {definedScope} scope.";
                 Progress.Report(progressId, 1f, description);
                 EditorUtility.DisplayProgressBar("Edit Mode Bootstrapping", description, 1f);
-                ServiceLocator.Create(context, serviceListAssetInstance);
+                ServiceLocator.Create(context, _editModeServiceListInstance);
 
                 Logging.Trace($"Waiting for idle {nameof(TaskScheduler)}.");
                 while (!TaskScheduler.IsIdle)
@@ -205,7 +205,7 @@ namespace BeardPhantom.Bootstrap.EditMode
                 Progress.Report(
                     progressId,
                     1f,
-                    $"Finished in {sw.Elapsed.TotalMilliseconds:0.00}ms with instance '{serviceListAssetInstance.name}' from {definedScope} scope.");
+                    $"Finished in {sw.Elapsed.TotalMilliseconds:0.00}ms with instance '{_editModeServiceListInstance.name}' from {definedScope} scope.");
                 Progress.Finish(progressId);
             }
             catch (Exception ex)
