@@ -7,11 +7,15 @@ namespace BeardPhantom.Bootstrap.Editor
 {
     public class BootstrapAppWindow : EditorWindow
     {
+        private static readonly GUID s_uxmlGuid = new("9ae124f587507a1469f8c82e44b628de");
+
         private HelpBox _noActiveServicesBox;
 
         private InspectorElement _inspectorElement;
 
         private SerializedObject _serializedObject;
+        
+        private Foldout _sectionServices;
 
         [MenuItem("Window/General/Bootstrap Status Window")]
         private static void ShowWindow()
@@ -38,10 +42,11 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private void CreateGUI()
         {
-            _noActiveServicesBox = new HelpBox(
-                "There is no active services object in memory.",
-                HelpBoxMessageType.Info);
-            rootVisualElement.Add(_noActiveServicesBox);
+            var visualTreeAsset = AssetDatabase.LoadAssetByGUID<VisualTreeAsset>(s_uxmlGuid);
+            visualTreeAsset.CloneTree(rootVisualElement);
+
+            _noActiveServicesBox = rootVisualElement.Q<HelpBox>();
+            _sectionServices = rootVisualElement.Q<Foldout>("section-services");
             RefreshUI();
         }
 
@@ -74,8 +79,11 @@ namespace BeardPhantom.Bootstrap.Editor
 
             _noActiveServicesBox.style.display = DisplayStyle.None;
             _serializedObject = new SerializedObject(appInstance.ActiveServiceListAsset);
-            _inspectorElement = new InspectorElement(_serializedObject);
-            rootVisualElement.Add(_inspectorElement);
+            _inspectorElement = new InspectorElement(_serializedObject)
+            {
+                name = "services-inspector",
+            };
+            _sectionServices.Add(_inspectorElement);
         }
     }
 }
