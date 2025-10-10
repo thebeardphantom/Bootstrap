@@ -1,23 +1,30 @@
-﻿using System;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace BeardPhantom.Bootstrap.Editor
 {
-    public class BootstrapStatusWindow : EditorWindow
+    public class BootstrapAppWindow : EditorWindow
     {
+        private static readonly GUID s_uxmlGuid = new("9ae124f587507a1469f8c82e44b628de");
+
         private HelpBox _noActiveServicesBox;
 
         private InspectorElement _inspectorElement;
 
         private SerializedObject _serializedObject;
 
+        private Foldout _sectionServices;
+
+        private TextField _sessionGuidTextField;
+
+        private TextField _appCreateTimestampTextField;
+
         [MenuItem("Window/General/Bootstrap Status Window")]
         private static void ShowWindow()
         {
-            var window = GetWindow<BootstrapStatusWindow>();
+            var window = GetWindow<BootstrapAppWindow>();
             window.titleContent = new GUIContent("🥾Bootstrap Status");
             window.Show();
         }
@@ -39,10 +46,13 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private void CreateGUI()
         {
-            _noActiveServicesBox = new HelpBox(
-                "There is no active services object in memory.",
-                HelpBoxMessageType.Info);
-            rootVisualElement.Add(_noActiveServicesBox);
+            var visualTreeAsset = AssetDatabase.LoadAssetByGUID<VisualTreeAsset>(s_uxmlGuid);
+            visualTreeAsset.CloneTree(rootVisualElement);
+
+            _sessionGuidTextField = rootVisualElement.Q<TextField>("session-guid");
+            _appCreateTimestampTextField = rootVisualElement.Q<TextField>("app-create-timestamp");
+            _noActiveServicesBox = rootVisualElement.Q<HelpBox>();
+            _sectionServices = rootVisualElement.Q<Foldout>("section-services");
             RefreshUI();
         }
 
@@ -59,14 +69,20 @@ namespace BeardPhantom.Bootstrap.Editor
         private void RefreshUI()
         {
             _inspectorElement?.RemoveFromHierarchy();
+            _serializedObject?.Dispose();
             _inspectorElement = null;
             _serializedObject = null;
             _noActiveServicesBox.style.display = DisplayStyle.Flex;
 
             if (!App.TryGetInstance(out AppInstance appInstance))
             {
+                _sessionGuidTextField.value = null;
+                _appCreateTimestampTextField.value = null;
                 return;
             }
+
+            _sessionGuidTextField.value = appInstance.SessionGuid.ToString();
+            _appCreateTimestampTextField.value = appInstance.CreateTimestamp.ToString();
 
             if (appInstance.ActiveServiceListAsset == null)
             {
@@ -75,8 +91,11 @@ namespace BeardPhantom.Bootstrap.Editor
 
             _noActiveServicesBox.style.display = DisplayStyle.None;
             _serializedObject = new SerializedObject(appInstance.ActiveServiceListAsset);
-            _inspectorElement = new InspectorElement(_serializedObject);
-            rootVisualElement.Add(_inspectorElement);
+            _inspectorElement = new InspectorElement(_serializedObject)
+            {
+                name = "services-inspector",
+            };
+            _sectionServices.Add(_inspectorElement);
         }
     }
 }
