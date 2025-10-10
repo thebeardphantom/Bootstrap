@@ -1,12 +1,11 @@
-﻿using System;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace BeardPhantom.Bootstrap.Editor
 {
-    public class BootstrapStatusWindow : EditorWindow
+    public class BootstrapAppWindow : EditorWindow
     {
         private HelpBox _noActiveServicesBox;
 
@@ -17,7 +16,7 @@ namespace BeardPhantom.Bootstrap.Editor
         [MenuItem("Window/General/Bootstrap Status Window")]
         private static void ShowWindow()
         {
-            var window = GetWindow<BootstrapStatusWindow>();
+            var window = GetWindow<BootstrapAppWindow>();
             window.titleContent = new GUIContent("🥾Bootstrap Status");
             window.Show();
         }
