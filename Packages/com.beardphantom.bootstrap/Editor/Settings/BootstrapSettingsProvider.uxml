@@ -5,11 +5,7 @@
     <ui:VisualElement name="settings-content" class="settings-content">
         <ui:Label name="title-label" text="Bootstrap" class="title-label"/>
         <ui:Label name="edit-model-label" text="Edit Mode" class="header-label-1"/>
-        <ui:VisualElement class="row">
-            <uie:ObjectField name="services-instance" label="Services Instance"
-                             type="BeardPhantom.Bootstrap.EditMode.EditModeServicesInstance, BeardPhantom.Bootstrap"/>
-            <ui:Button name="reinitialize-button" text="Re-Bootstrap Edit Mode"/>
-        </ui:VisualElement>
+        <ui:Button name="reinitialize-button" text="Re-Bootstrap Edit Mode"/>
         <uie:Toolbar class="tab-view">
             <uie:ToolbarToggle label="Project" name="project-toggle" value="true" class="tab-view-tab"/>
             <uie:ToolbarToggle label="User" name="user-toggle" class="tab-view-tab"/>

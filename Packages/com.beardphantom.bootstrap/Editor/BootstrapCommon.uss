@@ -1,0 +1,58 @@
+.section {
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+}
+
+.header {
+    -unity-font-style: bold;
+}
+
+.section > Toggle {
+    background-color: rgb(62, 62, 62);
+    border-left-color: rgba(0, 0, 0, 0.33);
+    border-right-color: rgba(0, 0, 0, 0.33);
+    border-top-color: rgba(0, 0, 0, 0.33);
+    border-bottom-color: rgba(0, 0, 0, 0.33);
+    border-top-width: 1px;
+    border-right-width: 0;
+    border-bottom-width: 1px;
+    border-left-width: 0;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 2px;
+}
+
+.section > Toggle .unity-foldout__text {
+    -unity-font-style: bold;
+    padding-top: 2px;
+    padding-right: 0;
+    padding-bottom: 2px;
+    padding-left: 0;
+    font-size: 14px;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+}
+
+.section:selected {
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 1px;
+    border-left-width: 0;
+    border-left-color: rgba(0, 0, 0, 0.33);
+    border-right-color: rgba(0, 0, 0, 0.33);
+    border-top-color: rgba(0, 0, 0, 0.33);
+    border-bottom-color: rgba(0, 0, 0, 0.33);
+}

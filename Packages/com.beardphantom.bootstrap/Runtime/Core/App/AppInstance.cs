@@ -32,7 +32,9 @@ namespace BeardPhantom.Bootstrap
             }
         }
 
-        public ServiceLocator ServiceLocator { get; set; }
+        public ServiceLocator ServiceLocator { get; private set; }
+
+        public DateTimeOffset CreateTimestamp { get; private set; }
 
         public Guid SessionGuid { get; private set; }
 
@@ -71,6 +73,7 @@ namespace BeardPhantom.Bootstrap
 
         internal virtual Awaitable BootstrapAsync()
         {
+            CreateTimestamp = DateTimeOffset.Now;
             _bootstrapState = AppBootstrapState.None;
             SessionGuid = Guid.NewGuid();
             ServiceLocator = new ServiceLocator();
