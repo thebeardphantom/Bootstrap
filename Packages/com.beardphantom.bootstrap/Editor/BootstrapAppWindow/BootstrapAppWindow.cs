@@ -17,7 +17,9 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private Foldout _sectionServices;
 
-        private TextField _appGuidLabel;
+        private TextField _sessionGuidTextField;
+
+        private TextField _appCreateTimestampTextField;
 
         [MenuItem("Window/General/Bootstrap Status Window")]
         private static void ShowWindow()
@@ -47,7 +49,8 @@ namespace BeardPhantom.Bootstrap.Editor
             var visualTreeAsset = AssetDatabase.LoadAssetByGUID<VisualTreeAsset>(s_uxmlGuid);
             visualTreeAsset.CloneTree(rootVisualElement);
 
-            _appGuidLabel = rootVisualElement.Q<TextField>("app-guid");
+            _sessionGuidTextField = rootVisualElement.Q<TextField>("session-guid");
+            _appCreateTimestampTextField = rootVisualElement.Q<TextField>("app-create-timestamp");
             _noActiveServicesBox = rootVisualElement.Q<HelpBox>();
             _sectionServices = rootVisualElement.Q<Foldout>("section-services");
             RefreshUI();
@@ -73,11 +76,13 @@ namespace BeardPhantom.Bootstrap.Editor
 
             if (!App.TryGetInstance(out AppInstance appInstance))
             {
-                _appGuidLabel.value = null;
+                _sessionGuidTextField.value = null;
+                _appCreateTimestampTextField.value = null;
                 return;
             }
 
-            _appGuidLabel.value = appInstance.SessionGuid.ToString();
+            _sessionGuidTextField.value = appInstance.SessionGuid.ToString();
+            _appCreateTimestampTextField.value = appInstance.CreateTimestamp.ToString();
 
             if (appInstance.ActiveServiceListAsset == null)
             {

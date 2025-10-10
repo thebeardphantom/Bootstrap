@@ -1,7 +1,8 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <Style src="project://database/Packages/com.beardphantom.bootstrap/Editor/BootstrapCommon.uss?fileID=7433441132597879392&amp;guid=3462028873eb4c69a39f30b3ae0f2ced&amp;type=3#BootstrapCommon" />
     <ui:Foldout text="App" name="section-app" class="section">
-        <ui:TextField label="App GUID" name="app-guid" readonly="true" />
+        <ui:TextField label="Session GUID" name="session-guid" readonly="true" />
+        <ui:TextField label="Create Timestamp" name="app-create-timestamp" readonly="true" />
     </ui:Foldout>
     <ui:Foldout text="Services" name="section-services" class="section">
         <ui:Label text="Active Services List" tooltip="The active services list in memory." class="header" />
