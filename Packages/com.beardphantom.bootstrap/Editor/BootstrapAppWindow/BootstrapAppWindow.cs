@@ -14,8 +14,10 @@ namespace BeardPhantom.Bootstrap.Editor
         private InspectorElement _inspectorElement;
 
         private SerializedObject _serializedObject;
-        
+
         private Foldout _sectionServices;
+
+        private TextField _appGuidLabel;
 
         [MenuItem("Window/General/Bootstrap Status Window")]
         private static void ShowWindow()
@@ -45,6 +47,7 @@ namespace BeardPhantom.Bootstrap.Editor
             var visualTreeAsset = AssetDatabase.LoadAssetByGUID<VisualTreeAsset>(s_uxmlGuid);
             visualTreeAsset.CloneTree(rootVisualElement);
 
+            _appGuidLabel = rootVisualElement.Q<TextField>("app-guid");
             _noActiveServicesBox = rootVisualElement.Q<HelpBox>();
             _sectionServices = rootVisualElement.Q<Foldout>("section-services");
             RefreshUI();
@@ -63,14 +66,18 @@ namespace BeardPhantom.Bootstrap.Editor
         private void RefreshUI()
         {
             _inspectorElement?.RemoveFromHierarchy();
+            _serializedObject?.Dispose();
             _inspectorElement = null;
             _serializedObject = null;
             _noActiveServicesBox.style.display = DisplayStyle.Flex;
 
             if (!App.TryGetInstance(out AppInstance appInstance))
             {
+                _appGuidLabel.value = null;
                 return;
             }
+
+            _appGuidLabel.value = appInstance.SessionGuid.ToString();
 
             if (appInstance.ActiveServiceListAsset == null)
             {
