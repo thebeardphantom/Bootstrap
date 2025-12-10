@@ -12,4 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e16e7af07f9c4e71abc8d92f9c3e8bec, type: 3}
   m_Name: Env_Default
   m_EditorClassIdentifier: 
-  <ServicesListAsset>k__BackingField: {fileID: 0}
+  <PreBootstrapHandler>k__BackingField:
+    rid: -2
+  <PostBootstrapHandler>k__BackingField:
+    rid: -2
+  <ServiceListAsset>k__BackingField: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
