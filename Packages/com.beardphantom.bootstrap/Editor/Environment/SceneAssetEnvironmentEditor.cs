@@ -1,4 +1,5 @@
 using BeardPhantom.Bootstrap.EditMode;
+using BeardPhantom.Bootstrap.Editor.Settings;
 using BeardPhantom.Bootstrap.Environment;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -38,6 +39,7 @@ namespace BeardPhantom.Bootstrap.Editor.Environment
                 s => s.EditorSceneEnvironments,
                 out SettingsScope _);
             sceneEnvironments.AddOrReplace((SceneAsset)target, (BootstrapEnvironmentAsset)evt.newValue);
+            BootstrapSettingsProvider.SaveAllAssets();
         }
     }
 }

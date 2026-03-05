@@ -22,7 +22,7 @@ namespace BeardPhantom.Bootstrap.Editor
                 }
                 finally
                 {
-                    s_oneArgArray[0] = default;
+                    s_oneArgArray[0] = null;
                 }
             }
             remove
@@ -34,7 +34,7 @@ namespace BeardPhantom.Bootstrap.Editor
                 }
                 finally
                 {
-                    s_oneArgArray[0] = default;
+                    s_oneArgArray[0] = null;
                 }
             }
         }
@@ -90,8 +90,8 @@ namespace BeardPhantom.Bootstrap.Editor
             }
             finally
             {
-                s_twoArgArray[0] = default;
-                s_twoArgArray[1] = default;
+                s_twoArgArray[0] = null;
+                s_twoArgArray[1] = null;
             }
         }
 
@@ -104,7 +104,7 @@ namespace BeardPhantom.Bootstrap.Editor
             }
             finally
             {
-                s_oneArgArray[0] = default;
+                s_oneArgArray[0] = null;
             }
         }
 
@@ -118,8 +118,8 @@ namespace BeardPhantom.Bootstrap.Editor
             }
             finally
             {
-                s_twoArgArray[0] = default;
-                s_twoArgArray[1] = default;
+                s_twoArgArray[0] = null;
+                s_twoArgArray[1] = null;
             }
         }
 

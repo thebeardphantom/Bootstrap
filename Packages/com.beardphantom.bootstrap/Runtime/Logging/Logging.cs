@@ -11,38 +11,44 @@ namespace BeardPhantom.Bootstrap
 
         public static ILogHandler LogHandler { get; set; } = DefaultLogHandler;
 
-        public static BootstrapLogLevel MinLogLevel { get; set; } = BootstrapLogLevel.Information;
+        public static BootstrapLogLevel MinLogLevel { get; set; } = BootstrapLogLevel.Debug;
 
+        [HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void Trace(object message, Object context = null)
         {
             Log(BootstrapLogLevel.Trace, message, context);
         }
 
+        [HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void Debug(object message, Object context = null)
         {
             Log(BootstrapLogLevel.Debug, message, context);
         }
 
+        [HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void Info(object message, Object context = null)
         {
             Log(BootstrapLogLevel.Information, message, context);
         }
 
+        [HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void Warn(object message, Object context = null)
         {
             Log(BootstrapLogLevel.Warning, message, context);
         }
 
+        [HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void Error(object message, Object context = null)
         {
             Log(BootstrapLogLevel.Error, message, context);
         }
 
+        [HideInCallstack]
         private static void Log(BootstrapLogLevel logLevel, object message, Object context = null)
         {
             if (logLevel < MinLogLevel)
