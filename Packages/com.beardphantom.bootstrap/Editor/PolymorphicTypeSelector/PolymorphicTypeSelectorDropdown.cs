@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 
@@ -37,7 +36,7 @@ public class PolymorphicTypeSelectorDropdown : AdvancedDropdown
 
     protected override void ItemSelected(AdvancedDropdownItem item)
     {
-        SelectableType type = _selectableTypes[item.id];
+        SelectableType type = _selectableTypes.FirstOrDefault(t => t.Type.FullName == item.name);
         if (!type.IsEnabled)
         {
             EditorUtility.DisplayDialog(
@@ -80,7 +79,6 @@ public class PolymorphicTypeSelectorDropdown : AdvancedDropdown
             };
             root.AddChild(item);
         }
-
         return root;
     }
 

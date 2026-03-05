@@ -13,6 +13,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
 
         private BootstrapZLogHandler() { }
 
+        [HideInCallstack]
         public void Log(in BootstrapLogLevel logLevel, object message, Object context = null)
         {
             var microsoftLogLevel = (LogLevel)logLevel;

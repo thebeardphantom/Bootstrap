@@ -21,7 +21,7 @@ namespace BeardPhantom.Bootstrap
 
         private ServiceListAsset _serviceListAsset;
 
-        public bool CanLocateServices => App.Instance.BootstrapState > AppBootstrapState.ServiceInit;
+        public bool CanLocateServices => App.Instance.BootstrapState > AppBootstrapState.ServiceBinding;
 
         public void Create(BootstrapContext context, ServiceListAsset serviceListAsset)
         {
@@ -34,6 +34,7 @@ namespace BeardPhantom.Bootstrap
             appInstance.BootstrapState = AppBootstrapState.ServiceDiscovery;
             foreach (IService service in serviceListAsset.Services)
             {
+                Logging.Debug($"Discovered service {service.GetType()}.");
                 _services.Add(service);
                 ServiceDiscovered?.Invoke(service);
             }
@@ -53,11 +54,13 @@ namespace BeardPhantom.Bootstrap
                         serviceWithCustomBindings.GetCustomBindings(bindingTypes, out bool autoIncludeDeclaredType);
                         if (autoIncludeDeclaredType)
                         {
+                            Logging.Debug($"Binding service to {service.GetType()}.");
                             _typeToServices.Add(service.GetType(), service);
                         }
 
                         foreach (Type type in bindingTypes)
                         {
+                            Logging.Debug($"Binding service to {type}.");
                             _typeToServices.Add(type, service);
                         }
                     }
@@ -65,6 +68,7 @@ namespace BeardPhantom.Bootstrap
                 else
                 {
                     Type serviceType = service.GetType();
+                    Logging.Debug($"Binding service to {serviceType}.");
                     _typeToServices.Add(serviceType, service);
                 }
             }
@@ -73,22 +77,22 @@ namespace BeardPhantom.Bootstrap
              * Service Init
              */
             appInstance.BootstrapState = AppBootstrapState.ServiceInit;
-            Logging.Trace("Initializing services.");
+            Logging.Debug("Initializing services.");
             foreach (IService service in _services)
             {
-                Logging.Trace($"InitService on {service.GetType()}.");
+                Logging.Debug($"InitService on {service.GetType()}.");
                 service.InitService(context);
             }
         }
 
         public void Dispose()
         {
-            Logging.Trace("Disposing ServiceLocator.");
+            Logging.Debug("Disposing ServiceLocator.");
             foreach (IService service in _services)
             {
                 if (service is IDisposable disposable)
                 {
-                    Logging.Trace($"Disposing service {service.GetType()}.");
+                    Logging.Debug($"Disposing service {service.GetType()}.");
                     disposable.Dispose();
                 }
             }

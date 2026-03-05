@@ -28,6 +28,7 @@ namespace BeardPhantom.Bootstrap.EditMode
 
         public EditModeAppInstance()
         {
+            Logging.LogHandler = Logging.DefaultLogHandler;
             EditorApplication.playModeStateChanged += OnPlaymodeStateChanged;
             BootstrapEditorProjectSettings.instance.EditModeServices.ValueChanged += OnEditModeServicesChanged;
             BootstrapEditorUserSettings.instance.EditModeServices.ValueChanged += OnEditModeServicesChanged;

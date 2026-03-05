@@ -70,6 +70,29 @@ namespace BeardPhantom.Bootstrap
             }
         }
 
+        private void LateUpdate()
+        {
+            Logging.Trace("LateUpdate!");
+            if (!App.TryGetInstance(out AppInstance appInstance))
+            {
+                return;
+            }
+
+            if (!appInstance.CanLocateServices)
+            {
+                return;
+            }
+
+            float deltaTime = Time.deltaTime;
+            foreach (IService service in appInstance.ServiceLocator)
+            {
+                if (service is IServiceWithLateUpdateLoop serviceWithLateUpdateLoop)
+                {
+                    serviceWithLateUpdateLoop.LateUpdate(deltaTime);
+                }
+            }
+        }
+
         private void FixedUpdate()
         {
             Logging.Trace("FixedUpdate!");

@@ -23,7 +23,7 @@ namespace BeardPhantom.Bootstrap.Editor
                         onSelected(typedResult);
                     }
                 },
-                default,
+                null,
                 string.Format(PickPrefabTextFormat, typeof(T).Name),
                 typeof(T).Name,
                 typeof(GameObject));
@@ -44,14 +44,14 @@ namespace BeardPhantom.Bootstrap.Editor
                         onSelected(typedResult);
                     }
 
-                    if (result == default)
+                    if (result == null)
                     {
-                        onSelected(default);
+                        onSelected(null);
                     }
                 },
-                default,
-                default,
-                default,
+                null,
+                null,
+                null,
                 typeof(T));
         }
     }

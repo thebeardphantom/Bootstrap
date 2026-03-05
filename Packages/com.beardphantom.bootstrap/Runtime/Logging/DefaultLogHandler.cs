@@ -30,6 +30,7 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <inheritdoc />
+        [HideInCallstack]
         public void Log(in BootstrapLogLevel logLevel, object message, Object context = null)
         {
             if (logLevel == BootstrapLogLevel.None)
