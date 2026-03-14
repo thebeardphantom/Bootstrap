@@ -52,11 +52,11 @@ namespace BeardPhantom.Bootstrap
             string editModeStateJson = SessionState.GetString(EditModeAppInstance.EditModeStateSessionStateKey, "");
             if (string.IsNullOrWhiteSpace(editModeStateJson))
             {
-                return AwaitableUtility.GetCompleted();
+                return AwaitableUtility.Completed;
             }
 
             context.EditModeState = JsonConvert.DeserializeObject<EditModeState>(editModeStateJson);
-            return AwaitableUtility.GetCompleted();
+            return AwaitableUtility.Completed;
         }
 
         /// <inheritdoc />
