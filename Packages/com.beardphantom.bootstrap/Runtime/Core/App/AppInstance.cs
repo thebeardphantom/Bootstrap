@@ -78,7 +78,7 @@ namespace BeardPhantom.Bootstrap
             SessionGuid = Guid.NewGuid();
             ServiceLocator = new ServiceLocator();
             TaskScheduler = new TaskScheduler();
-            return AwaitableUtility.GetCompleted();
+            return AwaitableUtility.Completed;
         }
     }
 }

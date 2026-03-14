@@ -12,7 +12,7 @@ namespace BeardPhantom.Bootstrap
         /// <inheritdoc />
         public Awaitable OnPreBootstrapAsync(in BootstrapContext context)
         {
-            return AwaitableUtility.GetCompleted();
+            return AwaitableUtility.Completed;
         }
 
         /// <inheritdoc />
