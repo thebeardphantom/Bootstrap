@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
+using UnityEngine;
 
 public class PolymorphicTypeSelectorDropdown : AdvancedDropdown
 {
     public event Action<Type> ComponentTypeSelected;
+
     private readonly Type _baseType;
+
     private readonly IEnumerable<Type> _disabledTypes;
+
     private readonly List<SelectableType> _selectableTypes = new();
 
     public PolymorphicTypeSelectorDropdown(Type baseType)
@@ -67,18 +71,43 @@ public class PolymorphicTypeSelectorDropdown : AdvancedDropdown
 
         var root = new AdvancedDropdownItem($"{_baseType.Name}")
         {
-            id = -1,
+            id = 0,
         };
-        for (var i = 0; i < _selectableTypes.Count; i++)
+        IEnumerable<IGrouping<string, SelectableType>> selectableTypesByNamespace = _selectableTypes
+            .Where(t => t.Type.Namespace != null)
+            .GroupBy(t => t.Type.Namespace)
+            .OrderBy(g => g.Key);
+        GUIContent scriptIconContent = EditorGUIUtility.IconContent("cs Script Icon");
+        var scriptIcon = (Texture2D)scriptIconContent.image;
+        foreach (IGrouping<string, SelectableType> selectableTypes in selectableTypesByNamespace)
         {
-            SelectableType selectableType = _selectableTypes[i];
-            var item = new AdvancedDropdownItem(selectableType.Type.FullName)
+            var nsItem = new AdvancedDropdownItem(selectableTypes.Key)
             {
-                id = i,
-                enabled = selectableType.IsEnabled,
+                enabled = true,
             };
-            root.AddChild(item);
+            root.AddChild(nsItem);
+
+            foreach (SelectableType selectableType in selectableTypes)
+            {
+                var typeItem = new AdvancedDropdownItem(selectableType.Type.Name)
+                {
+                    enabled = selectableType.IsEnabled,
+                    icon = scriptIcon,
+                };
+                nsItem.AddChild(typeItem);
+            }
         }
+
+        foreach (SelectableType selectableType in _selectableTypes.Where(t => t.Type.Namespace == null))
+        {
+            var typeItem = new AdvancedDropdownItem(selectableType.Type.Name)
+            {
+                enabled = selectableType.IsEnabled,
+                icon = scriptIcon,
+            };
+            root.AddChild(typeItem);
+        }
+
         return root;
     }
 

@@ -108,13 +108,13 @@ namespace BeardPhantom.Bootstrap.Editor
             }
         }
 
-        public static GUID GetGuidFromBuildTarget(NamedBuildTarget namedBuildTarget, BuildTarget buildTarget)
+        public static UnityEngine.GUID GetGuidFromBuildTarget(NamedBuildTarget namedBuildTarget, BuildTarget buildTarget)
         {
             try
             {
                 s_twoArgArray[0] = namedBuildTarget;
                 s_twoArgArray[1] = buildTarget;
-                return (GUID)s_getGUIDFromBuildTargetMethod.Invoke(null, s_twoArgArray);
+                return (UnityEngine.GUID)s_getGUIDFromBuildTargetMethod.Invoke(null, s_twoArgArray);
             }
             finally
             {
