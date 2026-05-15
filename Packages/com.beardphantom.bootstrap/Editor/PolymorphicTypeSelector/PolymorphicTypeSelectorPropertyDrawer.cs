@@ -25,6 +25,8 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
 
         private Button _deleteButton;
 
+        private Rect _createNewButtonRepaintRect;
+
         public StatefulElement(
             PolymorphicTypeSelectorAttribute attribute,
             SerializedProperty property)
@@ -60,10 +62,8 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
             {
                 UnregisterCallback<MouseEnterEvent>(OnMouseEnterRoot);
                 UnregisterCallback<MouseLeaveEvent>(OnMouseLeaveRoot);
-                var buttonField = ButtonField.Create(label, $"Create New {_baseType.Name}");
+                var buttonField = IMGUIField.Create(label, OnDrawCreateNewButtonIMGUI);
                 buttonField.name = "create-button";
-                buttonField.Button.AddToClassList("create-button");
-                buttonField.Button.clickable.clickedWithEventInfo += OnCreateNewButtonClicked;
                 Add(buttonField);
             }
             else
@@ -88,6 +88,26 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
             this.Bind(_property.serializedObject);
         }
 
+        private void OnDrawCreateNewButtonIMGUI()
+        {
+            GUIContent content = EditorGUIUtility.TrTempContent("Create new IService");
+            Rect createNewButtonRect = GUILayoutUtility.GetRect(content, GUI.skin.button);
+            if (Event.current.type == EventType.Repaint)
+            {
+                _createNewButtonRepaintRect = createNewButtonRect;
+            }
+
+            if (!GUI.Button(createNewButtonRect, content))
+            {
+                return;
+            }
+
+            Rect dropdownRect = _createNewButtonRepaintRect;
+            var dropdown = new PolymorphicTypeSelectorDropdown(_baseType);
+            dropdown.ComponentTypeSelected += OnComponentTypeSelected;
+            dropdown.Show(dropdownRect);
+        }
+
         private void OnMouseEnterRoot(MouseEnterEvent _)
         {
             _deleteButton.style.display = DisplayStyle.Flex;
@@ -109,16 +129,6 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
             RebuildUI();
         }
 
-        private void OnCreateNewButtonClicked(EventBase obj)
-        {
-            var target = (Button)obj.currentTarget;
-            Rect rect = target.worldBound;
-            // rect.position = obj.originalMousePosition;
-            var dropdown = new PolymorphicTypeSelectorDropdown(_baseType);
-            dropdown.ComponentTypeSelected += OnComponentTypeSelected;
-            dropdown.Show(rect);
-        }
-
         private void OnComponentTypeSelected(Type type)
         {
             object instance = Activator.CreateInstance(type);
@@ -127,23 +137,21 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
             RebuildUI();
         }
 
-        private class ButtonField : BaseField<bool>
+        private class IMGUIField : BaseField<bool>
         {
-            public readonly Button Button;
+            public readonly IMGUIContainer IMGUIContainer;
 
-            private ButtonField(string label, string buttonText, Button button) : base(label, button)
+            private IMGUIField(string label, IMGUIContainer buttonGUIContainer) : base(label, buttonGUIContainer)
             {
                 AddToClassList(alignedFieldUssClassName);
-                Button = button;
-                button.text = buttonText;
-                button.style.flexGrow = 1f;
-                button.style.marginTop = 0f;
-                button.style.marginBottom = 0f;
+                buttonGUIContainer.style.flexGrow = 1f;
+                buttonGUIContainer.style.marginTop = 0f;
+                buttonGUIContainer.style.marginBottom = 0f;
             }
 
-            public static ButtonField Create(string label, string buttonText)
+            public static IMGUIField Create(string label, Action drawButtonGui)
             {
-                return new ButtonField(label, buttonText, new Button());
+                return new IMGUIField(label, new IMGUIContainer(drawButtonGui));
             }
         }
     }
