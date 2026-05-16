@@ -23,6 +23,8 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
 
         private readonly SerializedProperty _property;
 
+        private readonly string _createNewButtonText;
+
         private Button _deleteButton;
 
         private Rect _createNewButtonRepaintRect;
@@ -34,6 +36,7 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
             _property = property.Copy();
             _baseType = attribute.BaseType;
             name = "root";
+            _createNewButtonText = $"Create new {_baseType.Name}";
             var styleSheet = AssetDatabase.LoadAssetByGUID<StyleSheet>(s_stylesheetGuid);
             styleSheets.Add(styleSheet);
             RebuildUI();
@@ -90,7 +93,7 @@ public class PolymorphicTypeSelectorPropertyDrawer : PropertyDrawer
 
         private void OnDrawCreateNewButtonIMGUI()
         {
-            GUIContent content = EditorGUIUtility.TrTempContent("Create new IService");
+            GUIContent content = EditorGUIUtility.TrTempContent(_createNewButtonText);
             Rect createNewButtonRect = GUILayoutUtility.GetRect(content, GUI.skin.button);
             if (Event.current.type == EventType.Repaint)
             {
