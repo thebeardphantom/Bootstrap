@@ -15,6 +15,8 @@ public class PolymorphicTypeSelectorDropdown : AdvancedDropdown
 
     private readonly List<SelectableType> _selectableTypes = new();
 
+    private readonly Dictionary<int, SelectableType> _itemIdToSelectableType = new();
+
     public PolymorphicTypeSelectorDropdown(Type baseType)
         : this(baseType, Enumerable.Empty<Type>(), new AdvancedDropdownState()) { }
 
@@ -40,7 +42,7 @@ public class PolymorphicTypeSelectorDropdown : AdvancedDropdown
 
     protected override void ItemSelected(AdvancedDropdownItem item)
     {
-        SelectableType type = _selectableTypes.FirstOrDefault(t => t.Type.FullName == item.name);
+        SelectableType type = _itemIdToSelectableType[item.id];
         if (!type.IsEnabled)
         {
             EditorUtility.DisplayDialog(
@@ -79,15 +81,15 @@ public class PolymorphicTypeSelectorDropdown : AdvancedDropdown
             .OrderBy(g => g.Key);
         GUIContent scriptIconContent = EditorGUIUtility.IconContent("cs Script Icon");
         var scriptIcon = (Texture2D)scriptIconContent.image;
-        foreach (IGrouping<string, SelectableType> selectableTypes in selectableTypesByNamespace)
+        foreach (IGrouping<string, SelectableType> group in selectableTypesByNamespace)
         {
-            var nsItem = new AdvancedDropdownItem(selectableTypes.Key)
+            var nsItem = new AdvancedDropdownItem(group.Key)
             {
                 enabled = true,
             };
             root.AddChild(nsItem);
 
-            foreach (SelectableType selectableType in selectableTypes)
+            foreach (SelectableType selectableType in group)
             {
                 var typeItem = new AdvancedDropdownItem(selectableType.Type.Name)
                 {
@@ -95,6 +97,7 @@ public class PolymorphicTypeSelectorDropdown : AdvancedDropdown
                     icon = scriptIcon,
                 };
                 nsItem.AddChild(typeItem);
+                _itemIdToSelectableType.Add(typeItem.id, selectableType);
             }
         }
 
@@ -106,6 +109,7 @@ public class PolymorphicTypeSelectorDropdown : AdvancedDropdown
                 icon = scriptIcon,
             };
             root.AddChild(typeItem);
+            _itemIdToSelectableType.Add(typeItem.id, selectableType);
         }
 
         return root;
