@@ -16,12 +16,12 @@ namespace BeardPhantom.Bootstrap
 
         public static bool IsNotNull<T>(this T obj) where T : class
         {
-            return !IsNull(obj);
+            return !obj.IsNull();
         }
 
         public static T NullCoalesce<T>(this T obj, T valueIfNull) where T : class
         {
-            return IsNull(obj) ? valueIfNull : obj;
+            return obj.IsNull() ? valueIfNull : obj;
         }
     }
 }

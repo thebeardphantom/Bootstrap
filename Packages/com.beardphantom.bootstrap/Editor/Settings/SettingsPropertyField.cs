@@ -40,16 +40,15 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         {
             // I hate that I have to do this. TODO Look into GeometryChangedEvent
             var propertyField = (PropertyField)evt.target;
-            propertyField.schedule.Execute(
-                    () =>
+            propertyField.schedule.Execute(() =>
+                {
+                    string labelText = propertyField.label;
+                    var label = propertyField.Q<Label>(className: PropertyField.labelUssClassName);
+                    if (label != null)
                     {
-                        string labelText = propertyField.label;
-                        var label = propertyField.Q<Label>(className: PropertyField.labelUssClassName);
-                        if (label != null)
-                        {
-                            label.text = labelText;
-                        }
-                    })
+                        label.text = labelText;
+                    }
+                })
                 .ExecuteLater(1);
         }
 

@@ -16,7 +16,7 @@ namespace BeardPhantom.Bootstrap.EditMode
 {
     public class EditModeAppInstance : AppInstance
     {
-        public const string EditModeServicesInstanceIdSessionStateKey = "EditModeServicesIId";
+        public const string EditModeServicesEntityIdSessionStateKey = "EditModeServicesIId";
 
         public const string EditModeStateSessionStateKey = "EDIT_MODE_STATE";
 
@@ -185,7 +185,7 @@ namespace BeardPhantom.Bootstrap.EditMode
                 }
 
                 _editModeServiceListInstance = CreateEditModeServicesInstance(serviceListAssetSource);
-                SessionState.SetInt(EditModeServicesInstanceIdSessionStateKey, _editModeServiceListInstance.GetInstanceID());
+                SessionState.SetString(EditModeServicesEntityIdSessionStateKey, _editModeServiceListInstance.GetEntityId().ToString());
 
                 var context = new BootstrapContext(TaskScheduler);
                 var description = $"Creating edit mode services from prefab '{serviceListAssetSource.name}' from {definedScope} scope.";

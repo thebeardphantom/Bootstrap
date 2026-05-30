@@ -11,6 +11,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
 {
     public class BootstrapSettingsEditor
     {
+        public event Action<SerializedObject> SerializedObjectChanged;
         private const string UxmlGuid = "cc2657753a54cb14396441d2393d3d8f";
 
         private readonly VisualElement _content;
@@ -26,8 +27,6 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         private UnityEditor.Editor _editor;
 
         private VisualElement _rootElement;
-
-        public event Action<SerializedObject> SerializedObjectChanged;
 
         public BootstrapSettingsEditor(VisualElement rootElement)
         {
@@ -154,7 +153,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
                 _tabViewContent.Query<SettingsPropertyField>()
                     .ForEach(spf => spf.SetAlwaysOverride(true));
             }
-            
+
             SerializedObjectChanged?.Invoke(serializedObject);
         }
     }
