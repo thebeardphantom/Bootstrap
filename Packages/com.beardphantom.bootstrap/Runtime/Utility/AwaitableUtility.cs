@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +13,11 @@ namespace BeardPhantom.Bootstrap
 
         public static void Forget(this Awaitable awaitable, bool silenceOperationCancelledExceptions = true)
         {
+#if UNITY_6000_5_OR_NEWER
+            awaitable.LogExceptionsAndForget();
+#else
             _ = ForgetImpl(awaitable, silenceOperationCancelledExceptions);
+#endif
         }
 
         public static void Forget<T>(this Awaitable<T> awaitable, bool silenceOperationCancelledExceptions = true)
@@ -35,11 +40,12 @@ namespace BeardPhantom.Bootstrap
         /// Gets an Awaitable that is already completed.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [SuppressMessage("ReSharper", "AsyncMethodWithoutAwait")]
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private static async Awaitable GetCompleted() { }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
-        private static async Task ForgetImpl(Awaitable awaitable, bool silenceOperationCancelledExceptions)
+        private static async Awaitable ForgetImpl(Awaitable awaitable, bool silenceOperationCancelledExceptions)
         {
             try
             {
@@ -52,7 +58,7 @@ namespace BeardPhantom.Bootstrap
             }
         }
 
-        private static async Task ForgetImpl<T>(Awaitable<T> awaitable, bool silenceOperationCancelledExceptions)
+        private static async Awaitable ForgetImpl<T>(Awaitable<T> awaitable, bool silenceOperationCancelledExceptions)
         {
             try
             {
@@ -71,6 +77,7 @@ namespace BeardPhantom.Bootstrap
         public static Awaitable<T> Completed => FromResult();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [SuppressMessage("ReSharper", "AsyncMethodWithoutAwait")]
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public static async Awaitable<T> FromResult(T result = default)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
