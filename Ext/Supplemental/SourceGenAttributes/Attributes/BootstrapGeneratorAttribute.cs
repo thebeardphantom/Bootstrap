@@ -6,6 +6,10 @@ namespace BeardPhantom.Bootstrap.SourceGen
     [AttributeUsage(AttributeTargets.Class)]
     public abstract class BootstrapGeneratorAttribute : Attribute
     {
-        internal abstract void Generate(StringBuilder importsStringBuilder, StringBuilder featuresStringBuilder, string className);
+        internal abstract string[] Imports { get; }
+
+        internal abstract string FilenameId { get; }
+
+        internal abstract void Generate(StringBuilder featuresStringBuilder, string className);
     }
 }

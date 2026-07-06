@@ -13,11 +13,7 @@ namespace BeardPhantom.Bootstrap
 
         public static void Forget(this Awaitable awaitable, bool silenceOperationCancelledExceptions = true)
         {
-#if UNITY_6000_5_OR_NEWER
-            awaitable.LogExceptionsAndForget();
-#else
             _ = ForgetImpl(awaitable, silenceOperationCancelledExceptions);
-#endif
         }
 
         public static void Forget<T>(this Awaitable<T> awaitable, bool silenceOperationCancelledExceptions = true)

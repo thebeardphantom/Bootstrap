@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!-- ILRepack -->
+    <Target Name="ILRepacker" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+        <ItemGroup>
+            <InputAssemblies Include="$(OutputPath)BeardPhantom.Bootstrap.SourceGen.dll"/>
+            <InputAssemblies Include="$(OutputPath)BeardPhantom.Bootstrap.SourceGenAttributes.dll"/>
+            <!--<InputAssemblies Include="$(OutputPath)Microsoft.CodeAnalysis.dll" />-->
+            <!--<InputAssemblies Include="$(OutputPath)Microsoft.CodeAnalysis.CSharp.dll" />-->
+            <!--<InputAssemblies Include="$(OutputPath)System.Reflection.Metadata.dll" />-->
+        </ItemGroup>
+
+        <ILRepack
+                Parallel="true"
+                Internalize="false"
+                InputAssemblies="@(InputAssemblies)"
+                TargetKind="Dll"
+                OutputFile="$(OutputPath)\$(AssemblyName).dll"
+                Verbose="true"
+                LogFile="$(OutputPath)\ILRepack.log"
+                CopyAttributes="true"
+                AllowMultiple="true"
+                Union="true"
+                LibraryPath="$(OutputPath)"
+        />
+    </Target>
+    <!-- /ILRepack -->
+</Project>

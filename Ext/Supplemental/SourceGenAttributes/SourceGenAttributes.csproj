@@ -15,7 +15,7 @@
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-      <Exec Command="xcopy /Y /I /F &quot;$(TargetDir)*.dll&quot; &quot;..\..\..\Packages\com.beardphantom.bootstrap\&quot;" />
+      <Exec Command="xcopy /Y /I /F &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;..\..\..\Packages\com.beardphantom.bootstrap\&quot;" />
     </Target>
 
 </Project>
