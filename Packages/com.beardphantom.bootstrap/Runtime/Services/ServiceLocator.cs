@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
-using Object = UnityEngine.Object;
+
+#pragma warning disable CS0067 // Event is never used
 
 namespace BeardPhantom.Bootstrap
 {
