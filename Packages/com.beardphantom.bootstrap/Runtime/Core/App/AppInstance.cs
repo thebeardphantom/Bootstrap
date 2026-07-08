@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Threading;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace BeardPhantom.Bootstrap
 {
@@ -13,6 +13,10 @@ namespace BeardPhantom.Bootstrap
         private AppBootstrapState _bootstrapState;
 
         private bool _disposed;
+
+        private readonly CancellationTokenSource _appLifetimeCancellationTokenSource = new();
+
+        public CancellationToken AppLifetimeCancellationToken => _appLifetimeCancellationTokenSource.Token;
 
         public abstract ServiceListAsset ActiveServiceListAsset { get; }
 
@@ -56,6 +60,8 @@ namespace BeardPhantom.Bootstrap
             }
 
             _disposed = true;
+            _appLifetimeCancellationTokenSource.Cancel();
+            _appLifetimeCancellationTokenSource.Dispose();
             ServiceLocator.Dispose();
         }
 

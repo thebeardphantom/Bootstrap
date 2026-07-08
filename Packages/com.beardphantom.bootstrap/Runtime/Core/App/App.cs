@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace BeardPhantom.Bootstrap
 {
@@ -81,6 +82,13 @@ namespace BeardPhantom.Bootstrap
             Deinitialized?.Invoke();
         }
 
+        public static void Reset()
+        {
+            Deinitialize();
+            SceneManager.LoadScene(0);
+            RuntimeEntryPoint();
+        }
+
         internal static void Initialize<T>() where T : AppInstance, new()
         {
             InitializeAsync<T>().Forget();
@@ -91,13 +99,13 @@ namespace BeardPhantom.Bootstrap
             InitializeAsync(instance).Forget();
         }
 
-        internal static Awaitable InitializeAsync<T>() where T : AppInstance, new()
+        private static Awaitable InitializeAsync<T>() where T : AppInstance, new()
         {
             ThrowIfInitialized();
             return InitializeAsync(new T());
         }
 
-        internal static async Awaitable InitializeAsync(AppInstance instance)
+        private static async Awaitable InitializeAsync(AppInstance instance)
         {
             ThrowIfInitialized();
             Logging.Info($"Initializing instance {instance}.");

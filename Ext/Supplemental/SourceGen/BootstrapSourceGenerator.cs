@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -65,7 +66,7 @@ namespace BeardPhantom.Bootstrap.SourceGen
             }
         }
 
-        public void Execute(GeneratorExecutionContext context)
+        private static void GenerateSource(GeneratorExecutionContext context)
         {
             foreach (SyntaxTree syntaxTree in context.Compilation.SyntaxTrees)
             {
@@ -85,6 +86,21 @@ namespace BeardPhantom.Bootstrap.SourceGen
                     BootstrapGeneratorAttribute[] attributes = CodeGenHelper.FindAttributes(symbol);
                     GenerateExtensionClass(context, clss, attributes);
                 }
+            }
+        }
+
+        public void Execute(GeneratorExecutionContext context)
+        {
+            try
+            {
+                GenerateSource(context);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                string logFile = Path.Combine(Path.GetTempPath(), "BootstrapSourceGenerator.log");
+                File.WriteAllText(logFile, ex.ToString());
+                throw;
             }
         }
 

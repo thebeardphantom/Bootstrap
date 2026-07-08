@@ -88,8 +88,11 @@ namespace BeardPhantom.Bootstrap
         private async Awaitable FlushTaskSchedulerLoopAsync()
         {
             Logging.Debug($"Starting {nameof(FlushTaskSchedulerLoopAsync)}()");
-            CancellationToken cancellationToken = Application.exitCancellationToken;
-            while (Application.isPlaying)
+            using var linked = CancellationTokenSource.CreateLinkedTokenSource(
+                Application.exitCancellationToken,
+                AppLifetimeCancellationToken);
+            CancellationToken cancellationToken = linked.Token;
+            while (!cancellationToken.IsCancellationRequested)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 Assert.IsTrue(BootstrapState >= AppBootstrapState.AsyncTaskFlush, "BootstrapState >= AppBootstrapState.AsyncTaskFlush");

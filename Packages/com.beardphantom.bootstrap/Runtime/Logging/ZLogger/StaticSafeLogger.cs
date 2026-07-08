@@ -3,13 +3,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace BeardPhantom.Bootstrap.ZLogger
 {
     public class StaticSafeLogger : ILogger
     {
-        private static readonly ServiceRef<ILogService> s_logService = new();
-
         private readonly string _loggerCategory;
 
         private readonly Queue<IQueuedLog> _logQueue = new();
@@ -67,9 +66,9 @@ namespace BeardPhantom.Bootstrap.ZLogger
                 return;
             }
 
-            if (s_logService.TryGetValue(out ILogService logService) && logService.TryGetLogger(_loggerCategory, out _wrappedLogger))
+            if (ServiceRef<ILogService>.TryGetInstance(out ILogService logService)
+                && logService.TryGetLogger(_loggerCategory, out _wrappedLogger))
             {
-                _wrappedLogger = logService.GetLogger(_loggerCategory);
                 _acquisitionGuid = appInstance.SessionGuid;
                 EmptyLogQueue();
             }

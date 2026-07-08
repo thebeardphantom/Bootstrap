@@ -12,6 +12,7 @@ namespace BeardPhantom.Bootstrap.SourceGen
         {
             "UnityEngine",
             "BeardPhantom.Bootstrap",
+            "System.Runtime.CompilerServices",
         };
 
         internal override string FilenameId => "Singleton";
@@ -26,8 +27,7 @@ namespace BeardPhantom.Bootstrap.SourceGen
         internal override void Generate(StringBuilder featuresStringBuilder, string className)
         {
             string accessFormatStr = Access == SingletonAccess.Property ? PropertyFormatStr : OutMethodFormatStr;
-            string accessStr = string.Format(accessFormatStr, className);
-            featuresStringBuilder.AppendFormat(Format, className, accessStr);
+            featuresStringBuilder.AppendFormat(accessFormatStr, className);
         }
     }
 }

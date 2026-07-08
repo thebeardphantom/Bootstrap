@@ -1,56 +1,52 @@
-﻿using System;
-
-namespace BeardPhantom.Bootstrap
+﻿namespace BeardPhantom.Bootstrap
 {
-    public class ServiceRef<T> where T : class
+    public static class ServiceRef<T> where T : class
     {
-        private T _value;
+        private static T s_instance;
 
-        private Guid _sessionGuid;
+        private static bool s_subscribed;
 
-        private bool _hasValue;
-
-        public T Value
+        public static T Instance
         {
             get
             {
-                if (!App.TryGetInstance(out AppInstance instance))
+                if (s_instance.IsNotNull())
                 {
-                    ClearValue();
-                    return null;
+                    return s_instance;
                 }
 
-                Guid appSessionGuid = instance.SessionGuid;
-                if (_value.IsNotNull() && _sessionGuid == appSessionGuid)
-                {
-                    return _value;
-                }
-
-                if (App.TryLocate(out _value))
-                {
-                    _hasValue = true;
-                    _sessionGuid = appSessionGuid;
-                }
-                else
-                {
-                    ClearValue();
-                }
-
-                return _value;
+                EnsureSubscribed();
+                s_instance = App.Locate<T>();
+                return s_instance;
             }
         }
 
-        public bool TryGetValue(out T value)
+        public static bool TryGetInstance(out T instance)
         {
-            value = Value;
-            return _hasValue;
+            if (s_instance.IsNull())
+            {
+                EnsureSubscribed();
+                App.TryLocate(out s_instance);
+            }
+
+            instance = s_instance;
+            return s_instance.IsNotNull();
         }
 
-        private void ClearValue()
+        private static void EnsureSubscribed()
         {
-            _value = null;
-            _hasValue = false;
-            _sessionGuid = Guid.Empty;
+            if (s_subscribed)
+            {
+                return;
+            }
+
+            s_subscribed = true;
+            App.Deinitialized += Clear;
+        }
+
+        private static void Clear()
+        {
+            s_instance = null;
         }
     }
 }

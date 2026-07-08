@@ -26,9 +26,9 @@ namespace BeardPhantom.Bootstrap.SourceGen
                     return false;
                 }
 
-                if (syntaxNode.GetType() == typeof(T))
+                if (syntaxNode is T typedSyntaxNode)
                 {
-                    result = syntaxNode as T;
+                    result = typedSyntaxNode;
                     return true;
                 }
 
