@@ -21,7 +21,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
 
         private ILoggerFactory _loggerFactory;
 
-        public int InitPriority => -1000;
+        int IServiceWithInitPriority.InitPriority => -1000;
 
         [field: SerializeField]
         private LogLevel ConsoleMinLogLevel { get; set; } = LogLevel.Debug;
@@ -31,22 +31,6 @@ namespace BeardPhantom.Bootstrap.ZLogger
 
         [field: SerializeField]
         private string FilePath { get; set; } = "Temp/log.txt";
-
-        [SuppressMessage("ReSharper", "MemberCanBeProtected.Global")]
-        public virtual string GetLogLevelAbbreviated(LogLevel logLevel)
-        {
-            return logLevel switch
-            {
-                LogLevel.Trace => "TRC",
-                LogLevel.Debug => "DBG",
-                LogLevel.Information => "INF",
-                LogLevel.Warning => "WRN",
-                LogLevel.Error => "ERR",
-                LogLevel.Critical => "CRT",
-                LogLevel.None => "NNE",
-                _ => throw new ArgumentOutOfRangeException(),
-            };
-        }
 
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
         public ILogger GetLogger(string category)
@@ -84,12 +68,11 @@ namespace BeardPhantom.Bootstrap.ZLogger
         protected virtual void SetPrefixFormatter(PlainTextZLoggerFormatter formatter)
         {
             formatter.SetPrefixFormatter(
-                $"[{0}] [{1}] [{2}] ",
+                $"[{0:short}] [{1}] [{2}] ",
                 (in MessageTemplate template, in LogInfo info) =>
                 {
-                    string logLevelAbbreviated = GetLogLevelAbbreviated(info.LogLevel);
                     int frame = Time.frameCount;
-                    template.Format(logLevelAbbreviated, frame, info.Category);
+                    template.Format(info.LogLevel, frame, info.Category);
                 });
         }
 
