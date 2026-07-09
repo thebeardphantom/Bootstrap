@@ -31,9 +31,9 @@ namespace BeardPhantom.Bootstrap
             return Instance;
         }
 
+#if !UNITY_6000_5_OR_NEWER
         private void OnApplicationQuit()
         {
-            Logging.Debug("OnApplicationQuit");
             if (App.TryGetInstance(out AppInstance appInstance))
             {
                 appInstance.NotifyQuitting();
@@ -41,6 +41,7 @@ namespace BeardPhantom.Bootstrap
 
             DestroyImmediate(gameObject);
         }
+#endif
 
         private void OnDestroy()
         {

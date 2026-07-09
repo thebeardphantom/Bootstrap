@@ -10,11 +10,9 @@ namespace BeardPhantom.Bootstrap
 
         public event OnAppBootstrapStateChanged AppBootstrapStateChanged;
 
-        private AppBootstrapState _bootstrapState;
-
-        private bool _disposed;
-
         private readonly CancellationTokenSource _appLifetimeCancellationTokenSource = new();
+
+        private AppBootstrapState _bootstrapState;
 
         public CancellationToken AppLifetimeCancellationToken => _appLifetimeCancellationTokenSource.Token;
 
@@ -46,20 +44,24 @@ namespace BeardPhantom.Bootstrap
 
         public bool IsRunningTests { get; internal set; }
 
-        public abstract bool IsQuitting { get; }
+        public virtual bool IsQuitting => BootstrapState == AppBootstrapState.Quitting;
+
+        public virtual bool IsResetting => BootstrapState == AppBootstrapState.Resetting;
 
         public TaskScheduler TaskScheduler { get; private set; }
 
         public bool CanLocateServices => ServiceLocator is { CanLocateServices: true, };
 
+        protected bool Disposed { get; private set; }
+
         public virtual void Dispose()
         {
-            if (_disposed)
+            if (Disposed)
             {
                 return;
             }
 
-            _disposed = true;
+            Disposed = true;
             _appLifetimeCancellationTokenSource.Cancel();
             _appLifetimeCancellationTokenSource.Dispose();
             ServiceLocator.Dispose();
@@ -75,7 +77,25 @@ namespace BeardPhantom.Bootstrap
             return ServiceLocator.LocateService<T>();
         }
 
-        internal abstract void NotifyQuitting();
+        internal virtual void OnEnteringPlaymode() { }
+
+        internal virtual void OnEnteringEditMode() { }
+
+        internal virtual void OnExitingPlaymode() { }
+
+        internal virtual void OnExitingEditMode() { }
+
+        internal void NotifyQuitting()
+        {
+            BootstrapState = AppBootstrapState.Quitting;
+            Dispose();
+        }
+
+        internal void NotifyResetting()
+        {
+            BootstrapState = AppBootstrapState.Resetting;
+            Dispose();
+        }
 
         internal virtual Awaitable BootstrapAsync()
         {

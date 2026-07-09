@@ -58,18 +58,7 @@ namespace BeardPhantom.Bootstrap
             return Instance.Locate<T>();
         }
 
-        public static void Dispose()
-        {
-            if (!TryGetInstance(out AppInstance instance))
-            {
-                return;
-            }
-
-            Logging.Info($"Disposing instance {s_instance}.");
-            instance.Dispose();
-        }
-
-        public static void Deinitialize()
+        public static void Reset()
         {
             if (!TryGetInstance(out AppInstance instance))
             {
@@ -77,16 +66,24 @@ namespace BeardPhantom.Bootstrap
             }
 
             Logging.Info($"Deinitializing instance {s_instance}.");
-            instance.Dispose();
+            instance.NotifyResetting();
             s_instance = null;
             Deinitialized?.Invoke();
-        }
-
-        public static void Reset()
-        {
-            Deinitialize();
             SceneManager.LoadScene(0);
             RuntimeEntryPoint();
+        }
+
+        internal static void Deinitialize()
+        {
+            if (!TryGetInstance(out AppInstance instance))
+            {
+                return;
+            }
+
+            Logging.Info($"Deinitializing instance {s_instance}.");
+            instance.NotifyQuitting();
+            s_instance = null;
+            Deinitialized?.Invoke();
         }
 
         internal static void Initialize<T>() where T : AppInstance, new()
@@ -125,7 +122,7 @@ namespace BeardPhantom.Bootstrap
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void RuntimeEntryPoint()
         {
-            RuntimeAppInstance appInstance = BootstrapUtility.GetRuntimeAppInstance();
+            RuntimeAppInstance appInstance = new PlayModeAppInstance();
             InitializeAsync(appInstance).Forget();
         }
     }

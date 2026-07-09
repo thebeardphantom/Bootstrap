@@ -11,5 +11,7 @@ namespace BeardPhantom.Bootstrap
         AsyncTaskFlush = 6,
         PostBootstrap = 7,
         Ready = 8,
+        Quitting = 9,
+        Resetting = 10,
     }
 }

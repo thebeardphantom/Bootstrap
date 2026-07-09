@@ -7,8 +7,6 @@ namespace BeardPhantom.Bootstrap
 {
     public abstract class RuntimeAppInstance : AppInstance
     {
-        private bool _isQuitting;
-
         private IPreBootstrapHandler _preHandler;
 
         private IPostBootstrapHandler _postHandler;
@@ -17,13 +15,16 @@ namespace BeardPhantom.Bootstrap
 
         public override ServiceListAsset ActiveServiceListAsset => SessionEnvironment.ServiceListAsset;
 
-        public override bool IsQuitting => _isQuitting;
-
         protected abstract bool TryDetermineSessionEnvironment(out BootstrapEnvironmentAsset environment);
 
-        internal override void NotifyQuitting()
+        protected abstract void GetDefaultBootstrapHandlers(
+            out IPreBootstrapHandler preBootstrapHandler,
+            out IPostBootstrapHandler postBootstrapHandler);
+
+        internal override void OnExitingPlaymode()
         {
-            _isQuitting = true;
+            base.OnExitingPlaymode();
+            NotifyQuitting();
         }
 
         internal override async Awaitable BootstrapAsync()
@@ -75,7 +76,7 @@ namespace BeardPhantom.Bootstrap
 
         private void AssignBootstrapHandlers()
         {
-            BootstrapUtility.GetDefaultBootstrapHandlers(
+            GetDefaultBootstrapHandlers(
                 out IPreBootstrapHandler defaultPreHandler,
                 out IPostBootstrapHandler defaultPostHandler);
             _preHandler = SessionEnvironment.PreBootstrapHandler.NullCoalesce(defaultPreHandler);

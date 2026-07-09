@@ -6,7 +6,7 @@ namespace BeardPhantom.Bootstrap
 {
     internal static class ObjectUtility
     {
-        internal static string GetGameObjectPath(GameObject gameObject)
+        public static string GetGameObjectPath(GameObject gameObject)
         {
             using (GenericPool<StringBuilder>.Get(out StringBuilder stringBuilder))
             {

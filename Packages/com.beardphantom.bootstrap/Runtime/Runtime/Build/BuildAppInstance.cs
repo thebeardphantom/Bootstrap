@@ -33,5 +33,13 @@ namespace BeardPhantom.Bootstrap
 
             return foundValid;
         }
+
+        protected override void GetDefaultBootstrapHandlers(
+            out IPreBootstrapHandler preBootstrapHandler,
+            out IPostBootstrapHandler postBootstrapHandler)
+        {
+            preBootstrapHandler = BuildBootstrapHandler.Instance;
+            postBootstrapHandler = BuildBootstrapHandler.Instance;
+        }
     }
 }

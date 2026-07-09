@@ -29,9 +29,12 @@ namespace BeardPhantom.Bootstrap.EditMode
         public EditModeAppInstance()
         {
             Logging.LogHandler = Logging.DefaultLogHandler;
-            EditorApplication.playModeStateChanged += OnPlaymodeStateChanged;
             BootstrapEditorProjectSettings.instance.EditModeServices.ValueChanged += OnEditModeServicesChanged;
             BootstrapEditorUserSettings.instance.EditModeServices.ValueChanged += OnEditModeServicesChanged;
+            if (BootstrapEditorSettingsUtility.GetValue(a => a.EditorFlowEnabled))
+            {
+                EditorSceneManager.playModeStartScene = null;
+            }
         }
 
         private static ServiceListAsset CreateEditModeServicesInstance(ServiceListAsset serviceListAssetSource)
@@ -51,13 +54,37 @@ namespace BeardPhantom.Bootstrap.EditMode
             return sceneEnvironments.TryFindEnvironmentForKey(sceneAsset, out environment);
         }
 
-        private static void OnPlaymodeStateChanged(PlayModeStateChange change)
+        public override void Dispose()
         {
-            if (change is not PlayModeStateChange.ExitingEditMode)
+            base.Dispose();
+            if (_editModeServiceListInstance.IsNotNull())
             {
-                return;
+                Object.DestroyImmediate(_editModeServiceListInstance);
             }
+        }
 
+        public void ReinitializeIfNecessary()
+        {
+            ServiceListAsset serviceListAsset = BootstrapEditorSettingsUtility.GetValue(asset => asset.EditModeServices);
+
+            /*
+             * Bootstrap if:
+             *     1. There's no existing instance already.
+             *     2. The environment was cleared. PerformBootstrappingAsync will cleanup any existing instances.
+             *     3. The services list asset has changed.
+             */
+            if (_editModeServiceListInstance.IsNull()
+                || serviceListAsset.IsNull()
+                || serviceListAsset != _editModeServiceListInstance.SourceAsset)
+            {
+                App.Deinitialize();
+                App.Initialize<EditModeAppInstance>();
+            }
+        }
+
+        internal override void OnExitingEditMode()
+        {
+            base.OnExitingEditMode();
             SessionState.EraseString(EditModeStateSessionStateKey);
 
             if (BootstrapEditorSettingsUtility.GetValue(a => a.EditorFlowEnabled))
@@ -119,37 +146,6 @@ namespace BeardPhantom.Bootstrap.EditMode
 
             App.Deinitialize();
         }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-            EditorApplication.playModeStateChanged -= OnPlaymodeStateChanged;
-            if (_editModeServiceListInstance.IsNotNull())
-            {
-                Object.DestroyImmediate(_editModeServiceListInstance);
-            }
-        }
-
-        public void ReinitializeIfNecessary()
-        {
-            ServiceListAsset serviceListAsset = BootstrapEditorSettingsUtility.GetValue(asset => asset.EditModeServices);
-
-            /*
-             * Bootstrap if:
-             *     1. There's no existing instance already.
-             *     2. The environment was cleared. PerformBootstrappingAsync will cleanup any existing instances.
-             *     3. The services list asset has changed.
-             */
-            if (_editModeServiceListInstance.IsNull()
-                || serviceListAsset.IsNull()
-                || serviceListAsset != _editModeServiceListInstance.SourceAsset)
-            {
-                App.Deinitialize();
-                App.Initialize<EditModeAppInstance>();
-            }
-        }
-
-        internal override void NotifyQuitting() { }
 
         internal override async Awaitable BootstrapAsync()
         {

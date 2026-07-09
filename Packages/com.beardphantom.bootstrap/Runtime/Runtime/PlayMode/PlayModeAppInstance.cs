@@ -1,45 +1,29 @@
 ﻿#if UNITY_EDITOR
 using BeardPhantom.Bootstrap.EditMode;
 using BeardPhantom.Bootstrap.Environment;
+using Newtonsoft.Json;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 
 namespace BeardPhantom.Bootstrap
 {
     public class PlayModeAppInstance : RuntimeAppInstance
     {
-        public PlayModeAppInstance()
+        internal static bool TryLoadEditModeState(out EditModeState editModeState)
         {
-            EditorApplication.playModeStateChanged += OnPlaymodeStateChanged;
-        }
-
-        private static void OnPlaymodeStateChanged(PlayModeStateChange change)
-        {
-            switch (change)
+            string json = SessionState.GetString(EditModeAppInstance.EditModeStateSessionStateKey, null);
+            if (string.IsNullOrWhiteSpace(json))
             {
-                case PlayModeStateChange.ExitingPlayMode:
-                {
-                    App.Dispose();
-                    break;
-                }
-                case PlayModeStateChange.EnteredEditMode:
-                {
-                    EditorApplication.playModeStateChanged -= OnPlaymodeStateChanged;
-                    if (BootstrapEditorSettingsUtility.GetValue(a => a.EditorFlowEnabled))
-                    {
-                        EditorSceneManager.playModeStartScene = null;
-                    }
-
-                    App.Deinitialize();
-                    App.InitializeEditorDelayed<EditModeAppInstance>();
-                    break;
-                }
+                editModeState = null;
+                return false;
             }
+
+            editModeState = JsonConvert.DeserializeObject<EditModeState>(json);
+            return editModeState != null;
         }
 
         protected override bool TryDetermineSessionEnvironment(out BootstrapEnvironmentAsset environment)
         {
-            if (!BootstrapUtility.TryLoadEditModeState(out EditModeState editModeState))
+            if (!TryLoadEditModeState(out EditModeState editModeState))
             {
                 environment = null;
                 return false;
@@ -47,6 +31,14 @@ namespace BeardPhantom.Bootstrap
 
             environment = editModeState.Environment;
             return editModeState.Environment;
+        }
+
+        protected override void GetDefaultBootstrapHandlers(
+            out IPreBootstrapHandler preBootstrapHandler,
+            out IPostBootstrapHandler postBootstrapHandler)
+        {
+            preBootstrapHandler = PlayModeBootstrapHandler.Instance;
+            postBootstrapHandler = PlayModeBootstrapHandler.Instance;
         }
     }
 }
