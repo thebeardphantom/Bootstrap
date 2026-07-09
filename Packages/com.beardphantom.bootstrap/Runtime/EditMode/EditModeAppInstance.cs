@@ -77,14 +77,13 @@ namespace BeardPhantom.Bootstrap.EditMode
                 || serviceListAsset.IsNull()
                 || serviceListAsset != _editModeServiceListInstance.SourceAsset)
             {
-                App.Deinitialize();
+                App.Quit();
                 App.Initialize<EditModeAppInstance>();
             }
         }
 
-        internal override void OnExitingEditMode()
+        internal void OnExitingEditMode()
         {
-            base.OnExitingEditMode();
             SessionState.EraseString(EditModeStateSessionStateKey);
 
             if (BootstrapEditorSettingsUtility.GetValue(a => a.EditorFlowEnabled))
@@ -143,8 +142,6 @@ namespace BeardPhantom.Bootstrap.EditMode
                     }
                 }
             }
-
-            App.Deinitialize();
         }
 
         internal override async Awaitable BootstrapAsync()

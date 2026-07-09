@@ -98,7 +98,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
                 return;
             }
 
-            App.Deinitialize();
+            App.Quit();
             App.Initialize<EditModeAppInstance>();
         }
 

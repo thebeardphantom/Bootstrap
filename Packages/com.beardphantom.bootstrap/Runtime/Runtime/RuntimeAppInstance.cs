@@ -21,12 +21,6 @@ namespace BeardPhantom.Bootstrap
             out IPreBootstrapHandler preBootstrapHandler,
             out IPostBootstrapHandler postBootstrapHandler);
 
-        internal override void OnExitingPlaymode()
-        {
-            base.OnExitingPlaymode();
-            NotifyQuitting();
-        }
-
         internal override async Awaitable BootstrapAsync()
         {
             await base.BootstrapAsync();

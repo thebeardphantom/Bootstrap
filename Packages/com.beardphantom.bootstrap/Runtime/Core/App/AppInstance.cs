@@ -61,6 +61,7 @@ namespace BeardPhantom.Bootstrap
                 return;
             }
 
+            Logging.Debug($"Disposing {this}.");
             Disposed = true;
             _appLifetimeCancellationTokenSource.Cancel();
             _appLifetimeCancellationTokenSource.Dispose();
@@ -77,22 +78,16 @@ namespace BeardPhantom.Bootstrap
             return ServiceLocator.LocateService<T>();
         }
 
-        internal virtual void OnEnteringPlaymode() { }
-
-        internal virtual void OnEnteringEditMode() { }
-
-        internal virtual void OnExitingPlaymode() { }
-
-        internal virtual void OnExitingEditMode() { }
-
         internal void NotifyQuitting()
         {
+            Logging.Debug($"{this} is quitting.");
             BootstrapState = AppBootstrapState.Quitting;
             Dispose();
         }
 
         internal void NotifyResetting()
         {
+            Logging.Debug($"{this} is resetting.");
             BootstrapState = AppBootstrapState.Resetting;
             Dispose();
         }

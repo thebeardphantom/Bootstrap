@@ -1,9 +1,7 @@
 ﻿#if UNITY_EDITOR
 using BeardPhantom.Bootstrap.EditMode;
-using System;
 using UnityEditor;
 using UnityEditor.Compilation;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace BeardPhantom.Bootstrap
@@ -39,13 +37,21 @@ namespace BeardPhantom.Bootstrap
         [InitializeOnLoadMethod]
         private static void EditorEntryPoint()
         {
+            CompilationPipeline.compilationStarted += OnCompilationStarted;
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
-            CompilationPipeline.compilationFinished += OnCompilationFinished;
 
             if (!Application.isPlaying)
             {
                 InitializeEditorDelayed<EditModeAppInstance>();
             }
+        }
+
+        private static void OnCompilationStarted(object obj)
+        {
+            Logging.Debug($"{nameof(OnCompilationStarted)}");
+            EditorApplication.isPlaying = false;
+            Quit();
+            Deinitialize();
         }
 
         private static void OnPlayModeStateChanged(PlayModeStateChange state)
@@ -55,52 +61,27 @@ namespace BeardPhantom.Bootstrap
             {
                 case PlayModeStateChange.EnteredEditMode:
                 {
-                    if (TryGetInstance(out AppInstance instance))
-                    {
-                        instance.OnEnteringEditMode();
-                    }
-
                     Deinitialize();
                     InitializeEditorDelayed<EditModeAppInstance>();
                     break;
                 }
-                case PlayModeStateChange.EnteredPlayMode:
-                {
-                    if (TryGetInstance(out AppInstance instance))
-                    {
-                        instance.OnEnteringPlaymode();
-                    }
-
-                    break;
-                }
                 case PlayModeStateChange.ExitingEditMode:
                 {
-                    if (TryGetInstance(out AppInstance instance))
+                    if (TryGetInstance(out EditModeAppInstance instance))
                     {
                         instance.OnExitingEditMode();
                     }
 
+                    Quit();
+                    Deinitialize();
                     break;
                 }
                 case PlayModeStateChange.ExitingPlayMode:
                 {
-                    if (TryGetInstance(out AppInstance instance))
-                    {
-                        instance.OnExitingPlaymode();
-                    }
-
+                    Quit();
                     break;
                 }
-                default:
-                {
-                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
-                }
             }
-        }
-
-        private static void OnCompilationFinished(object obj)
-        {
-            Deinitialize();
         }
     }
 }

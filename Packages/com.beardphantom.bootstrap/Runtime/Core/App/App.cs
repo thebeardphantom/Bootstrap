@@ -62,28 +62,29 @@ namespace BeardPhantom.Bootstrap
         {
             if (!TryGetInstance(out AppInstance instance))
             {
+                Logging.Warn("No current AppInstance.");
                 return;
             }
 
-            Logging.Info($"Deinitializing instance {s_instance}.");
             instance.NotifyResetting();
-            s_instance = null;
-            Deinitialized?.Invoke();
+            Deinitialize();
+
+            Logging.Debug("Reloading scene at index 0.");
             SceneManager.LoadScene(0);
+
+            Logging.Debug($"Re-entering {nameof(RuntimeEntryPoint)}.");
             RuntimeEntryPoint();
         }
 
-        internal static void Deinitialize()
+        internal static void Quit()
         {
             if (!TryGetInstance(out AppInstance instance))
             {
+                Logging.Warn("No current AppInstance.");
                 return;
             }
 
-            Logging.Info($"Deinitializing instance {s_instance}.");
             instance.NotifyQuitting();
-            s_instance = null;
-            Deinitialized?.Invoke();
         }
 
         internal static void Initialize<T>() where T : AppInstance, new()
@@ -91,9 +92,11 @@ namespace BeardPhantom.Bootstrap
             InitializeAsync<T>().Forget();
         }
 
-        internal static void Initialize(AppInstance instance)
+        private static void Deinitialize()
         {
-            InitializeAsync(instance).Forget();
+            Logging.Debug($"Deinitializing instance {s_instance}.");
+            s_instance = null;
+            Deinitialized?.Invoke();
         }
 
         private static Awaitable InitializeAsync<T>() where T : AppInstance, new()
@@ -122,8 +125,17 @@ namespace BeardPhantom.Bootstrap
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void RuntimeEntryPoint()
         {
-            RuntimeAppInstance appInstance = new PlayModeAppInstance();
+            RuntimeAppInstance appInstance = GetRuntimeAppInstance();
             InitializeAsync(appInstance).Forget();
+        }
+
+        private static RuntimeAppInstance GetRuntimeAppInstance()
+        {
+#if UNITY_EDITOR
+            return new PlayModeAppInstance();
+#else
+            return new BuildAppInstance();
+#endif
         }
     }
 }
