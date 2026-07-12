@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading;
 using UnityEngine;
 using ZLogger;
 using ZLogger.Formatters;
@@ -19,6 +20,8 @@ namespace BeardPhantom.Bootstrap.ZLogger
     [SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
     public partial class DefaultLogService : IServiceWithCustomBindings, IServiceWithInitPriority, ILogService, IDisposable
     {
+        private static int s_mainThreadId;
+
         private ILoggerFactory _loggerFactory;
 
         int IServiceWithInitPriority.InitPriority => -1000;
@@ -30,7 +33,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         private LogLevel FileMinLogLevel { get; set; } = LogLevel.Trace;
 
         [field: SerializeField]
-        private string FilePath { get; set; } = "Temp/log.txt";
+        private string FilePath { get; set; } = "Logs/App.log";
 
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
         public ILogger GetLogger(string category)
@@ -55,13 +58,21 @@ namespace BeardPhantom.Bootstrap.ZLogger
             return LoggerFactory.Create(builder =>
             {
                 builder
-                    .SetMinimumLevel(LogLevel.Trace)
-                    .AddZLoggerUnityDebug(options =>
-                    {
-                        options.UsePlainTextFormatter(SetPrefixFormatter);
-                    })
-                    .AddFilter<ZLoggerUnityDebugLoggerProvider>(level => level >= ConsoleMinLogLevel);
+                    .ClearProviders()
+                    .SetMinimumLevel(LogLevel.Trace);
+                ConfigureConsoleProvider(builder);
+                ConfigureFileProvider(builder);
             });
+        }
+
+        protected virtual bool ShouldLogToConsole(LogLevel level)
+        {
+            return level >= ConsoleMinLogLevel;
+        }
+
+        protected virtual bool ShouldLogToFile(LogLevel level)
+        {
+            return level >= FileMinLogLevel;
         }
 
         protected virtual void SetPrefixFormatter(PlainTextZLoggerFormatter formatter)
@@ -75,6 +86,16 @@ namespace BeardPhantom.Bootstrap.ZLogger
                 });
         }
 
+        protected virtual void SetPrefixFormatterThreadSafe(PlainTextZLoggerFormatter formatter)
+        {
+            formatter.SetPrefixFormatter(
+                $"[{0:short}] [{1}] ",
+                (in MessageTemplate template, in LogInfo info) =>
+                {
+                    template.Format(info.LogLevel, info.Category);
+                });
+        }
+
         protected virtual void ConfigureFileProvider(ILoggingBuilder builder)
         {
             if (string.IsNullOrWhiteSpace(FilePath))
@@ -82,21 +103,49 @@ namespace BeardPhantom.Bootstrap.ZLogger
                 return;
             }
 
-            File.Delete(FilePath);
+            if (File.Exists(FilePath))
+            {
+                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(FilePath);
+                string extension = Path.GetExtension(FilePath);
+                string directory = Path.GetDirectoryName(FilePath);
+                string prevFileName = string.Concat(fileNameWithoutExtension, "_prev", extension);
+                string prevFilePath = directory == null ? prevFileName : Path.Combine(directory, prevFileName);
+                File.Copy(FilePath, prevFilePath, true);
+                File.Delete(FilePath);
+            }
+
             builder.AddZLoggerFile(
                     FilePath,
                     options =>
                     {
-                        options.UsePlainTextFormatter(SetPrefixFormatter);
+                        options.UsePlainTextFormatter(SetPrefixFormatterThreadSafe);
+                        options.InternalErrorLogger = ex => Logging.Error($"ZLogger Error: {ex}");
                     })
-                .AddFilter<ZLoggerFileLoggerProvider>(level => level >= FileMinLogLevel);
+                .AddFilter<ZLoggerFileLoggerProvider>(ShouldLogToFile);
+        }
+
+        protected virtual void ConfigureConsoleProvider(ILoggingBuilder builder)
+        {
+            builder.AddZLoggerUnityDebug(options =>
+                {
+                    options.UsePlainTextFormatter(SetPrefixFormatter);
+                    options.InternalErrorLogger = ex => Logging.Error($"ZLogger Error: {ex}");
+                })
+                .AddFilter<ZLoggerUnityDebugLoggerProvider>(ShouldLogToConsole);
         }
 
         [HideInCallstack]
         protected virtual void FlushStartupLogs()
         {
             var startupLogsAppExtension = App.GetExtension<StartupLogsAppExtension>();
+            if (!startupLogsAppExtension.HasStartupLogs)
+            {
+                return;
+            }
+
+            s_logger.ZLogDebug($"Begin flushing startup logs.");
             startupLogsAppExtension.Flush(this);
+            s_logger.ZLogDebug($"Finished flushing startup logs.");
         }
 
         void IDisposable.Dispose()
@@ -107,13 +156,12 @@ namespace BeardPhantom.Bootstrap.ZLogger
 
         void IService.InitService(BootstrapContext context)
         {
-            Logging.LogHandler = BootstrapZLogHandler.Instance;
+            s_mainThreadId = Thread.CurrentThread.ManagedThreadId;
             s_logger.ZLogTrace($"Test startup log.");
+            Logging.LogHandler = BootstrapZLogHandler.Instance;
             _loggerFactory = CreateLoggerFactory();
             s_logger.ZLogInformation($"Log system setup complete.");
-            s_logger.ZLogDebug($"Begin flushing startup logs.");
             FlushStartupLogs();
-            s_logger.ZLogDebug($"Finished flushing startup logs.");
         }
 
         void IServiceWithCustomBindings.GetCustomBindings(List<Type> bindingTypes, out bool autoIncludeDeclaredType)

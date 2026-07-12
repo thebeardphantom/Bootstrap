@@ -15,6 +15,8 @@ namespace BeardPhantom.Bootstrap.ZLogger
 
         private bool _hasFlushedStartupLogs;
 
+        public bool HasStartupLogs => !_startupLogQueue.IsEmpty;
+
         public StartupLogsAppExtension()
         {
             App.Deinitialized += OnAppDeinitialized;

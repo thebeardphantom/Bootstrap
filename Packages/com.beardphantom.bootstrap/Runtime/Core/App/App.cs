@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Assemblies;
 using UnityEngine.SceneManagement;
@@ -16,7 +17,11 @@ namespace BeardPhantom.Bootstrap
 
         private static readonly Dictionary<Type, IAppExtension> s_typeToAppExtensions = new();
 
+        private static int s_mainThreadId;
+
         private static AppInstance s_instance;
+
+        public static bool IsMainThread => Thread.CurrentThread.ManagedThreadId == s_mainThreadId;
 
         public static AppInstance Instance
         {
@@ -173,18 +178,20 @@ namespace BeardPhantom.Bootstrap
             }
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void RuntimeEntryPoint()
+        private static void InitCommon()
         {
-#if !UNITY_EDITOR
+            s_mainThreadId = Thread.CurrentThread.ManagedThreadId;
+            Logging.Trace($"Got main thread ID {s_mainThreadId}.");
             RegisterAllExtensions();
-#endif
-            RuntimeAppInstance appInstance = GetRuntimeAppInstance();
-            InitializeAsync(appInstance).Forget();
         }
 
         private static void RegisterAllExtensions()
         {
+            if (s_typeToAppExtensions.Count > 0)
+            {
+                return;
+            }
+
             IReadOnlyList<Assembly> assemblies = CurrentAssemblies.GetLoadedAssemblies();
             foreach (Assembly assembly in assemblies)
             {
@@ -196,6 +203,14 @@ namespace BeardPhantom.Bootstrap
                     Logging.Debug($"Registered extension {attribute.ExtensionType.Name}.");
                 }
             }
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void RuntimeEntryPoint()
+        {
+            InitCommon();
+            RuntimeAppInstance appInstance = GetRuntimeAppInstance();
+            InitializeAsync(appInstance).Forget();
         }
 
         private static RuntimeAppInstance GetRuntimeAppInstance()

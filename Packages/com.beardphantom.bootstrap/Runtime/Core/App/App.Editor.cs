@@ -37,7 +37,7 @@ namespace BeardPhantom.Bootstrap
         [InitializeOnLoadMethod]
         private static void EditorEntryPoint()
         {
-            RegisterAllExtensions();
+            InitCommon();
             CompilationPipeline.compilationStarted += OnCompilationStarted;
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
 
