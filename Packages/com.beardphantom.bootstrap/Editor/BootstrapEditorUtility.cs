@@ -44,7 +44,7 @@ namespace BeardPhantom.Bootstrap.Editor
                         onSelected(typedResult);
                     }
 
-                    if (result == null)
+                    if (result.IsNull())
                     {
                         onSelected(null);
                     }

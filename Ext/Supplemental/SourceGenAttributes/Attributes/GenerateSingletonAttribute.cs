@@ -1,12 +1,27 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace BeardPhantom.Bootstrap.SourceGen
 {
     [SuppressMessage("ReSharper", "UnusedType.Global")]
-    public partial class GenerateSingletonAttribute : BootstrapGeneratorAttribute
+    public class GenerateSingletonAttribute : BootstrapGeneratorAttribute
     {
-        public readonly SingletonAccess Access;
+        private const string PropertyFormatStr = @"
+        private static {0} Instance
+        {{
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ServiceRef<{0}>.Instance;
+        }}";
+
+        private const string OutMethodFormatStr = @"
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void GetInstance(out {0} instance)
+        {{
+            instance = ServiceRef<{0}>.Instance;
+        }}";
+
+        public readonly SingletonAccessors Accessors;
 
         internal override string[] Imports { get; } =
         {
@@ -17,17 +32,28 @@ namespace BeardPhantom.Bootstrap.SourceGen
 
         internal override string FilenameId => "Singleton";
 
-        public GenerateSingletonAttribute() : this(SingletonAccess.Property) { }
+        public GenerateSingletonAttribute() : this(SingletonAccessors.Property) { }
 
-        public GenerateSingletonAttribute(SingletonAccess access)
+        public GenerateSingletonAttribute(SingletonAccessors accessors)
         {
-            Access = access;
+            Accessors = accessors;
+            if (accessors == 0)
+            {
+                throw new ArgumentOutOfRangeException($"Argument {nameof(accessors)} must have at least one value set.");
+            }
         }
 
         internal override void Generate(StringBuilder featuresStringBuilder, string className)
         {
-            string accessFormatStr = Access == SingletonAccess.Property ? PropertyFormatStr : OutMethodFormatStr;
-            featuresStringBuilder.AppendFormat(accessFormatStr, className);
+            if (Accessors.HasFlagFast(SingletonAccessors.Property))
+            {
+                featuresStringBuilder.AppendFormat(PropertyFormatStr, className);
+            }
+
+            if (Accessors.HasFlagFast(SingletonAccessors.OutMethod))
+            {
+                featuresStringBuilder.AppendFormat(OutMethodFormatStr, className);
+            }
         }
     }
 }

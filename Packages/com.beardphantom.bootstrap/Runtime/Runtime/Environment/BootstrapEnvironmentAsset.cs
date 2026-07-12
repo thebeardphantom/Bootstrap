@@ -7,7 +7,7 @@ namespace BeardPhantom.Bootstrap.Environment
     [CreateAssetMenu(menuName = "Bootstrap/Environment Asset")]
     public class BootstrapEnvironmentAsset : ScriptableObject
     {
-        public bool IsNoOp => ServiceListAsset == null || ServiceListAsset.Services.Length == 0;
+        public bool IsNoOp => ServiceListAsset.IsNull() || ServiceListAsset.Services.Length == 0;
 
         [field: SerializeReference]
         [field: PolymorphicTypeSelector(typeof(IPreBootstrapHandler))]
@@ -18,7 +18,7 @@ namespace BeardPhantom.Bootstrap.Environment
         public IPostBootstrapHandler PostBootstrapHandler { get; private set; }
 
         [field: SerializeField]
-        public ServiceListAsset ServiceListAsset { get; private set; }
+        public ServiceList ServiceListAsset { get; private set; }
 
         internal BootstrapEnvironmentAsset StartEnvironment()
         {

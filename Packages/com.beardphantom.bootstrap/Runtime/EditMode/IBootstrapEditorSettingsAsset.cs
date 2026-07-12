@@ -9,7 +9,7 @@ namespace BeardPhantom.Bootstrap.EditMode
     {
         SettingsProperty<bool> EditorFlowEnabled { get; set; }
 
-        SettingsProperty<ServiceListAsset> EditModeServices { get; }
+        SettingsProperty<ServiceList> EditModeServices { get; }
 
         SettingsProperty<BootstrapEnvironmentAsset> DefaultPlayModeEnvironment { get; }
 

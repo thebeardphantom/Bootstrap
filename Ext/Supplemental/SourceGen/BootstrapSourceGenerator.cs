@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+#if DEBUG
+using System.Diagnostics;
+#endif
 
 namespace BeardPhantom.Bootstrap.SourceGen
 {
@@ -18,9 +21,9 @@ namespace BeardPhantom.Bootstrap.SourceGen
 
             namespace {1}
             {{
-                public partial class {2}
+                public partial {2} {3}
                 {{
-            {3}
+            {4}
                 }}
             }}
             """;
@@ -29,15 +32,23 @@ namespace BeardPhantom.Bootstrap.SourceGen
             """
             {0}
 
-            public partial class {1}
+            public partial {1} {2}
             {{
-            {2}
+            {3}
             }}
             """;
 
+        private const string KeywordInterface = "interface";
+
+        private const string KeywordClass = "class";
+
+        private const string KeywordStruct = "struct";
+
+        private const string KeywordRecord = "record";
+
         private static void GenerateExtensionClass(
             GeneratorExecutionContext context,
-            ClassDeclarationSyntax clss,
+            TypeDeclarationSyntax typeDeclarationSyntax,
             IReadOnlyCollection<BootstrapGeneratorAttribute> generatorAttributes)
         {
             if (generatorAttributes.Count == 0)
@@ -47,20 +58,24 @@ namespace BeardPhantom.Bootstrap.SourceGen
 
             StringBuilder featuresStringBuilder = new();
 
-            string className = clss.Identifier.Text;
+            string typeName = typeDeclarationSyntax.Identifier.Text;
+            Console.WriteLine($"Generating extension classes for type {typeName}.");
             foreach (BootstrapGeneratorAttribute generatorAttribute in generatorAttributes)
             {
+                Console.WriteLine($"Found attribute {generatorAttribute}.");
                 featuresStringBuilder.Clear();
-                generatorAttribute.Generate(featuresStringBuilder, className);
+                generatorAttribute.Generate(featuresStringBuilder, typeName);
 
                 string imports = string.Join(Environment.NewLine, generatorAttribute.Imports.Select(import => $"using {import};"));
 
                 string featuresString = featuresStringBuilder.ToString().TrimEnd();
-                string contents = clss.TryGetParentSyntax(out NamespaceDeclarationSyntax? namespaceDeclarationSyntax)
-                    ? string.Format(Format, imports, namespaceDeclarationSyntax!.Name, className, featuresString)
-                    : string.Format(FormatNoNamespace, imports, className, featuresString);
+                string typeKeyword = GetKeywordForType(typeDeclarationSyntax);
+                string contents = typeDeclarationSyntax.TryGetParentSyntax(out NamespaceDeclarationSyntax? namespaceDeclarationSyntax)
+                    ? string.Format(Format, imports, namespaceDeclarationSyntax!.Name, typeKeyword, typeName, featuresString)
+                    : string.Format(FormatNoNamespace, imports, typeKeyword, typeName, featuresString);
 
-                var hintName = $"{clss.Identifier}.g.{generatorAttribute.FilenameId}.cs";
+                var hintName = $"{typeDeclarationSyntax.Identifier}.g.{generatorAttribute.FilenameId}.cs";
+                Console.WriteLine($"Generating class file '{hintName}'.");
                 SourceText sourceText = SourceText.From(contents, Encoding.UTF8);
                 context.AddSource(hintName, sourceText);
             }
@@ -72,35 +87,100 @@ namespace BeardPhantom.Bootstrap.SourceGen
             {
                 SemanticModel model = context.Compilation.GetSemanticModel(syntaxTree);
 
-                IEnumerable<ClassDeclarationSyntax> classNodes = syntaxTree.GetRoot()
+                IEnumerable<TypeDeclarationSyntax> classNodes = syntaxTree.GetRoot()
                     .DescendantNodes()
-                    .OfType<ClassDeclarationSyntax>();
+                    .OfType<TypeDeclarationSyntax>();
 
-                foreach (ClassDeclarationSyntax? clss in classNodes)
+                foreach (TypeDeclarationSyntax typeDeclarationSyntax in classNodes)
                 {
-                    if (model.GetDeclaredSymbol(clss) is not INamedTypeSymbol symbol)
+                    if (model.GetDeclaredSymbol(typeDeclarationSyntax) is not INamedTypeSymbol symbol)
                     {
                         continue;
                     }
 
-                    BootstrapGeneratorAttribute[] attributes = CodeGenHelper.FindAttributes(symbol);
-                    GenerateExtensionClass(context, clss, attributes);
+                    BootstrapGeneratorAttribute[] attributes = CodeGenHelper.GetAttributeInstances(symbol);
+                    GenerateExtensionClass(context, typeDeclarationSyntax, attributes);
                 }
             }
         }
 
+        private static string GetKeywordForType(TypeDeclarationSyntax typeDeclarationSyntax)
+        {
+            return typeDeclarationSyntax switch
+            {
+                InterfaceDeclarationSyntax => KeywordInterface,
+                ClassDeclarationSyntax => KeywordClass,
+                StructDeclarationSyntax => KeywordStruct,
+                RecordDeclarationSyntax => KeywordRecord,
+                _ => throw new ArgumentException($"Unknown type {typeDeclarationSyntax}."),
+            };
+        }
+
         public void Execute(GeneratorExecutionContext context)
         {
+#if DEBUG
+            Debugger.Launch();
+#endif
+            TextWriter consoleOut = Console.Out;
+            TextWriter consoleErr = Console.Error;
+            string? logFilePath = null;
             try
             {
-                GenerateSource(context);
+                string tempPath = Path.GetTempPath();
+
+                FileStream? fileStream = null;
+                StreamWriter? streamWriter = null;
+                for (var i = 0; i < 32; i++)
+                {
+                    string potentialLogFilePath = Path.Combine(tempPath, $"BootstrapSourceGenerator_{i}.log");
+                    try
+                    {
+                        fileStream = File.Open(potentialLogFilePath, FileMode.Create, FileAccess.Write);
+                        streamWriter = new StreamWriter(fileStream);
+                        Console.SetOut(streamWriter);
+                        Console.SetError(streamWriter);
+                        logFilePath = potentialLogFilePath;
+                        break;
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        fileStream?.Dispose();
+                        streamWriter?.Dispose();
+                    }
+                    catch (IOException)
+                    {
+                        fileStream?.Dispose();
+                        streamWriter?.Dispose();
+                    }
+                }
+
+                using (fileStream)
+                {
+                    using (streamWriter)
+                    {
+                        try
+                        {
+                            GenerateSource(context);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Error.WriteLine(ex);
+                        }
+                    }
+                }
             }
-            catch (Exception ex)
+            finally
             {
-                Console.WriteLine(ex);
-                string logFile = Path.Combine(Path.GetTempPath(), "BootstrapSourceGenerator.log");
-                File.WriteAllText(logFile, ex.ToString());
-                throw;
+                Console.SetOut(consoleOut);
+                Console.SetError(consoleErr);
+                if (logFilePath != null)
+                {
+                    var info = new FileInfo(logFilePath);
+                    if (info.Length == 0)
+                    {
+                        info.Delete();
+                    }
+                }
             }
         }
 

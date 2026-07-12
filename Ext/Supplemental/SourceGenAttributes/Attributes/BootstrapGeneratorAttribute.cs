@@ -3,7 +3,7 @@ using System.Text;
 
 namespace BeardPhantom.Bootstrap.SourceGen
 {
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Struct)]
     public abstract class BootstrapGeneratorAttribute : Attribute
     {
         internal abstract string[] Imports { get; }

@@ -45,7 +45,7 @@ namespace BeardPhantom.Bootstrap.SourceGen
             return namedTypeSymbol.Name == typeof(T).Name || namedTypeSymbol.ToDisplayString() == typeof(T).FullName;
         }
 
-        public static BootstrapGeneratorAttribute[] FindAttributes(INamedTypeSymbol symbol)
+        public static BootstrapGeneratorAttribute[] GetAttributeInstances(INamedTypeSymbol symbol)
         {
             return symbol
                 .GetAttributes()

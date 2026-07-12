@@ -8,7 +8,7 @@ namespace BeardPhantom.Bootstrap
 {
     public class TaskScheduler
     {
-        private readonly PriorityQueue<AsyncScheduledTask, int> _tasks = new();
+        private readonly PriorityQueue<ScheduledTask, int> _tasks = new();
 
         private bool _isFlushingQueue;
 
@@ -16,20 +16,25 @@ namespace BeardPhantom.Bootstrap
 
         public bool IsIdle => !_isFlushingQueue && _tasks.Count == 0;
 
-        private static async Awaitable ExecuteTaskAsync(AsyncScheduledTask task)
+        private static async Awaitable ExecuteTaskAsync(ScheduledTask task)
         {
             Logging.Trace($"Invoking scheduled task {task}.");
             await task.InvokeAsync();
         }
 
-        public void Schedule(in Func<Awaitable> asyncScheduledTask, int priority = 0)
+        public void Schedule(in Func<Awaitable> asyncTask, int priority = 0)
         {
-            Schedule(new AsyncScheduledTask(asyncScheduledTask, priority));
+            Schedule(new ScheduledTask(asyncTask, priority));
         }
 
-        public void Schedule(in AsyncScheduledTask asyncScheduledTask)
+        public void Schedule(in Action syncTask, int priority = 0)
         {
-            _tasks.Enqueue(asyncScheduledTask, asyncScheduledTask.Priority);
+            Schedule(new ScheduledTask(syncTask, priority));
+        }
+
+        public void Schedule(in ScheduledTask scheduledTask)
+        {
+            _tasks.Enqueue(scheduledTask, scheduledTask.Priority);
         }
 
         public async Awaitable FlushQueueAsync(CancellationToken token = default)
@@ -45,7 +50,7 @@ namespace BeardPhantom.Bootstrap
 
                 using PooledObject<Stopwatch> __ = GenericPool<Stopwatch>.Get(out Stopwatch stopwatch);
                 stopwatch.Restart();
-                while (stopwatch.ElapsedMilliseconds < QueueFlushTimeoutMs && _tasks.TryDequeue(out AsyncScheduledTask task, out _))
+                while (stopwatch.ElapsedMilliseconds < QueueFlushTimeoutMs && _tasks.TryDequeue(out ScheduledTask task, out _))
                 {
                     token.ThrowIfCancellationRequested();
                     await ExecuteTaskAsync(task);

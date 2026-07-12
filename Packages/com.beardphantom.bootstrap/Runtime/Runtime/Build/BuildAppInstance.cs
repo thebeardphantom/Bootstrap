@@ -18,7 +18,7 @@ namespace BeardPhantom.Bootstrap
             var foundValid = false;
             foreach (BootstrapEnvironmentAsset asset in bootstrapEnvironmentAssets)
             {
-                if (asset != null)
+                if (asset.IsNotNull())
                 {
                     environment = asset;
                     foundValid = true;

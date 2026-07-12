@@ -2,7 +2,7 @@
 
 namespace SourceGenTest
 {
-    [GenerateSingleton(SingletonAccess.OutMethod)]
+    [GenerateSingleton(SingletonAccessors.OutMethod)]
     [GenerateLogger]
     public partial class Class1 { }
 }

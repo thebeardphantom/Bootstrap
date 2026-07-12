@@ -5,163 +5,166 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-public class PolymorphicTypeSelectorDropdown : AdvancedDropdown
+namespace BeardPhantom.Bootstrap.Editor
 {
-    public event Action<Type> ComponentTypeSelected;
-
-    private readonly Type _baseType;
-
-    private readonly IEnumerable<Type> _disabledTypes;
-
-    private readonly List<SelectableType> _selectableTypes = new();
-
-    private readonly Dictionary<int, SelectableType> _itemIdToSelectableType = new();
-
-    public PolymorphicTypeSelectorDropdown(Type baseType)
-        : this(baseType, Enumerable.Empty<Type>(), new AdvancedDropdownState()) { }
-
-    public PolymorphicTypeSelectorDropdown(Type baseType, IEnumerable<Type> disabledTypes)
-        : this(baseType, disabledTypes, new AdvancedDropdownState()) { }
-
-    public PolymorphicTypeSelectorDropdown(Type baseType, AdvancedDropdownState state) :
-        this(baseType, Enumerable.Empty<Type>(), state) { }
-
-    public PolymorphicTypeSelectorDropdown(
-        Type baseType,
-        IEnumerable<Type> disabledTypes,
-        AdvancedDropdownState state) : base(state)
+    public class PolymorphicTypeSelectorDropdown : AdvancedDropdown
     {
-        _baseType = baseType;
-        _disabledTypes = disabledTypes;
-    }
+        public event Action<Type> ComponentTypeSelected;
 
-    private static bool IsValidType(Type t)
-    {
-        return !t.IsAbstract && !t.IsInterface && !typeof(UnityEngine.Object).IsAssignableFrom(t);
-    }
+        private readonly Type _baseType;
 
-    protected override void ItemSelected(AdvancedDropdownItem item)
-    {
-        SelectableType type = _itemIdToSelectableType[item.id];
-        if (!type.IsEnabled)
+        private readonly IEnumerable<Type> _disabledTypes;
+
+        private readonly List<SelectableType> _selectableTypes = new();
+
+        private readonly Dictionary<int, SelectableType> _itemIdToSelectableType = new();
+
+        public PolymorphicTypeSelectorDropdown(Type baseType)
+            : this(baseType, Enumerable.Empty<Type>(), new AdvancedDropdownState()) { }
+
+        public PolymorphicTypeSelectorDropdown(Type baseType, IEnumerable<Type> disabledTypes)
+            : this(baseType, disabledTypes, new AdvancedDropdownState()) { }
+
+        public PolymorphicTypeSelectorDropdown(Type baseType, AdvancedDropdownState state) :
+            this(baseType, Enumerable.Empty<Type>(), state) { }
+
+        public PolymorphicTypeSelectorDropdown(
+            Type baseType,
+            IEnumerable<Type> disabledTypes,
+            AdvancedDropdownState state) : base(state)
         {
-            EditorUtility.DisplayDialog(
-                "Invalid Operation",
-                $"Only one '{type.Type.FullName}' is allowed to be added.",
-                "OK");
-            return;
+            _baseType = baseType;
+            _disabledTypes = disabledTypes;
         }
 
-        ComponentTypeSelected?.Invoke(type.Type);
-    }
-
-    protected override AdvancedDropdownItem BuildRoot()
-    {
-        TypeCache.TypeCollection allDerivedTypes = TypeCache.GetTypesDerivedFrom(_baseType);
-        foreach (Type type in allDerivedTypes)
+        private static bool IsValidType(Type t)
         {
-            if (!IsValidType(type))
+            return !t.IsAbstract && !t.IsInterface && !typeof(UnityEngine.Object).IsAssignableFrom(t);
+        }
+
+        protected override void ItemSelected(AdvancedDropdownItem item)
+        {
+            SelectableType type = _itemIdToSelectableType[item.id];
+            if (!type.IsEnabled)
             {
-                continue;
+                EditorUtility.DisplayDialog(
+                    "Invalid Operation",
+                    $"Only one '{type.Type.FullName}' is allowed to be added.",
+                    "OK");
+                return;
             }
 
-            bool enabled = !_disabledTypes.Contains(type);
-            _selectableTypes.Add(new SelectableType(type, enabled));
+            ComponentTypeSelected?.Invoke(type.Type);
         }
 
-        _selectableTypes.Sort();
-
-        var root = new AdvancedDropdownItem($"{_baseType.Name}")
+        protected override AdvancedDropdownItem BuildRoot()
         {
-            id = 0,
-        };
-        IEnumerable<IGrouping<string, SelectableType>> selectableTypesByNamespace = _selectableTypes
-            .Where(t => t.Type.Namespace != null)
-            .GroupBy(t => t.Type.Namespace)
-            .OrderBy(g => g.Key);
-        GUIContent scriptIconContent = EditorGUIUtility.IconContent("cs Script Icon");
-        var scriptIcon = (Texture2D)scriptIconContent.image;
-        foreach (IGrouping<string, SelectableType> group in selectableTypesByNamespace)
-        {
-            var nsItem = new AdvancedDropdownItem(group.Key)
+            TypeCache.TypeCollection allDerivedTypes = TypeCache.GetTypesDerivedFrom(_baseType);
+            foreach (Type type in allDerivedTypes)
             {
-                enabled = true,
-            };
-            root.AddChild(nsItem);
+                if (!IsValidType(type))
+                {
+                    continue;
+                }
 
-            foreach (SelectableType selectableType in group)
+                bool enabled = !_disabledTypes.Contains(type);
+                _selectableTypes.Add(new SelectableType(type, enabled));
+            }
+
+            _selectableTypes.Sort();
+
+            var root = new AdvancedDropdownItem($"{_baseType.Name}")
+            {
+                id = 0,
+            };
+            IEnumerable<IGrouping<string, SelectableType>> selectableTypesByNamespace = _selectableTypes
+                .Where(t => t.Type.Namespace.IsNotNull())
+                .GroupBy(t => t.Type.Namespace)
+                .OrderBy(g => g.Key);
+            GUIContent scriptIconContent = EditorGUIUtility.IconContent("cs Script Icon");
+            var scriptIcon = (Texture2D)scriptIconContent.image;
+            foreach (IGrouping<string, SelectableType> group in selectableTypesByNamespace)
+            {
+                var nsItem = new AdvancedDropdownItem(group.Key)
+                {
+                    enabled = true,
+                };
+                root.AddChild(nsItem);
+
+                foreach (SelectableType selectableType in group)
+                {
+                    var typeItem = new AdvancedDropdownItem(selectableType.Type.Name)
+                    {
+                        enabled = selectableType.IsEnabled,
+                        icon = scriptIcon,
+                    };
+                    nsItem.AddChild(typeItem);
+                    _itemIdToSelectableType.Add(typeItem.id, selectableType);
+                }
+            }
+
+            foreach (SelectableType selectableType in _selectableTypes.Where(t => t.Type.Namespace.IsNull()))
             {
                 var typeItem = new AdvancedDropdownItem(selectableType.Type.Name)
                 {
                     enabled = selectableType.IsEnabled,
                     icon = scriptIcon,
                 };
-                nsItem.AddChild(typeItem);
+                root.AddChild(typeItem);
                 _itemIdToSelectableType.Add(typeItem.id, selectableType);
             }
+
+            return root;
         }
 
-        foreach (SelectableType selectableType in _selectableTypes.Where(t => t.Type.Namespace == null))
+        private readonly struct SelectableType : IComparable<SelectableType>, IComparable
         {
-            var typeItem = new AdvancedDropdownItem(selectableType.Type.Name)
+            public readonly Type Type;
+
+            public readonly bool IsEnabled;
+
+            public SelectableType(Type type, bool isEnabled)
             {
-                enabled = selectableType.IsEnabled,
-                icon = scriptIcon,
-            };
-            root.AddChild(typeItem);
-            _itemIdToSelectableType.Add(typeItem.id, selectableType);
-        }
-
-        return root;
-    }
-
-    private readonly struct SelectableType : IComparable<SelectableType>, IComparable
-    {
-        public readonly Type Type;
-
-        public readonly bool IsEnabled;
-
-        public SelectableType(Type type, bool isEnabled)
-        {
-            Type = type;
-            IsEnabled = isEnabled;
-        }
-
-        public int CompareTo(SelectableType other)
-        {
-            return string.Compare(Type.FullName, other.Type.FullName, StringComparison.OrdinalIgnoreCase);
-        }
-
-        public int CompareTo(object obj)
-        {
-            if (obj is null)
-            {
-                return 1;
+                Type = type;
+                IsEnabled = isEnabled;
             }
 
-            return obj is SelectableType other
-                ? CompareTo(other)
-                : throw new ArgumentException($"Object must be of type {nameof(SelectableType)}");
-        }
+            public int CompareTo(SelectableType other)
+            {
+                return string.Compare(Type.FullName, other.Type.FullName, StringComparison.OrdinalIgnoreCase);
+            }
 
-        public static bool operator <(SelectableType left, SelectableType right)
-        {
-            return left.CompareTo(right) < 0;
-        }
+            public int CompareTo(object obj)
+            {
+                if (obj is null)
+                {
+                    return 1;
+                }
 
-        public static bool operator >(SelectableType left, SelectableType right)
-        {
-            return left.CompareTo(right) > 0;
-        }
+                return obj is SelectableType other
+                    ? CompareTo(other)
+                    : throw new ArgumentException($"Object must be of type {nameof(SelectableType)}");
+            }
 
-        public static bool operator <=(SelectableType left, SelectableType right)
-        {
-            return left.CompareTo(right) <= 0;
-        }
+            public static bool operator <(SelectableType left, SelectableType right)
+            {
+                return left.CompareTo(right) < 0;
+            }
 
-        public static bool operator >=(SelectableType left, SelectableType right)
-        {
-            return left.CompareTo(right) >= 0;
+            public static bool operator >(SelectableType left, SelectableType right)
+            {
+                return left.CompareTo(right) > 0;
+            }
+
+            public static bool operator <=(SelectableType left, SelectableType right)
+            {
+                return left.CompareTo(right) <= 0;
+            }
+
+            public static bool operator >=(SelectableType left, SelectableType right)
+            {
+                return left.CompareTo(right) >= 0;
+            }
         }
     }
 }

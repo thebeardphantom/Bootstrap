@@ -13,7 +13,7 @@ namespace BeardPhantom.Bootstrap
 
         public BootstrapEnvironmentAsset SessionEnvironment { get; private set; }
 
-        public override ServiceListAsset ActiveServiceListAsset => SessionEnvironment.ServiceListAsset;
+        public override ServiceList ActiveServiceList => SessionEnvironment.ServiceListAsset;
 
         protected abstract bool TryDetermineSessionEnvironment(out BootstrapEnvironmentAsset environment);
 

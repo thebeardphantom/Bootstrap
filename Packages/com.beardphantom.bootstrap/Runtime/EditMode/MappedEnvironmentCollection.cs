@@ -27,7 +27,7 @@ namespace BeardPhantom.Bootstrap.EditMode
 
         public void AddOrReplace(T key, BootstrapEnvironmentAsset environment)
         {
-            if (key == null)
+            if (key.IsNull())
             {
                 throw new ArgumentNullException(nameof(key));
             }

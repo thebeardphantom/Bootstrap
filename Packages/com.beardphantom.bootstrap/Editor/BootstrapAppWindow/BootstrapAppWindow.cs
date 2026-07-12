@@ -84,13 +84,13 @@ namespace BeardPhantom.Bootstrap.Editor
             _sessionGuidTextField.value = appInstance.SessionGuid.ToString();
             _appCreateTimestampTextField.value = appInstance.CreateTimestamp.ToString();
 
-            if (appInstance.ActiveServiceListAsset == null)
+            if (appInstance.ActiveServiceList.IsNull())
             {
                 return;
             }
 
             _noActiveServicesBox.style.display = DisplayStyle.None;
-            _serializedObject = new SerializedObject(appInstance.ActiveServiceListAsset);
+            _serializedObject = new SerializedObject(appInstance.ActiveServiceList);
             _inspectorElement = new InspectorElement(_serializedObject)
             {
                 name = "services-inspector",

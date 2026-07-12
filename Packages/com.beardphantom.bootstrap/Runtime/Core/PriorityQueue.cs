@@ -65,7 +65,7 @@ namespace BeardPhantom.Bootstrap
     {
         public static void ThrowIfNull(object o)
         {
-            if (o == null)
+            if (o.IsNull())
             {
                 throw new ArgumentNullException(); // hard to do it differently without C# 10's features
             }
@@ -390,7 +390,7 @@ namespace BeardPhantom.Bootstrap
                 Grow(currentSize + 1);
             }
 
-            if (_comparer == null)
+            if (_comparer.IsNull())
             {
                 MoveUpDefaultComparer((element, priority), currentSize);
             }
@@ -745,7 +745,7 @@ namespace BeardPhantom.Bootstrap
             if (lastNodeIndex > 0)
             {
                 (TElement Element, TPriority Priority) lastNode = _nodes[lastNodeIndex];
-                if (_comparer == null)
+                if (_comparer.IsNull())
                 {
                     MoveDownDefaultComparer(lastNode, 0);
                 }
@@ -774,7 +774,7 @@ namespace BeardPhantom.Bootstrap
             (TElement Element, TPriority Priority)[] nodes = _nodes;
             int lastParentWithChildren = GetParentIndex(_size - 1);
 
-            if (_comparer == null)
+            if (_comparer.IsNull())
             {
                 for (int index = lastParentWithChildren; index >= 0; --index)
                 {

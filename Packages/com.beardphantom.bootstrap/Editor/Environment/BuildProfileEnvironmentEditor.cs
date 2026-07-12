@@ -3,7 +3,7 @@ using BeardPhantom.Bootstrap.Environment;
 using UnityEditor;
 using UnityEditor.Build.Profile;
 
-namespace BeardPhantom.Bootstrap.Editor.Environment
+namespace BeardPhantom.Bootstrap.Editor
 {
     [InitializeOnLoad]
     public static class BuildProfileEnvironmentEditor

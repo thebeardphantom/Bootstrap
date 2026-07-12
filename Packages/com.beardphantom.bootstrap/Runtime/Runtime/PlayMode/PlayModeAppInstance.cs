@@ -18,7 +18,7 @@ namespace BeardPhantom.Bootstrap
             }
 
             editModeState = JsonConvert.DeserializeObject<EditModeState>(json);
-            return editModeState != null;
+            return editModeState.IsNotNull();
         }
 
         protected override bool TryDetermineSessionEnvironment(out BootstrapEnvironmentAsset environment)

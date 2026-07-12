@@ -21,7 +21,7 @@ namespace BeardPhantom.Bootstrap
 
         public static void LoadScenesInPlayMode(IReadOnlyList<string> scenePaths)
         {
-            Assert.IsNotNull(scenePaths, "scenePaths != null");
+            Assert.IsNotNull(scenePaths, "scenePaths.IsNotNull()");
             Assert.IsTrue(scenePaths.Count > 0, "scenePaths.Length > 0");
 
             var loadFirstAsSingle = true;
@@ -68,7 +68,7 @@ namespace BeardPhantom.Bootstrap
             }
 
             List<string> editModeScenePaths = context.EditModeState.LoadedScenes;
-            if (editModeScenePaths == null || editModeScenePaths.Count == 0)
+            if (editModeScenePaths.IsNull() || editModeScenePaths.Count == 0)
             {
                 SceneManager.LoadScene(1);
             }
@@ -78,7 +78,7 @@ namespace BeardPhantom.Bootstrap
             }
 
             SelectedObjectPath[] serializedSelectedObjs = context.EditModeState.SelectedObjects;
-            if (serializedSelectedObjs == null || serializedSelectedObjs.Length == 0)
+            if (serializedSelectedObjs.IsNull() || serializedSelectedObjs.Length == 0)
             {
                 return;
             }

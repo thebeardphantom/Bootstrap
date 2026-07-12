@@ -44,7 +44,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
                 {
                     string labelText = propertyField.label;
                     var label = propertyField.Q<Label>(className: PropertyField.labelUssClassName);
-                    if (label != null)
+                    if (label.IsNotNull())
                     {
                         label.text = labelText;
                     }

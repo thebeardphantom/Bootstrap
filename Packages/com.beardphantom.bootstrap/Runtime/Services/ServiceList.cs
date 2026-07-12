@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace BeardPhantom.Bootstrap
 {
-    [CreateAssetMenu(menuName = "Bootstrap/" + nameof(ServiceListAsset))]
-    public class ServiceListAsset : ScriptableObject
+    [CreateAssetMenu(menuName = "Bootstrap/" + nameof(ServiceList))]
+    public class ServiceList : ScriptableObject
     {
         [field: SerializeReference]
         [field: PolymorphicTypeSelector(typeof(IService))]
@@ -13,12 +13,13 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// If this is a cloned instance of another asset then this property points to the source asset on disk.
         /// </summary>
-        internal ServiceListAsset SourceAsset { get; set; }
+        internal ServiceList Source { get; set; }
 
-        public ServiceListAsset CreateClone()
+        public ServiceList CreateClone()
         {
-            ServiceListAsset clone = Instantiate(this);
-            clone.SourceAsset = this;
+            ServiceList clone = Instantiate(this);
+            clone.Source = this;
+            clone.name = $"{name} Instance";
             return clone;
         }
     }

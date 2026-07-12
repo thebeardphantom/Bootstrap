@@ -26,7 +26,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
             MappedEnvironmentCollection<BuildProfile> buildProfileEnvironments =
                 BootstrapEditorSettingsUtility.GetValue(a => a.BuildProfileEnvironments);
-            if (buildProfileEnvironments == null)
+            if (buildProfileEnvironments.IsNull())
             {
                 return false;
             }
@@ -56,7 +56,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
             MappedEnvironmentCollection<string> platformEnvironments =
                 BootstrapEditorSettingsUtility.GetValue(a => a.PlatformEnvironments);
-            if (platformEnvironments == null)
+            if (platformEnvironments.IsNull())
             {
                 return false;
             }

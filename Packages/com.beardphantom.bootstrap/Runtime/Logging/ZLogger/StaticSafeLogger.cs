@@ -1,17 +1,12 @@
 #if BOOTSTRAP_ZLOGGER
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace BeardPhantom.Bootstrap.ZLogger
 {
     public class StaticSafeLogger : ILogger
     {
         private readonly string _loggerCategory;
-
-        private readonly Queue<IQueuedLog> _logQueue = new();
 
         private ILogger _wrappedLogger;
 
@@ -33,7 +28,10 @@ namespace BeardPhantom.Bootstrap.ZLogger
             ReacquireLogger();
             if (_wrappedLogger is NullLogger or null)
             {
-                _logQueue.Enqueue(new QueuedLog<TState>(logLevel, eventId, state, exception, formatter));
+                var startupLogsAppExtension = App.GetExtension<StartupLogsAppExtension>();
+                string stateString = formatter.Invoke(state, exception);
+                var startupLog = new StartupLog(_loggerCategory, stateString, logLevel, eventId, exception);
+                startupLogsAppExtension.EnqueueStartupLog(startupLog);
             }
             else
             {
@@ -70,7 +68,6 @@ namespace BeardPhantom.Bootstrap.ZLogger
                 && logService.TryGetLogger(_loggerCategory, out _wrappedLogger))
             {
                 _acquisitionGuid = appInstance.SessionGuid;
-                EmptyLogQueue();
             }
             else
             {
@@ -82,51 +79,6 @@ namespace BeardPhantom.Bootstrap.ZLogger
         {
             _wrappedLogger = NullLogger.Instance;
             _acquisitionGuid = null;
-        }
-
-        private void EmptyLogQueue()
-        {
-            while (_logQueue.TryDequeue(out IQueuedLog queuedLog))
-            {
-                queuedLog.Log(_wrappedLogger);
-            }
-        }
-
-        private interface IQueuedLog
-        {
-            void Log(ILogger logger);
-        }
-
-        private class QueuedLog<TState> : IQueuedLog
-        {
-            private readonly LogLevel _logLevel;
-
-            private readonly EventId _eventId;
-
-            private readonly TState _state;
-
-            private readonly Exception _exception;
-
-            private readonly Func<TState, Exception, string> _formatter;
-
-            public QueuedLog(
-                LogLevel logLevel,
-                EventId eventId,
-                TState state,
-                Exception exception,
-                Func<TState, Exception, string> formatter)
-            {
-                _logLevel = logLevel;
-                _eventId = eventId;
-                _state = state;
-                _exception = exception;
-                _formatter = formatter;
-            }
-
-            public void Log(ILogger logger)
-            {
-                logger.Log(_logLevel, _eventId, _state, _exception, _formatter);
-            }
         }
     }
 }

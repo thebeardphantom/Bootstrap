@@ -6,7 +6,7 @@ namespace BeardPhantom.Bootstrap
 {
     internal class DefaultLogHandler : ILogHandler
     {
-        public const string LogFormatString = "[" + Logging.BootstrapTag + "] {0}";
+        private const string LogFormatString = "[{0}] [" + Logging.BootstrapTag + "] {1}";
 
         private static readonly string[] s_logFormatStrings =
         {
@@ -39,7 +39,7 @@ namespace BeardPhantom.Bootstrap
             }
 
             string formatString = GetFormatString(logLevel);
-            message = string.Format(formatString, message);
+            message = string.Format(formatString, Time.frameCount, message);
 
             LogType logType = logLevel.GetUnityLogType();
             Debug.unityLogger.Log(logType, message, context);

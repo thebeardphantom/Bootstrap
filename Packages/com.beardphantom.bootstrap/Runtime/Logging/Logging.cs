@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace BeardPhantom.Bootstrap
 {
+    /// <summary>
+    /// Handles logging for the Bootstrap library.
+    /// </summary>
     internal static class Logging
     {
         public const string BootstrapTag = "Bootstrap";

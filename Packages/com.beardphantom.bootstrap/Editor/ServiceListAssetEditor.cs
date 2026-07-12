@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 
 namespace BeardPhantom.Bootstrap.Editor
 {
-    [CustomEditor(typeof(ServiceListAsset))]
+    [CustomEditor(typeof(ServiceList))]
     public class ServiceListAssetEditor : UnityEditor.Editor
     {
         private const string HelpBoxTxt = "There are SerializeReference types which are missing.";

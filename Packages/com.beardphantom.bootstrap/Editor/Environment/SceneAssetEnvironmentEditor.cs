@@ -6,7 +6,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace BeardPhantom.Bootstrap.Editor.Environment
+namespace BeardPhantom.Bootstrap.Editor
 {
     [CustomEditor(typeof(SceneAsset))]
     public class SceneAssetEnvironmentEditor : UnityEditor.Editor

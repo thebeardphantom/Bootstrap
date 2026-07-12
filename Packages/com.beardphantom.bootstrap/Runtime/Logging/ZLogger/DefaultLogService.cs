@@ -1,4 +1,5 @@
 ﻿#if BOOTSTRAP_ZLOGGER
+using BeardPhantom.Bootstrap.SourceGen;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -14,11 +15,10 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 namespace BeardPhantom.Bootstrap.ZLogger
 {
     [Serializable]
+    [GenerateLogger]
     [SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
-    public class DefaultLogService : IServiceWithCustomBindings, IServiceWithInitPriority, ILogService, IDisposable
+    public partial class DefaultLogService : IServiceWithCustomBindings, IServiceWithInitPriority, ILogService, IDisposable
     {
-        private static readonly ILogger s_logger = LogUtility.GetStaticLogger<DefaultLogService>();
-
         private ILoggerFactory _loggerFactory;
 
         int IServiceWithInitPriority.InitPriority => -1000;
@@ -40,7 +40,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
 
         public bool TryGetLogger(string category, out ILogger logger)
         {
-            if (_loggerFactory == null)
+            if (_loggerFactory.IsNull())
             {
                 logger = null;
                 return false;
@@ -61,7 +61,6 @@ namespace BeardPhantom.Bootstrap.ZLogger
                         options.UsePlainTextFormatter(SetPrefixFormatter);
                     })
                     .AddFilter<ZLoggerUnityDebugLoggerProvider>(level => level >= ConsoleMinLogLevel);
-                // ConfigureFileProvider(builder);
             });
         }
 
@@ -93,6 +92,13 @@ namespace BeardPhantom.Bootstrap.ZLogger
                 .AddFilter<ZLoggerFileLoggerProvider>(level => level >= FileMinLogLevel);
         }
 
+        [HideInCallstack]
+        protected virtual void FlushStartupLogs()
+        {
+            var startupLogsAppExtension = App.GetExtension<StartupLogsAppExtension>();
+            startupLogsAppExtension.Flush(this);
+        }
+
         void IDisposable.Dispose()
         {
             _loggerFactory?.Dispose();
@@ -102,8 +108,12 @@ namespace BeardPhantom.Bootstrap.ZLogger
         void IService.InitService(BootstrapContext context)
         {
             Logging.LogHandler = BootstrapZLogHandler.Instance;
+            s_logger.ZLogTrace($"Test startup log.");
             _loggerFactory = CreateLoggerFactory();
             s_logger.ZLogInformation($"Log system setup complete.");
+            s_logger.ZLogDebug($"Begin flushing startup logs.");
+            FlushStartupLogs();
+            s_logger.ZLogDebug($"Finished flushing startup logs.");
         }
 
         void IServiceWithCustomBindings.GetCustomBindings(List<Type> bindingTypes, out bool autoIncludeDeclaredType)

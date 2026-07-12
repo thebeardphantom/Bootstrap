@@ -20,20 +20,20 @@ namespace BeardPhantom.Bootstrap
 
         private readonly List<IService> _services = new();
 
-        private ServiceListAsset _serviceListAsset;
+        private ServiceList _serviceList;
 
         public bool CanLocateServices => App.Instance.BootstrapState > AppBootstrapState.ServiceBinding;
 
-        public void Create(BootstrapContext context, ServiceListAsset serviceListAsset)
+        public void Create(BootstrapContext context, ServiceList serviceList)
         {
-            _serviceListAsset = serviceListAsset;
+            _serviceList = serviceList;
             AppInstance appInstance = App.Instance;
 
             /*
              * Service Discovery
              */
             appInstance.BootstrapState = AppBootstrapState.ServiceDiscovery;
-            foreach (IService service in serviceListAsset.Services)
+            foreach (IService service in serviceList.Services)
             {
                 Logging.Debug($"Discovered service {service.GetType()}.");
                 _services.Add(service);
@@ -98,12 +98,12 @@ namespace BeardPhantom.Bootstrap
                 }
             }
 
-            if (!Application.isEditor || BootstrapUtility.IsPersistent(_serviceListAsset))
+            if (!Application.isEditor || BootstrapUtility.IsPersistent(_serviceList))
             {
                 return;
             }
 
-            BootstrapUtility.DestroyReferenceImmediate(ref _serviceListAsset);
+            BootstrapUtility.DestroyReferenceImmediate(ref _serviceList);
         }
 
         public bool TryLocateService<T>(out T service, bool throwIfCannotLocateServices = false) where T : class

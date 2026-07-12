@@ -20,9 +20,9 @@ namespace BeardPhantom.Bootstrap.EditMode
 
         public const string EditModeStateSessionStateKey = "EDIT_MODE_STATE";
 
-        private ServiceListAsset _editModeServiceListInstance;
+        private ServiceList _editModeServiceListInstance;
 
-        public override ServiceListAsset ActiveServiceListAsset => _editModeServiceListInstance;
+        public override ServiceList ActiveServiceList => _editModeServiceListInstance;
 
         public override bool IsQuitting => false;
 
@@ -35,14 +35,6 @@ namespace BeardPhantom.Bootstrap.EditMode
             {
                 EditorSceneManager.playModeStartScene = null;
             }
-        }
-
-        private static ServiceListAsset CreateEditModeServicesInstance(ServiceListAsset serviceListAssetSource)
-        {
-            ServiceListAsset serviceListAssetInstance = Object.Instantiate(serviceListAssetSource);
-            serviceListAssetInstance.SourceAsset = serviceListAssetSource;
-            serviceListAssetInstance.name = $"{serviceListAssetSource.name} Instance";
-            return serviceListAssetInstance;
         }
 
         private static bool TryFindActiveSceneEnvironment(out BootstrapEnvironmentAsset environment)
@@ -65,7 +57,7 @@ namespace BeardPhantom.Bootstrap.EditMode
 
         public void ReinitializeIfNecessary()
         {
-            ServiceListAsset serviceListAsset = BootstrapEditorSettingsUtility.GetValue(asset => asset.EditModeServices);
+            ServiceList serviceList = BootstrapEditorSettingsUtility.GetValue(asset => asset.EditModeServices);
 
             /*
              * Bootstrap if:
@@ -74,8 +66,8 @@ namespace BeardPhantom.Bootstrap.EditMode
              *     3. The services list asset has changed.
              */
             if (_editModeServiceListInstance.IsNull()
-                || serviceListAsset.IsNull()
-                || serviceListAsset != _editModeServiceListInstance.SourceAsset)
+                || serviceList.IsNull()
+                || serviceList != _editModeServiceListInstance.Source)
             {
                 App.Quit();
                 App.Initialize<EditModeAppInstance>();
@@ -107,7 +99,7 @@ namespace BeardPhantom.Bootstrap.EditMode
                     Logging.Trace("BootstrapEditorHelper prepping for playmode.");
                     EditorBuildSettingsScene bootstrapScene =
                         EditorBuildSettings.scenes.FirstOrDefault(s => AssetDatabase.LoadAssetAtPath<SceneAsset>(s.path));
-                    if (bootstrapScene == null)
+                    if (bootstrapScene.IsNull())
                     {
                         Logging.Info("No valid first scene in EditorBuildSettings");
                         return;
@@ -163,10 +155,10 @@ namespace BeardPhantom.Bootstrap.EditMode
             {
                 var sw = Stopwatch.StartNew();
 
-                ServiceListAsset serviceListAssetSource = BootstrapEditorSettingsUtility.GetValue(
+                ServiceList serviceListSource = BootstrapEditorSettingsUtility.GetValue(
                     asset => asset.EditModeServices,
                     out SettingsScope definedScope);
-                if (serviceListAssetSource.IsNull())
+                if (serviceListSource.IsNull())
                 {
                     sw.Stop();
                     Progress.Report(
@@ -177,11 +169,11 @@ namespace BeardPhantom.Bootstrap.EditMode
                     return;
                 }
 
-                _editModeServiceListInstance = CreateEditModeServicesInstance(serviceListAssetSource);
+                _editModeServiceListInstance = serviceListSource.CreateClone();
                 SessionState.SetString(EditModeServicesEntityIdSessionStateKey, _editModeServiceListInstance.GetEntityId().ToString());
 
                 var context = new BootstrapContext(TaskScheduler);
-                var description = $"Creating edit mode services from prefab '{serviceListAssetSource.name}' from {definedScope} scope.";
+                var description = $"Creating edit mode services from prefab '{serviceListSource.name}' from {definedScope} scope.";
                 Progress.Report(progressId, 1f, description);
                 EditorUtility.DisplayProgressBar("Edit Mode Bootstrapping", description, 1f);
                 ServiceLocator.Create(context, _editModeServiceListInstance);
@@ -213,7 +205,7 @@ namespace BeardPhantom.Bootstrap.EditMode
             }
         }
 
-        private void OnEditModeServicesChanged(ServiceListAsset serviceListAsset)
+        private void OnEditModeServicesChanged(ServiceList serviceList)
         {
             ReinitializeIfNecessary();
         }

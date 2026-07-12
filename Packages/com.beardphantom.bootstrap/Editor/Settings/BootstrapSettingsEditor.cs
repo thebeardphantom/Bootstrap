@@ -12,13 +12,8 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
     public class BootstrapSettingsEditor
     {
         public event Action<SerializedObject> SerializedObjectChanged;
+
         private const string UxmlGuid = "cc2657753a54cb14396441d2393d3d8f";
-
-        private readonly VisualElement _content;
-
-        private readonly ToolbarToggle _projectToggle;
-
-        private readonly ToolbarToggle _userToggle;
 
         private readonly Button _reinitializeButton;
 
@@ -26,24 +21,25 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
 
         private UnityEditor.Editor _editor;
 
-        private VisualElement _rootElement;
+        private readonly VisualElement _rootElement;
 
         public BootstrapSettingsEditor(VisualElement rootElement)
         {
+            _rootElement = rootElement;
             CompilationPipeline.compilationStarted += OnCompilationStarted;
 
             var uxml = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(AssetDatabase.GUIDToAssetPath(UxmlGuid));
             uxml.CloneTree(rootElement);
-            _content = rootElement.Q("settings-content");
-            _tabViewContent = _content.Q(className: "tab-view-content");
-            _projectToggle = _content.Q<ToolbarToggle>("project-toggle");
-            _userToggle = _content.Q<ToolbarToggle>("user-toggle");
+            VisualElement content = rootElement.Q("settings-content");
+            _tabViewContent = content.Q(className: "tab-view-content");
+            var projectToggle = content.Q<ToolbarToggle>("project-toggle");
+            var userToggle = content.Q<ToolbarToggle>("user-toggle");
 
-            _reinitializeButton = _content.Q<Button>("reinitialize-button");
+            _reinitializeButton = content.Q<Button>("reinitialize-button");
             _reinitializeButton.clicked += OnReinitializeButtonClicked;
 
-            SetupTabViewTab(_projectToggle, SettingsScope.Project, _userToggle);
-            SetupTabViewTab(_userToggle, SettingsScope.User, _projectToggle);
+            SetupTabViewTab(projectToggle, SettingsScope.Project, userToggle);
+            SetupTabViewTab(userToggle, SettingsScope.User, projectToggle);
             BindToScope(SettingsScope.Project);
         }
 
@@ -99,6 +95,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
             }
 
             App.Quit();
+            App.Deinitialize();
             App.Initialize<EditModeAppInstance>();
         }
 

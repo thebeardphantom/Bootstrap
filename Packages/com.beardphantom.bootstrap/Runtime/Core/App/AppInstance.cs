@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace BeardPhantom.Bootstrap
 {
@@ -12,11 +14,13 @@ namespace BeardPhantom.Bootstrap
 
         private readonly CancellationTokenSource _appLifetimeCancellationTokenSource = new();
 
+        private readonly List<Object> _appScopedObjects = new();
+
         private AppBootstrapState _bootstrapState;
 
         public CancellationToken AppLifetimeCancellationToken => _appLifetimeCancellationTokenSource.Token;
 
-        public abstract ServiceListAsset ActiveServiceListAsset { get; }
+        public abstract ServiceList ActiveServiceList { get; }
 
         public AppBootstrapState BootstrapState
         {
@@ -78,6 +82,18 @@ namespace BeardPhantom.Bootstrap
             return ServiceLocator.LocateService<T>();
         }
 
+        public T ScopeToApp<T>(T obj) where T : Object
+        {
+            if (obj.IsNull())
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            Object.DontDestroyOnLoad(obj);
+            _appScopedObjects.Add(obj);
+            return obj;
+        }
+
         internal void NotifyQuitting()
         {
             Logging.Debug($"{this} is quitting.");
@@ -90,6 +106,10 @@ namespace BeardPhantom.Bootstrap
             Logging.Debug($"{this} is resetting.");
             BootstrapState = AppBootstrapState.Resetting;
             Dispose();
+            foreach (Object appScopedObject in _appScopedObjects)
+            {
+                Object.Destroy(appScopedObject);
+            }
         }
 
         internal virtual Awaitable BootstrapAsync()

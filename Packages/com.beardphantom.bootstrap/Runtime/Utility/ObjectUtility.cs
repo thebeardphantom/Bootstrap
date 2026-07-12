@@ -12,7 +12,7 @@ namespace BeardPhantom.Bootstrap
             {
                 stringBuilder.Clear();
                 Transform tform = gameObject.transform;
-                while (tform != null)
+                while (tform.IsNotNull())
                 {
                     stringBuilder.Insert(0, tform.name);
                     stringBuilder.Insert(0, '/');

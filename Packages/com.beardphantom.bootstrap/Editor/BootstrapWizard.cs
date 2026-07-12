@@ -118,7 +118,7 @@ namespace BeardPhantom.Bootstrap.Editor
                 return;
             }
 
-            var servicesListAsset = CreateInstance<ServiceListAsset>();
+            var servicesListAsset = CreateInstance<ServiceList>();
             AssetDatabase.CreateAsset(servicesListAsset, EditModeServiceListAssetPath);
             IBootstrapEditorSettingsAsset settings = BootstrapEditorSettingsUtility.GetWithScope(SettingsScope.Project);
             settings.EditModeServices.SetValue(servicesListAsset);
