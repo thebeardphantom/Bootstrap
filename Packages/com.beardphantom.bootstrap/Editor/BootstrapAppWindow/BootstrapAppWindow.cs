@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -7,6 +8,8 @@ namespace BeardPhantom.Bootstrap.Editor
 {
     public class BootstrapAppWindow : EditorWindow
     {
+        public const string MenuItemPath = "Window/General/Bootstrap Status Window";
+
         private static readonly GUID s_uxmlGuid = new("9ae124f587507a1469f8c82e44b628de");
 
         private HelpBox _noActiveServicesBox;
@@ -17,11 +20,15 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private Foldout _sectionServices;
 
-        private TextField _sessionGuidTextField;
+        private Label _sessionGuidTextField;
 
-        private TextField _appCreateTimestampTextField;
+        private Label _appCreateTimestampTextField;
 
-        [MenuItem("Window/General/Bootstrap Status Window")]
+        private ObjectField _sourceAsset;
+
+        private Label _appType;
+
+        [MenuItem(MenuItemPath)]
         private static void ShowWindow()
         {
             var window = GetWindow<BootstrapAppWindow>();
@@ -49,10 +56,12 @@ namespace BeardPhantom.Bootstrap.Editor
             var visualTreeAsset = AssetDatabase.LoadAssetByGUID<VisualTreeAsset>(s_uxmlGuid);
             visualTreeAsset.CloneTree(rootVisualElement);
 
-            _sessionGuidTextField = rootVisualElement.Q<TextField>("session-guid");
-            _appCreateTimestampTextField = rootVisualElement.Q<TextField>("app-create-timestamp");
+            _sessionGuidTextField = rootVisualElement.Q<Label>("session-guid");
+            _appCreateTimestampTextField = rootVisualElement.Q<Label>("app-create-timestamp");
             _noActiveServicesBox = rootVisualElement.Q<HelpBox>();
             _sectionServices = rootVisualElement.Q<Foldout>("section-services");
+            _sourceAsset = rootVisualElement.Q<ObjectField>("source-asset");
+            _appType = rootVisualElement.Q<Label>("app-type");
             RefreshUI();
         }
 
@@ -66,6 +75,16 @@ namespace BeardPhantom.Bootstrap.Editor
             RefreshUI();
         }
 
+        private void OnAddedAsTab()
+        {
+            RefreshUI();
+        }
+
+        private void OnTabDetached()
+        {
+            RefreshUI();
+        }
+
         private void RefreshUI()
         {
             _inspectorElement?.RemoveFromHierarchy();
@@ -73,28 +92,38 @@ namespace BeardPhantom.Bootstrap.Editor
             _inspectorElement = null;
             _serializedObject = null;
             _noActiveServicesBox.style.display = DisplayStyle.Flex;
+            _sourceAsset.SetValueWithoutNotify(null);
 
             if (!App.TryGetInstance(out AppInstance appInstance))
             {
-                _sessionGuidTextField.value = null;
-                _appCreateTimestampTextField.value = null;
+                _appType.text = null;
+                _sessionGuidTextField.text = null;
+                _appCreateTimestampTextField.text = null;
                 return;
             }
 
-            _sessionGuidTextField.value = appInstance.SessionGuid.ToString();
-            _appCreateTimestampTextField.value = appInstance.CreateTimestamp.ToString();
+            _appType.text = appInstance.GetType().Name;
+            _appType.tooltip = appInstance.GetType().ToString();
+            _sessionGuidTextField.text = appInstance.SessionGuid.ToString();
+            _appCreateTimestampTextField.text = appInstance.CreateTimestamp.ToString();
 
             if (appInstance.ActiveServiceList.IsNull())
             {
                 return;
             }
 
+            _sourceAsset.SetValueWithoutNotify(appInstance.ActiveServiceList.Source);
             _noActiveServicesBox.style.display = DisplayStyle.None;
             _serializedObject = new SerializedObject(appInstance.ActiveServiceList);
             _inspectorElement = new InspectorElement(_serializedObject)
             {
                 name = "services-inspector",
             };
+            _inspectorElement.RegisterCallbackOnce<AttachToPanelEvent>(_ =>
+            {
+                var scriptField = _inspectorElement.Q<PropertyField>("PropertyField:m_Script");
+                scriptField.style.display = DisplayStyle.None;
+            });
             _sectionServices.Add(_inspectorElement);
         }
     }
