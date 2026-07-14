@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -8,8 +7,6 @@ namespace BeardPhantom.Bootstrap.Editor
 {
     public class BootstrapAppWindow : EditorWindow
     {
-        public const string MenuItemPath = "Window/General/Bootstrap Status Window";
-
         private static readonly GUID s_uxmlGuid = new("9ae124f587507a1469f8c82e44b628de");
 
         private HelpBox _noActiveServicesBox;
@@ -28,8 +25,8 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private Label _appType;
 
-        [MenuItem(MenuItemPath)]
-        private static void ShowWindow()
+        [MenuItem("Window/General/Bootstrap Status Window")]
+        public static void ShowWindow()
         {
             var window = GetWindow<BootstrapAppWindow>();
             window.titleContent = new GUIContent("🥾Bootstrap Status");
@@ -119,12 +116,26 @@ namespace BeardPhantom.Bootstrap.Editor
             {
                 name = "services-inspector",
             };
-            _inspectorElement.RegisterCallbackOnce<AttachToPanelEvent>(_ =>
-            {
-                var scriptField = _inspectorElement.Q<PropertyField>("PropertyField:m_Script");
-                scriptField.style.display = DisplayStyle.None;
-            });
+            _inspectorElement.RegisterCallbackOnce<AttachToPanelEvent>(OnInspectorElementAttachedToPanel);
             _sectionServices.Add(_inspectorElement);
+        }
+
+        private void OnInspectorElementAttachedToPanel(AttachToPanelEvent _)
+        {
+            var scriptField = _inspectorElement.Q<PropertyField>("PropertyField:m_Script");
+            scriptField.style.display = DisplayStyle.None;
+
+            var listView = _inspectorElement.Q<ListView>();
+            listView.showAddRemoveFooter = false;
+            listView.showBoundCollectionSize = false;
+            listView.reorderable = false;
+            listView.allowRemove = false;
+            listView.allowAdd = false;
+            listView.selectionType = SelectionType.None;
+            listView.RegisterCallback<GeometryChangedEvent>(_ =>
+            {
+                listView.reorderable = false;
+            });
         }
     }
 }

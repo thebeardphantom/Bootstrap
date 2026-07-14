@@ -16,7 +16,7 @@ namespace BeardPhantom.Bootstrap.Editor
                 property);
         }
 
-        private class StatefulElement : VisualElement
+        public class StatefulElement : VisualElement
         {
             private static readonly GUID s_stylesheetGuid = new("95843a8ba54d4d139dbcff8d6d29704c");
 
@@ -61,19 +61,20 @@ namespace BeardPhantom.Bootstrap.Editor
                 Clear();
 
                 string label = GetLabel();
-
+                bool isAsset = EditorUtility.IsPersistent(_property.serializedObject.targetObject);
                 if (_property.managedReferenceValue.IsNull())
                 {
                     UnregisterCallback<MouseEnterEvent>(OnMouseEnterRoot);
                     UnregisterCallback<MouseLeaveEvent>(OnMouseLeaveRoot);
-                    var buttonField = IMGUIField.Create(label, OnDrawCreateNewButtonIMGUI);
-                    buttonField.name = "create-button";
-                    Add(buttonField);
+                    if(isAsset)
+                    {
+                        var buttonField = IMGUIField.Create(label, OnDrawCreateNewButtonIMGUI);
+                        buttonField.name = "create-button";
+                        Add(buttonField);
+                    }
                 }
                 else
                 {
-                    RegisterCallback<MouseEnterEvent>(OnMouseEnterRoot);
-                    RegisterCallback<MouseLeaveEvent>(OnMouseLeaveRoot);
                     var propertyField = new PropertyField(_property, label);
                     propertyField.TrackPropertyValue(_property, OnSerializedPropertyValueChanged);
                     Add(propertyField);
@@ -87,6 +88,18 @@ namespace BeardPhantom.Bootstrap.Editor
                     _deleteButton.AddToClassList("delete-button");
                     _deleteButton.clickable.clickedWithEventInfo += OnDeleteButtonClicked;
                     Add(_deleteButton);
+
+                    if (isAsset)
+                    {
+                        RegisterCallback<MouseEnterEvent>(OnMouseEnterRoot);
+                        RegisterCallback<MouseLeaveEvent>(OnMouseLeaveRoot);
+                    }
+                    else
+                    {
+                        UnregisterCallback<MouseEnterEvent>(OnMouseEnterRoot);
+                        UnregisterCallback<MouseLeaveEvent>(OnMouseLeaveRoot);
+                        _deleteButton.style.display = DisplayStyle.None;
+                    }
                 }
 
                 this.Bind(_property.serializedObject);
@@ -114,12 +127,18 @@ namespace BeardPhantom.Bootstrap.Editor
 
             private void OnMouseEnterRoot(MouseEnterEvent _)
             {
-                _deleteButton.style.display = DisplayStyle.Flex;
+                if (_deleteButton != null)
+                {
+                    _deleteButton.style.display = DisplayStyle.Flex;
+                }
             }
 
             private void OnMouseLeaveRoot(MouseLeaveEvent _)
             {
-                _deleteButton.style.display = DisplayStyle.None;
+                if (_deleteButton != null)
+                {
+                    _deleteButton.style.display = DisplayStyle.None;
+                }
             }
 
             private void OnDeleteButtonClicked(EventBase obj)

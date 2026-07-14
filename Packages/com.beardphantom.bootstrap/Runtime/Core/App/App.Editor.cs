@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 using BeardPhantom.Bootstrap.EditMode;
+using System.Diagnostics;
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
@@ -43,7 +44,7 @@ namespace BeardPhantom.Bootstrap
 
             if (!Application.isPlaying)
             {
-                InitializeEditorDelayed<EditModeAppInstance>();
+                ScheduleInitEditorApp();
             }
         }
 
@@ -83,6 +84,12 @@ namespace BeardPhantom.Bootstrap
                     break;
                 }
             }
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        private static void ScheduleInitEditorApp()
+        {
+            InitializeEditorDelayed<EditModeAppInstance>();
         }
     }
 }

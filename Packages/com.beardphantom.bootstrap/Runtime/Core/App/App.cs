@@ -104,6 +104,16 @@ namespace BeardPhantom.Bootstrap
             return Instance.Locate<T>();
         }
 
+        public static T GetExtension<T>() where T : IAppExtension
+        {
+            if (s_typeToAppExtensions.TryGetValue(typeof(T), out IAppExtension extension))
+            {
+                return (T)extension;
+            }
+
+            throw new Exception($"No extension found for type {typeof(T)}");
+        }
+
         public static void Reset()
         {
             if (!TryGetInstance(out AppInstance appInstance))
@@ -115,21 +125,18 @@ namespace BeardPhantom.Bootstrap
             appInstance.NotifyResetting();
             Deinitialize();
 
-            Logging.Debug("Reloading scene at index 0.");
-            SceneManager.LoadScene(0);
-
-            Logging.Debug($"Re-entering {nameof(RuntimeEntryPoint)}.");
-            RuntimeEntryPoint();
-        }
-
-        public static T GetExtension<T>() where T : IAppExtension
-        {
-            if (s_typeToAppExtensions.TryGetValue(typeof(T), out IAppExtension extension))
+            if (Application.isPlaying)
             {
-                return (T)extension;
-            }
+                Logging.Debug("Reloading scene at index 0.");
+                SceneManager.LoadScene(0);
 
-            throw new Exception($"No extension found for type {typeof(T)}");
+                Logging.Debug($"Re-entering {nameof(RuntimeEntryPoint)}.");
+                RuntimeEntryPoint();
+            }
+            else
+            {
+                ScheduleInitEditorApp();
+            }
         }
 
         internal static void Quit()

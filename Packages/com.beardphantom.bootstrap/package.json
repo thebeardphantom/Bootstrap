@@ -1,7 +1,7 @@
 {
   "name": "com.beardphantom.bootstrap",
   "displayName": "Bootstrap",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "unity": "6000.0",
   "description": "An async-first bootstrapping framework for Unity projects.",
   "keywords": [
@@ -11,5 +11,6 @@
   "dependencies": {
     "com.unity.nuget.newtonsoft-json": "0.0.0"
   },
-  "type": "library"
+  "type": "library",
+  "documentationUrl": "https://github.com/thebeardphantom/Bootstrap/wiki"
 }
