@@ -15,6 +15,10 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace BeardPhantom.Bootstrap.ZLogger
 {
+    /// <summary>
+    /// Default <see cref="ILogService"/> implementation. Configures ZLogger console and file logging providers
+    /// and installs <see cref="BootstrapZLogHandler"/> as the active <see cref="ILogHandler"/>.
+    /// </summary>
     [Serializable]
     [GenerateLogger]
     [SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
@@ -24,23 +28,41 @@ namespace BeardPhantom.Bootstrap.ZLogger
 
         private ILoggerFactory _loggerFactory;
 
+        /// <inheritdoc />
         int IServiceWithInitPriority.InitPriority => -1000;
 
+        /// <summary>
+        /// The minimum level of messages written to the console provider.
+        /// </summary>
         [field: SerializeField]
+        [field: Tooltip("The minimum level of messages written to the console provider.")]
         private LogLevel ConsoleMinLogLevel { get; set; } = LogLevel.Debug;
 
+        /// <summary>
+        /// The minimum level of messages written to the file provider.
+        /// </summary>
         [field: SerializeField]
+        [field: Tooltip("The minimum level of messages written to the file provider.")]
         private LogLevel FileMinLogLevel { get; set; } = LogLevel.Trace;
 
+        /// <summary>
+        /// The path the file provider writes logs to.
+        /// </summary>
         [field: SerializeField]
+        [field: Tooltip("The path the file provider writes logs to.")]
         private string FilePath { get; set; } = "Logs/App.log";
 
+        /// <summary>
+        /// Gets a logger for the given <paramref name="category"/>.
+        /// </summary>
+        /// <param name="category">The logger category name.</param>
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
         public ILogger GetLogger(string category)
         {
             return _loggerFactory.CreateLogger(category);
         }
 
+        /// <inheritdoc />
         public bool TryGetLogger(string category, out ILogger logger)
         {
             if (_loggerFactory.IsNull())
@@ -53,6 +75,10 @@ namespace BeardPhantom.Bootstrap.ZLogger
             return true;
         }
 
+        /// <summary>
+        /// Creates the <see cref="ILoggerFactory"/> used by this service, configured with the console and file
+        /// providers.
+        /// </summary>
         protected virtual ILoggerFactory CreateLoggerFactory()
         {
             return LoggerFactory.Create(builder =>
@@ -65,16 +91,28 @@ namespace BeardPhantom.Bootstrap.ZLogger
             });
         }
 
+        /// <summary>
+        /// Determines whether a message at <paramref name="level"/> should be written to the console provider.
+        /// </summary>
+        /// <param name="level">The level of the message being logged.</param>
         protected virtual bool ShouldLogToConsole(LogLevel level)
         {
             return level >= ConsoleMinLogLevel;
         }
 
+        /// <summary>
+        /// Determines whether a message at <paramref name="level"/> should be written to the file provider.
+        /// </summary>
+        /// <param name="level">The level of the message being logged.</param>
         protected virtual bool ShouldLogToFile(LogLevel level)
         {
             return level >= FileMinLogLevel;
         }
 
+        /// <summary>
+        /// Configures the message prefix formatter used by the console provider.
+        /// </summary>
+        /// <param name="formatter">The formatter to configure.</param>
         protected virtual void SetPrefixFormatter(PlainTextZLoggerFormatter formatter)
         {
             formatter.SetPrefixFormatter(
@@ -86,6 +124,11 @@ namespace BeardPhantom.Bootstrap.ZLogger
                 });
         }
 
+        /// <summary>
+        /// Configures the message prefix formatter used by the file provider. Thread-safe, since file writes can
+        /// occur off the main thread.
+        /// </summary>
+        /// <param name="formatter">The formatter to configure.</param>
         protected virtual void SetPrefixFormatterThreadSafe(PlainTextZLoggerFormatter formatter)
         {
             formatter.SetPrefixFormatter(
@@ -96,6 +139,11 @@ namespace BeardPhantom.Bootstrap.ZLogger
                 });
         }
 
+        /// <summary>
+        /// Adds and configures the file logging provider on <paramref name="builder"/>, rotating the previous
+        /// log file at <see cref="FilePath"/> if one exists.
+        /// </summary>
+        /// <param name="builder">The logging builder to configure.</param>
         protected virtual void ConfigureFileProvider(ILoggingBuilder builder)
         {
             if (string.IsNullOrWhiteSpace(FilePath))
@@ -124,6 +172,10 @@ namespace BeardPhantom.Bootstrap.ZLogger
                 .AddFilter<ZLoggerFileLoggerProvider>(ShouldLogToFile);
         }
 
+        /// <summary>
+        /// Adds and configures the Unity console logging provider on <paramref name="builder"/>.
+        /// </summary>
+        /// <param name="builder">The logging builder to configure.</param>
         protected virtual void ConfigureConsoleProvider(ILoggingBuilder builder)
         {
             builder.AddZLoggerUnityDebug(options =>
@@ -134,6 +186,10 @@ namespace BeardPhantom.Bootstrap.ZLogger
                 .AddFilter<ZLoggerUnityDebugLoggerProvider>(ShouldLogToConsole);
         }
 
+        /// <summary>
+        /// Flushes any log entries queued by <see cref="StartupLogsAppExtension"/> before this service was
+        /// available, if there are any.
+        /// </summary>
         [HideInCallstack]
         protected virtual void FlushStartupLogs()
         {
@@ -148,12 +204,18 @@ namespace BeardPhantom.Bootstrap.ZLogger
             s_logger.ZLogDebug($"Finished flushing startup logs.");
         }
 
+        /// <inheritdoc />
         void IDisposable.Dispose()
         {
             _loggerFactory?.Dispose();
             _loggerFactory = null;
         }
 
+        /// <summary>
+        /// Initializes the logging system: records the main thread id, installs <see cref="BootstrapZLogHandler"/>
+        /// as the active <see cref="ILogHandler"/>, creates the logger factory, and flushes any queued startup logs.
+        /// </summary>
+        /// <param name="context">The context for this initialization.</param>
         void IService.InitService(BootstrapContext context)
         {
             s_mainThreadId = Thread.CurrentThread.ManagedThreadId;
@@ -164,6 +226,11 @@ namespace BeardPhantom.Bootstrap.ZLogger
             FlushStartupLogs();
         }
 
+        /// <summary>
+        /// Registers <see cref="ILogService"/> as an additional binding for this service.
+        /// </summary>
+        /// <param name="bindingTypes">The list of types to add bindings to.</param>
+        /// <param name="autoIncludeDeclaredType">Whether the declared type should also be automatically bound.</param>
         void IServiceWithCustomBindings.GetCustomBindings(List<Type> bindingTypes, out bool autoIncludeDeclaredType)
         {
             autoIncludeDeclaredType = true;

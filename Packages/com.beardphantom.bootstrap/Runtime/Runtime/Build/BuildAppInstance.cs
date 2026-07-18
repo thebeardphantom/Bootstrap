@@ -3,8 +3,14 @@ using UnityEngine;
 
 namespace BeardPhantom.Bootstrap
 {
+    /// <summary>
+    /// <see cref="RuntimeAppInstance"/> used for standalone builds. Determines the session environment from
+    /// <see cref="BootstrapEnvironmentAsset"/> instances loaded in memory and defaults to
+    /// <see cref="BuildBootstrapHandler"/> for bootstrap handling.
+    /// </summary>
     public class BuildAppInstance : RuntimeAppInstance
     {
+        /// <inheritdoc />
         protected override bool TryDetermineSessionEnvironment(out BootstrapEnvironmentAsset environment)
         {
             BootstrapEnvironmentAsset[] bootstrapEnvironmentAssets = Resources.FindObjectsOfTypeAll<BootstrapEnvironmentAsset>();
@@ -34,6 +40,7 @@ namespace BeardPhantom.Bootstrap
             return foundValid;
         }
 
+        /// <inheritdoc />
         protected override void GetDefaultBootstrapHandlers(
             out IPreBootstrapHandler preBootstrapHandler,
             out IPostBootstrapHandler postBootstrapHandler)

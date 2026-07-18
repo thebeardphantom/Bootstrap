@@ -5,18 +5,40 @@ using UnityEngine.Assertions;
 
 namespace BeardPhantom.Bootstrap
 {
+    /// <summary>
+    /// Base <see cref="AppInstance"/> for runtime (non-edit mode) contexts. Selects a
+    /// <see cref="BootstrapEnvironmentAsset"/> and drives it through the pre-bootstrap, service creation, and
+    /// post-bootstrap sequence.
+    /// </summary>
     public abstract class RuntimeAppInstance : AppInstance
     {
         private IPreBootstrapHandler _preHandler;
 
         private IPostBootstrapHandler _postHandler;
 
+        /// <summary>
+        /// The <see cref="BootstrapEnvironmentAsset"/> selected for the current session.
+        /// </summary>
         public BootstrapEnvironmentAsset SessionEnvironment { get; private set; }
 
+        /// <summary>
+        /// The <see cref="ServiceList"/> of the current <see cref="SessionEnvironment"/>.
+        /// </summary>
         public override ServiceList ActiveServiceList => SessionEnvironment.ServiceListAsset;
 
+        /// <summary>
+        /// Determines the <see cref="BootstrapEnvironmentAsset"/> to use for this session.
+        /// </summary>
+        /// <param name="environment">The selected environment, or null if none could be determined.</param>
+        /// <returns>True if an environment was selected.</returns>
         protected abstract bool TryDetermineSessionEnvironment(out BootstrapEnvironmentAsset environment);
 
+        /// <summary>
+        /// Gets the default pre/post bootstrap handlers to use when <see cref="SessionEnvironment"/> doesn't
+        /// specify its own.
+        /// </summary>
+        /// <param name="preBootstrapHandler">The default pre-bootstrap handler.</param>
+        /// <param name="postBootstrapHandler">The default post-bootstrap handler.</param>
         protected abstract void GetDefaultBootstrapHandlers(
             out IPreBootstrapHandler preBootstrapHandler,
             out IPostBootstrapHandler postBootstrapHandler);

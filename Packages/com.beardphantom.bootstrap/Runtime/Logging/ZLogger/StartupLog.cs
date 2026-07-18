@@ -6,6 +6,9 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace BeardPhantom.Bootstrap.ZLogger
 {
+    /// <summary>
+    /// A log entry captured before a real <see cref="ILogger"/> was available, to be replayed later.
+    /// </summary>
     public class StartupLog
     {
         private readonly string _stateString;
@@ -16,8 +19,19 @@ namespace BeardPhantom.Bootstrap.ZLogger
 
         private readonly Exception _exception;
 
+        /// <summary>
+        /// Gets the category of the logger that produced this entry.
+        /// </summary>
         public string LoggerCategory { get; }
 
+        /// <summary>
+        /// Creates a new <see cref="StartupLog"/>.
+        /// </summary>
+        /// <param name="loggerCategory">The category of the logger that produced this entry.</param>
+        /// <param name="stateString">The formatted log message.</param>
+        /// <param name="logLevel">The severity of the entry.</param>
+        /// <param name="eventId">The event id associated with the entry.</param>
+        /// <param name="exception">The exception related to the entry, if any.</param>
         public StartupLog(
             string loggerCategory,
             string stateString,
@@ -32,6 +46,10 @@ namespace BeardPhantom.Bootstrap.ZLogger
             _exception = exception;
         }
 
+        /// <summary>
+        /// Replays this entry on <paramref name="logger"/>.
+        /// </summary>
+        /// <param name="logger">The logger to replay this entry on.</param>
         [HideInCallstack]
         public void Log(ILogger logger)
         {

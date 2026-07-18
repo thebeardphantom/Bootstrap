@@ -7,6 +7,10 @@ using UnityEngine.TestRunner;
 
 namespace BeardPhantom.Bootstrap.Tests
 {
+    /// <summary>
+    /// Tracks whether Unity's playmode test runner is currently executing tests, exposing this via
+    /// <see cref="AppInstance.IsRunningTests"/>.
+    /// </summary>
     public class TestDetector : ITestRunCallback
     {
         void ITestRunCallback.RunStarted(ITest testsToRun)

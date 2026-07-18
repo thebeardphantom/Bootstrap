@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace BeardPhantom.Bootstrap.EditMode
 {
+    /// <summary>
+    /// Editor-only project-scoped Bootstrap settings, persisted to
+    /// <c>ProjectSettings/BootstrapProjectSettings.asset</c> and shared across all users of the project.
+    /// </summary>
     [FilePath("ProjectSettings/BootstrapProjectSettings.asset", FilePathAttribute.Location.ProjectFolder)]
     public class BootstrapEditorProjectSettings : BootstrapEditorSettingsAsset<BootstrapEditorProjectSettings>,
         ISerializationCallbackReceiver

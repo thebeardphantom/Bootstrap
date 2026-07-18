@@ -6,6 +6,11 @@ using UnityEditor;
 
 namespace BeardPhantom.Bootstrap
 {
+    /// <summary>
+    /// <see cref="RuntimeAppInstance"/> used when entering play mode in the editor. Determines the session
+    /// environment from the <see cref="EditModeState"/> persisted before entering play mode and defaults to
+    /// <see cref="PlayModeBootstrapHandler"/> for bootstrap handling.
+    /// </summary>
     public class PlayModeAppInstance : RuntimeAppInstance
     {
         internal static bool TryLoadEditModeState(out EditModeState editModeState)
@@ -21,6 +26,7 @@ namespace BeardPhantom.Bootstrap
             return editModeState.IsNotNull();
         }
 
+        /// <inheritdoc />
         protected override bool TryDetermineSessionEnvironment(out BootstrapEnvironmentAsset environment)
         {
             if (!TryLoadEditModeState(out EditModeState editModeState))
@@ -33,6 +39,7 @@ namespace BeardPhantom.Bootstrap
             return editModeState.Environment;
         }
 
+        /// <inheritdoc />
         protected override void GetDefaultBootstrapHandlers(
             out IPreBootstrapHandler preBootstrapHandler,
             out IPostBootstrapHandler postBootstrapHandler)

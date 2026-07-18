@@ -2,8 +2,15 @@
 
 namespace BeardPhantom.Bootstrap
 {
+    /// <summary>
+    /// Compares <see cref="IService"/> instances by their <see cref="IServiceWithInitPriority.InitPriority"/>,
+    /// treating services that don't implement <see cref="IServiceWithInitPriority"/> as priority 0.
+    /// </summary>
     public class ServiceInitComparer : IComparer<IService>
     {
+        /// <summary>
+        /// Shared singleton instance of the comparer.
+        /// </summary>
         public static readonly ServiceInitComparer Instance = new();
 
         public int Compare(IService x, IService y)

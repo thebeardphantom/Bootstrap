@@ -9,10 +9,19 @@ using Object = UnityEngine.Object;
 
 namespace BeardPhantom.Bootstrap
 {
+    /// <summary>
+    /// Static entry point for accessing and managing the current <see cref="AppInstance"/>.
+    /// </summary>
     public static partial class App
     {
+        /// <summary>
+        /// Raised after the current <see cref="AppInstance"/> finishes bootstrapping.
+        /// </summary>
         public static event Action Initialized;
 
+        /// <summary>
+        /// Raised after the current <see cref="AppInstance"/> is deinitialized.
+        /// </summary>
         public static event Action Deinitialized;
 
         private static readonly Dictionary<Type, IAppExtension> s_typeToAppExtensions = new();
@@ -21,8 +30,15 @@ namespace BeardPhantom.Bootstrap
 
         private static AppInstance s_instance;
 
+        /// <summary>
+        /// True if the calling thread is the main thread the app was initialized on.
+        /// </summary>
         public static bool IsMainThread => Thread.CurrentThread.ManagedThreadId == s_mainThreadId;
 
+        /// <summary>
+        /// The current app instance.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">No app instance is currently initialized.</exception>
         public static AppInstance Instance
         {
             get
@@ -36,12 +52,24 @@ namespace BeardPhantom.Bootstrap
             }
         }
 
+        /// <summary>
+        /// Instantiates a clone of <paramref name="original"/> and scopes it to the current app instance.
+        /// </summary>
+        /// <typeparam name="T">The type of object to instantiate.</typeparam>
+        /// <param name="original">The object to clone.</param>
         public static T InstantiateAndScopeToApp<T>(T original) where T : Object
         {
             T clone = Object.Instantiate(original);
             return ScopeToApp(clone);
         }
 
+        /// <summary>
+        /// Scopes <paramref name="obj"/> to the current app instance, if one exists. See
+        /// <see cref="AppInstance.ScopeToApp{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of <paramref name="obj"/>.</typeparam>
+        /// <param name="obj">The object to scope to the current app instance.</param>
+        /// <returns><paramref name="obj"/>, for chaining.</returns>
         public static T ScopeToApp<T>(T obj) where T : Object
         {
             if (TryGetInstance(out AppInstance appInstance))
@@ -56,6 +84,11 @@ namespace BeardPhantom.Bootstrap
             return obj;
         }
 
+        /// <summary>
+        /// Scopes each object in <paramref name="objs"/> to the current app instance, if one exists. See
+        /// <see cref="AppInstance.ScopeToApp{T}"/>.
+        /// </summary>
+        /// <param name="objs">The objects to scope to the current app instance.</param>
         public static void ScopeToApp(IEnumerable<Object> objs)
         {
             if (!TryGetInstance(out AppInstance appInstance))
@@ -70,12 +103,24 @@ namespace BeardPhantom.Bootstrap
             }
         }
 
+        /// <summary>
+        /// Attempts to get the current app instance.
+        /// </summary>
+        /// <param name="instance">The current app instance, or null if none is initialized.</param>
+        /// <returns>True if an app instance is currently initialized.</returns>
         public static bool TryGetInstance(out AppInstance instance)
         {
             instance = s_instance;
             return instance.IsNotNull();
         }
 
+        /// <summary>
+        /// Attempts to get the current app instance as type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The expected app instance type.</typeparam>
+        /// <param name="instance">The current app instance cast to <typeparamref name="T"/>, or null if none is
+        /// initialized or the current instance is not of type <typeparamref name="T"/>.</param>
+        /// <returns>True if an app instance of type <typeparamref name="T"/> is currently initialized.</returns>
         public static bool TryGetInstance<T>(out T instance) where T : AppInstance
         {
             if (TryGetInstance(out AppInstance untypedInstance) && untypedInstance is T typedInstance)
@@ -88,6 +133,12 @@ namespace BeardPhantom.Bootstrap
             return false;
         }
 
+        /// <summary>
+        /// Attempts to locate a service of type <typeparamref name="T"/> via the current app instance.
+        /// </summary>
+        /// <typeparam name="T">The service type to locate.</typeparam>
+        /// <param name="service">The located service, or null if not found or no app instance is initialized.</param>
+        /// <returns>True if the service was located.</returns>
         public static bool TryLocate<T>(out T service) where T : class
         {
             if (TryGetInstance(out AppInstance appInstance))
@@ -99,11 +150,20 @@ namespace BeardPhantom.Bootstrap
             return false;
         }
 
+        /// <summary>
+        /// Locates a service of type <typeparamref name="T"/> via <see cref="Instance"/>.
+        /// </summary>
+        /// <typeparam name="T">The service type to locate.</typeparam>
         public static T Locate<T>() where T : class
         {
             return Instance.Locate<T>();
         }
 
+        /// <summary>
+        /// Gets the registered <see cref="IAppExtension"/> instance of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The extension type to get.</typeparam>
+        /// <exception cref="Exception">No extension of type <typeparamref name="T"/> is registered.</exception>
         public static T GetExtension<T>() where T : IAppExtension
         {
             if (s_typeToAppExtensions.TryGetValue(typeof(T), out IAppExtension extension))
@@ -114,6 +174,9 @@ namespace BeardPhantom.Bootstrap
             throw new Exception($"No extension found for type {typeof(T)}");
         }
 
+        /// <summary>
+        /// Resets the current app instance and reinitializes the app, reloading scene 0 when playing.
+        /// </summary>
         public static void Reset()
         {
             if (!TryGetInstance(out AppInstance appInstance))

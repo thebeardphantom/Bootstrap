@@ -14,11 +14,23 @@ using Object = UnityEngine.Object;
 
 namespace BeardPhantom.Bootstrap
 {
+    /// <summary>
+    /// Default pre/post bootstrap handler used when entering play mode in the editor. Restores the scenes and
+    /// selection recorded in <see cref="EditModeState"/> before play mode was entered.
+    /// </summary>
     [Serializable]
     public class PlayModeBootstrapHandler : IPreBootstrapHandler, IPostBootstrapHandler
     {
+        /// <summary>
+        /// The shared instance used as the default bootstrap handler when entering play mode.
+        /// </summary>
         public static readonly PlayModeBootstrapHandler Instance = new();
 
+        /// <summary>
+        /// Loads the given scene paths in play mode. The first path replaces the currently loaded scene if only
+        /// the initial bootstrap scene is loaded; otherwise all paths are loaded additively.
+        /// </summary>
+        /// <param name="scenePaths">The asset paths of the scenes to load.</param>
         public static void LoadScenesInPlayMode(IReadOnlyList<string> scenePaths)
         {
             Assert.IsNotNull(scenePaths, "scenePaths.IsNotNull()");

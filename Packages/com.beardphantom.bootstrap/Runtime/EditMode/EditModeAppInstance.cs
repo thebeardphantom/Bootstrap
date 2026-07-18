@@ -14,18 +14,37 @@ using Object = UnityEngine.Object;
 
 namespace BeardPhantom.Bootstrap.EditMode
 {
+    /// <summary>
+    /// The <see cref="AppInstance"/> used while bootstrapping edit mode services in the Unity editor.
+    /// </summary>
     public class EditModeAppInstance : AppInstance
     {
+        /// <summary>
+        /// <see cref="SessionState"/> key under which the entity ID of the active edit mode
+        /// <see cref="ServiceList"/> instance is stored.
+        /// </summary>
         public const string EditModeServicesEntityIdSessionStateKey = "EditModeServicesIId";
 
+        /// <summary>
+        /// <see cref="SessionState"/> key under which the serialized <see cref="EditModeState"/> snapshot is stored.
+        /// </summary>
         public const string EditModeStateSessionStateKey = "EDIT_MODE_STATE";
 
         private ServiceList _editModeServiceListInstance;
 
+        /// <summary>
+        /// The active edit mode service list instance.
+        /// </summary>
         public override ServiceList ActiveServiceList => _editModeServiceListInstance;
 
+        /// <summary>
+        /// Always false; edit mode instances are not considered to be quitting.
+        /// </summary>
         public override bool IsQuitting => false;
 
+        /// <summary>
+        /// Creates a new instance, wires up the default log handler, and subscribes to edit mode service list changes.
+        /// </summary>
         public EditModeAppInstance()
         {
             Logging.LogHandler = Logging.DefaultLogHandler;
@@ -55,6 +74,10 @@ namespace BeardPhantom.Bootstrap.EditMode
             }
         }
 
+        /// <summary>
+        /// Re-bootstraps edit mode services if there is no active instance, the environment was cleared, or the
+        /// configured service list has changed.
+        /// </summary>
         public void ReinitializeIfNecessary()
         {
             ServiceList serviceList = BootstrapEditorSettingsUtility.GetValue(asset => asset.EditModeServices);

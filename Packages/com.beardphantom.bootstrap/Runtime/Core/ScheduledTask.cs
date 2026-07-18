@@ -4,6 +4,10 @@ using UnityEngine.Assertions;
 
 namespace BeardPhantom.Bootstrap
 {
+    /// <summary>
+    /// Wraps a synchronous or asynchronous unit of work along with the priority used to order it within a
+    /// <see cref="TaskScheduler"/>.
+    /// </summary>
     public readonly struct ScheduledTask : IEquatable<ScheduledTask>, IComparable<ScheduledTask>, IComparable
     {
         internal readonly int Priority;
@@ -12,8 +16,18 @@ namespace BeardPhantom.Bootstrap
 
         private readonly Action _syncTask;
 
+        /// <summary>
+        /// Creates a scheduled task wrapping an asynchronous unit of work.
+        /// </summary>
+        /// <param name="asyncTask">The asynchronous work to invoke.</param>
+        /// <param name="priority">The priority used to order this task relative to others.</param>
         public ScheduledTask(Func<Awaitable> asyncTask, int priority = 0) : this(null, asyncTask, priority) { }
 
+        /// <summary>
+        /// Creates a scheduled task wrapping a synchronous unit of work.
+        /// </summary>
+        /// <param name="syncTask">The synchronous work to invoke.</param>
+        /// <param name="priority">The priority used to order this task relative to others.</param>
         public ScheduledTask(Action syncTask, int priority = 0) : this(syncTask, null, priority) { }
 
         private ScheduledTask(Action syncTask, Func<Awaitable> asyncTask, int priority)
@@ -24,6 +38,9 @@ namespace BeardPhantom.Bootstrap
             AssertState();
         }
 
+        /// <summary>
+        /// Invokes the wrapped task, awaiting it if asynchronous.
+        /// </summary>
         public Awaitable InvokeAsync()
         {
             AssertState();
