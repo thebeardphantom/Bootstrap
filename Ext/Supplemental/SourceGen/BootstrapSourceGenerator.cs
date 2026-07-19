@@ -12,6 +12,11 @@ using System.Diagnostics;
 
 namespace BeardPhantom.Bootstrap.SourceGen
 {
+    /// <summary>
+    /// Roslyn source generator that emits partial-class members for types decorated with a
+    /// <see cref="BootstrapGeneratorAttribute"/>-derived attribute (e.g. <see cref="GenerateLoggerAttribute"/>,
+    /// <see cref="GenerateSingletonAttribute"/>).
+    /// </summary>
     [Generator]
     public class BootstrapSourceGenerator : ISourceGenerator
     {
@@ -116,6 +121,7 @@ namespace BeardPhantom.Bootstrap.SourceGen
             };
         }
 
+        /// <inheritdoc />
         public void Execute(GeneratorExecutionContext context)
         {
 #if DEBUG
@@ -184,6 +190,7 @@ namespace BeardPhantom.Bootstrap.SourceGen
             }
         }
 
+        /// <inheritdoc />
         public void Initialize(GeneratorInitializationContext context) { }
     }
 }

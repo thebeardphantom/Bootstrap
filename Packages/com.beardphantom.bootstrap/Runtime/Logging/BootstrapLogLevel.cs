@@ -8,12 +8,39 @@ namespace BeardPhantom.Bootstrap
     /// </summary>
     public enum BootstrapLogLevel
     {
+        /// <summary>
+        /// Highly detailed messages used only for tracing execution during development.
+        /// </summary>
         Trace = 0,
+
+        /// <summary>
+        /// Messages useful for debugging during development.
+        /// </summary>
         Debug = 1,
+
+        /// <summary>
+        /// Messages tracking the general flow of the application.
+        /// </summary>
         Information = 2,
+
+        /// <summary>
+        /// Messages highlighting an unexpected or abnormal event that isn't otherwise an error.
+        /// </summary>
         Warning = 3,
+
+        /// <summary>
+        /// Messages highlighting a failure in the current operation or request.
+        /// </summary>
         Error = 4,
+
+        /// <summary>
+        /// Messages highlighting a failure that requires immediate attention, such as data loss or a crash.
+        /// </summary>
         Critical = 5,
+
+        /// <summary>
+        /// No messages should be logged.
+        /// </summary>
         None = 6,
     }
 

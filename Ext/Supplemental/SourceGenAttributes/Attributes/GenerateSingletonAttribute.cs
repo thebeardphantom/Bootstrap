@@ -4,6 +4,9 @@ using System.Text;
 
 namespace BeardPhantom.Bootstrap.SourceGen
 {
+    /// <summary>
+    /// Marks a partial type to have singleton service accessors generated for it.
+    /// </summary>
     [SuppressMessage("ReSharper", "UnusedType.Global")]
     public class GenerateSingletonAttribute : BootstrapGeneratorAttribute
     {
@@ -21,6 +24,9 @@ namespace BeardPhantom.Bootstrap.SourceGen
             instance = ServiceRef<{0}>.Instance;
         }}";
 
+        /// <summary>
+        /// The set of accessors to generate.
+        /// </summary>
         public readonly SingletonAccessors Accessors;
 
         internal override string[] Imports { get; } =
@@ -32,8 +38,15 @@ namespace BeardPhantom.Bootstrap.SourceGen
 
         internal override string FilenameId => "Singleton";
 
+        /// <summary>
+        /// Generates a property accessor only.
+        /// </summary>
         public GenerateSingletonAttribute() : this(SingletonAccessors.Property) { }
 
+        /// <summary>
+        /// Generates the accessors specified by <paramref name="accessors"/>.
+        /// </summary>
+        /// <param name="accessors">The set of accessors to generate.</param>
         public GenerateSingletonAttribute(SingletonAccessors accessors)
         {
             Accessors = accessors;
