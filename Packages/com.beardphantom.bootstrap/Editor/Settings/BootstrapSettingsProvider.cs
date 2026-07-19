@@ -5,8 +5,15 @@ using UnityEngine.UIElements;
 
 namespace BeardPhantom.Bootstrap.Editor.Settings
 {
+    /// <summary>
+    /// Project Settings page for editing <see cref="BootstrapEditorProjectSettings"/> and
+    /// <see cref="BootstrapEditorUserSettings"/>.
+    /// </summary>
     public class BootstrapSettingsProvider : SettingsProvider
     {
+        /// <summary>
+        /// The Project Settings menu path this provider is registered under.
+        /// </summary>
         public const string SettingsPath = "Project/Bootstrap";
 
         private SerializedObject _serializedObject;
@@ -16,6 +23,9 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         /// <inheritdoc />
         private BootstrapSettingsProvider() : base(SettingsPath, SettingsScope.Project) { }
 
+        /// <summary>
+        /// Saves both the project-scoped and user-scoped bootstrap editor settings assets.
+        /// </summary>
         public static void SaveAllAssets()
         {
             BootstrapEditorProjectSettings.instance.Save();

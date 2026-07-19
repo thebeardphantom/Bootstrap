@@ -9,8 +9,15 @@ using Object = UnityEngine.Object;
 
 namespace BeardPhantom.Bootstrap.Editor.Settings
 {
+    /// <summary>
+    /// Builds and manages the UI for the Bootstrap settings page, binding it to the project or user
+    /// scoped settings asset and swapping between them via tabs.
+    /// </summary>
     public class BootstrapSettingsEditor
     {
+        /// <summary>
+        /// Raised whenever the bound <see cref="SerializedObject"/> changes, e.g. due to switching scope tabs.
+        /// </summary>
         public event Action<SerializedObject> SerializedObjectChanged;
 
         private const string UxmlGuid = "cc2657753a54cb14396441d2393d3d8f";
@@ -23,6 +30,10 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
 
         private readonly VisualElement _rootElement;
 
+        /// <summary>
+        /// Creates the settings editor UI and attaches it under <paramref name="rootElement"/>.
+        /// </summary>
+        /// <param name="rootElement">The root visual element to build the settings UI into.</param>
         public BootstrapSettingsEditor(VisualElement rootElement)
         {
             _rootElement = rootElement;

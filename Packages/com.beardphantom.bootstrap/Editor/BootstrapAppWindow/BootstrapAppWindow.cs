@@ -5,6 +5,10 @@ using UnityEngine.UIElements;
 
 namespace BeardPhantom.Bootstrap.Editor
 {
+    /// <summary>
+    /// Editor window displaying the status of the currently running <see cref="AppInstance"/>, including its
+    /// session GUID, create timestamp, and active service list.
+    /// </summary>
     public class BootstrapAppWindow : EditorWindow
     {
         private static readonly GUID s_uxmlGuid = new("9ae124f587507a1469f8c82e44b628de");
@@ -25,6 +29,9 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private Label _appType;
 
+        /// <summary>
+        /// Opens (or focuses) the Bootstrap Status window.
+        /// </summary>
         [MenuItem("Window/General/Bootstrap Status Window")]
         public static void ShowWindow()
         {

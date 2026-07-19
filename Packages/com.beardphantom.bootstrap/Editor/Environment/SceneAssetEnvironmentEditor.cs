@@ -8,11 +8,16 @@ using UnityEngine.UIElements;
 
 namespace BeardPhantom.Bootstrap.Editor
 {
+    /// <summary>
+    /// Custom inspector for <see cref="SceneAsset"/> that adds a Bootstrap environment selector mapping the
+    /// scene to a <see cref="BootstrapEnvironmentAsset"/>.
+    /// </summary>
     [CustomEditor(typeof(SceneAsset))]
     public class SceneAssetEnvironmentEditor : UnityEditor.Editor
     {
         private ObjectField _envSelectorField;
 
+        /// <inheritdoc />
         public override VisualElement CreateInspectorGUI()
         {
             MappedEnvironmentCollection<SceneAsset> sceneEnvironments = BootstrapEditorSettingsUtility.GetValue(

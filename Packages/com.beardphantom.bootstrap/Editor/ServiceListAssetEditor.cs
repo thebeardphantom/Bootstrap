@@ -6,12 +6,17 @@ using UnityEngine.UIElements;
 
 namespace BeardPhantom.Bootstrap.Editor
 {
+    /// <summary>
+    /// Custom inspector for <see cref="ServiceList"/> that warns about and allows clearing managed references
+    /// with missing types.
+    /// </summary>
     [CustomEditor(typeof(ServiceList))]
     public class ServiceListAssetEditor : UnityEditor.Editor
     {
         private const string HelpBoxTxt = "There are SerializeReference types which are missing.";
         private VisualElement _rootVisualElement;
 
+        /// <inheritdoc />
         public override VisualElement CreateInspectorGUI()
         {
             _rootVisualElement = new VisualElement();

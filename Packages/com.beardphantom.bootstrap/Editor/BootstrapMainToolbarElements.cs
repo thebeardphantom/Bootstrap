@@ -7,6 +7,9 @@ using UnityEditor;
 using UnityEditor.Toolbars;
 using UnityEngine;
 
+/// <summary>
+/// Registers the Bootstrap dropdown menu (flow toggle, status window, app restart) on the Unity main toolbar.
+/// </summary>
 public static class BootstrapMainToolbarElements
 {
     [MainToolbarElement("Bootstrap/Options", defaultDockPosition = MainToolbarDockPosition.Middle)]

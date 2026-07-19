@@ -7,8 +7,15 @@ using UnityEngine;
 
 namespace BeardPhantom.Bootstrap.Editor
 {
+    /// <summary>
+    /// Dropdown listing concrete, non-Unity-Object types derived from a base type, grouped by namespace, for
+    /// selecting a type to instantiate into a polymorphic (<c>SerializeReference</c>) field.
+    /// </summary>
     public class PolymorphicTypeSelectorDropdown : AdvancedDropdown
     {
+        /// <summary>
+        /// Raised when the user selects an enabled type from the dropdown.
+        /// </summary>
         public event Action<Type> ComponentTypeSelected;
 
         private readonly Type _baseType;
@@ -19,15 +26,38 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private readonly Dictionary<int, SelectableType> _itemIdToSelectableType = new();
 
+        /// <summary>
+        /// Creates a dropdown listing types derived from <paramref name="baseType"/>.
+        /// </summary>
+        /// <param name="baseType">The base type whose derived types are listed.</param>
         public PolymorphicTypeSelectorDropdown(Type baseType)
             : this(baseType, Enumerable.Empty<Type>(), new AdvancedDropdownState()) { }
 
+        /// <summary>
+        /// Creates a dropdown listing types derived from <paramref name="baseType"/>, with some types shown
+        /// disabled.
+        /// </summary>
+        /// <param name="baseType">The base type whose derived types are listed.</param>
+        /// <param name="disabledTypes">Types to display as disabled/non-selectable.</param>
         public PolymorphicTypeSelectorDropdown(Type baseType, IEnumerable<Type> disabledTypes)
             : this(baseType, disabledTypes, new AdvancedDropdownState()) { }
 
+        /// <summary>
+        /// Creates a dropdown listing types derived from <paramref name="baseType"/>, using an existing dropdown
+        /// state.
+        /// </summary>
+        /// <param name="baseType">The base type whose derived types are listed.</param>
+        /// <param name="state">The persisted state to use for the dropdown.</param>
         public PolymorphicTypeSelectorDropdown(Type baseType, AdvancedDropdownState state) :
             this(baseType, Enumerable.Empty<Type>(), state) { }
 
+        /// <summary>
+        /// Creates a dropdown listing types derived from <paramref name="baseType"/>, with some types shown
+        /// disabled, using an existing dropdown state.
+        /// </summary>
+        /// <param name="baseType">The base type whose derived types are listed.</param>
+        /// <param name="disabledTypes">Types to display as disabled/non-selectable.</param>
+        /// <param name="state">The persisted state to use for the dropdown.</param>
         public PolymorphicTypeSelectorDropdown(
             Type baseType,
             IEnumerable<Type> disabledTypes,
@@ -42,6 +72,7 @@ namespace BeardPhantom.Bootstrap.Editor
             return !t.IsAbstract && !t.IsInterface && !typeof(UnityEngine.Object).IsAssignableFrom(t);
         }
 
+        /// <inheritdoc />
         protected override void ItemSelected(AdvancedDropdownItem item)
         {
             SelectableType type = _itemIdToSelectableType[item.id];
@@ -57,6 +88,7 @@ namespace BeardPhantom.Bootstrap.Editor
             ComponentTypeSelected?.Invoke(type.Type);
         }
 
+        /// <inheritdoc />
         protected override AdvancedDropdownItem BuildRoot()
         {
             TypeCache.TypeCollection allDerivedTypes = TypeCache.GetTypesDerivedFrom(_baseType);

@@ -5,6 +5,10 @@ using UnityEditor.Build.Profile;
 
 namespace BeardPhantom.Bootstrap.Editor
 {
+    /// <summary>
+    /// Draws the Bootstrap environment selector on classic and profile-based build player windows and persists
+    /// the selection to editor settings.
+    /// </summary>
     [InitializeOnLoad]
     public static class BuildProfileEnvironmentEditor
     {

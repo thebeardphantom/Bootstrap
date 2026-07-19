@@ -10,6 +10,10 @@ using UnityEngine.SceneManagement;
 
 namespace BeardPhantom.Bootstrap.Editor
 {
+    /// <summary>
+    /// Editor wizard that scaffolds a new Bootstrap setup: creates the bootstrap scene, registers it in the build
+    /// settings, and creates the default environment and edit mode service list assets.
+    /// </summary>
     public class BootstrapWizard : ScriptableWizard
     {
         private const string OutputDirectory = "Assets/Bootstrap/";
@@ -28,16 +32,32 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private const string EditModeServiceListAssetPath = OutputDirectory + EditModeServiceListAssetName + ".asset";
 
+        /// <summary>
+        /// If true, creates the bootstrap scene at the configured output path.
+        /// </summary>
         [field: SerializeField]
+        [field: Tooltip("If true, creates the bootstrap scene at the configured output path.")]
         private bool CreateBootstrapScene { get; set; } = true;
 
+        /// <summary>
+        /// If true, adds the bootstrap scene to the build settings scene list.
+        /// </summary>
         [field: SerializeField]
+        [field: Tooltip("If true, adds the bootstrap scene to the build settings scene list.")]
         private bool ModifyScenesList { get; set; } = true;
 
+        /// <summary>
+        /// If true, creates the default Bootstrap environment asset and assigns it in editor settings.
+        /// </summary>
         [field: SerializeField]
+        [field: Tooltip("If true, creates the default Bootstrap environment asset and assigns it in editor settings.")]
         private bool CreateDefaultEnvironment { get; set; } = true;
 
+        /// <summary>
+        /// If true, creates the edit mode service list asset and assigns it in editor settings.
+        /// </summary>
         [field: SerializeField]
+        [field: Tooltip("If true, creates the edit mode service list asset and assigns it in editor settings.")]
         private bool CreateEditModeServiceListAsset { get; set; } = true;
 
         [MenuItem("Edit/Bootstrap Wizard")]
