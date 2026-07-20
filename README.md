@@ -22,6 +22,10 @@ openupm add com.beardphantom.bootstrap
 
 See the [wiki](https://github.com/thebeardphantom/Bootstrap/wiki) for setup guides and API details.
 
+## AI Usage Disclaimer
+
+**AI was *not* used to write *any* code in the Bootstrap repository.** It was however, used for documentation purposes. Please read the [wiki](https://github.com/thebeardphantom/Bootstrap/wiki#ai-usage-disclaimer) for more information.
+
 ## License
 
 [MIT](LICENSE.md)
