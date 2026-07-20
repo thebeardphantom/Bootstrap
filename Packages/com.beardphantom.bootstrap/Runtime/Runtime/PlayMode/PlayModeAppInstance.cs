@@ -40,7 +40,7 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <inheritdoc />
-        protected override void GetDefaultBootstrapHandlers(
+        public override void GetDefaultBootstrapHandlers(
             out IPreBootstrapHandler preBootstrapHandler,
             out IPostBootstrapHandler postBootstrapHandler)
         {

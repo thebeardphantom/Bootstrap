@@ -39,7 +39,7 @@ namespace BeardPhantom.Bootstrap
         /// </summary>
         /// <param name="preBootstrapHandler">The default pre-bootstrap handler.</param>
         /// <param name="postBootstrapHandler">The default post-bootstrap handler.</param>
-        protected abstract void GetDefaultBootstrapHandlers(
+        public abstract void GetDefaultBootstrapHandlers(
             out IPreBootstrapHandler preBootstrapHandler,
             out IPostBootstrapHandler postBootstrapHandler);
 
