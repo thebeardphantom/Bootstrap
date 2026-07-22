@@ -25,12 +25,12 @@ namespace BeardPhantom.Bootstrap.ZLogger
         public bool HasStartupLogs => !_startupLogQueue.IsEmpty;
 
         /// <summary>
-        /// Creates a new <see cref="StartupLogsAppExtension"/> and subscribes to <see cref="App.Deinitialized"/>
+        /// Creates a new <see cref="StartupLogsAppExtension"/> and subscribes to <see cref="App.AppInstanceDestroyed"/>
         /// to reset flush state when the app deinitializes.
         /// </summary>
         public StartupLogsAppExtension()
         {
-            App.Deinitialized += OnAppDeinitialized;
+            App.AppInstanceDestroyed += OnAppInstanceDestroyed;
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
             _startupLogQueue.Enqueue(startupLog);
         }
 
-        private void OnAppDeinitialized()
+        private void OnAppInstanceDestroyed()
         {
             _hasFlushedStartupLogs = false;
         }

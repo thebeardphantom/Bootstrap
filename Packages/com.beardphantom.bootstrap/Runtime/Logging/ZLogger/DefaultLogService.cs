@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Threading;
 using UnityEngine;
 using ZLogger;
 using ZLogger.Formatters;
@@ -24,8 +23,6 @@ namespace BeardPhantom.Bootstrap.ZLogger
     [SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
     public partial class DefaultLogService : IServiceWithCustomBindings, IServiceWithInitPriority, ILogService, IDisposable
     {
-        private static int s_mainThreadId;
-
         private ILoggerFactory _loggerFactory;
 
         /// <inheritdoc />
@@ -218,7 +215,6 @@ namespace BeardPhantom.Bootstrap.ZLogger
         /// <param name="context">The context for this initialization.</param>
         void IService.InitService(BootstrapContext context)
         {
-            s_mainThreadId = Thread.CurrentThread.ManagedThreadId;
             s_logger.ZLogTrace($"Test startup log.");
             Logging.LogHandler = BootstrapZLogHandler.Instance;
             _loggerFactory = CreateLoggerFactory();

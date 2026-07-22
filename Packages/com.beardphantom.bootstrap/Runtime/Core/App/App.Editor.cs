@@ -9,9 +9,15 @@ namespace BeardPhantom.Bootstrap
 {
     public static partial class App
     {
-        internal static void InitializeEditorDelayed<T>() where T : AppInstance, new()
+        /// <remarks>
+        /// <c>EditorApplication.update</c> is used instead of <c>EditorApplication.delayCall</c> to work better with the
+        /// Multiplayer Play Mode package, as <c>EditorApplication.delayCall</c> doesn't get called on unfocused editor
+        /// applications.
+        /// </remarks>
+        [Conditional("UNITY_EDITOR")]
+        internal static void CreateAppInstanceDelayed<T>() where T : AppInstance, new()
         {
-            Logging.Info($"{nameof(InitializeEditorDelayed)} with type {typeof(T)}.");
+            Logging.Info($"{nameof(CreateAppInstanceDelayed)} with type {typeof(T)}.");
             var updateCount = 0;
             EditorApplication.update += Update;
 
@@ -26,7 +32,7 @@ namespace BeardPhantom.Bootstrap
                 if (updateCount > 0)
                 {
                     EditorApplication.update -= Update;
-                    Initialize<T>();
+                    CreateAppInstance<T>();
                 }
                 else
                 {
@@ -38,13 +44,13 @@ namespace BeardPhantom.Bootstrap
         [InitializeOnLoadMethod]
         private static void EditorEntryPoint()
         {
-            InitCommon();
+            Init();
             CompilationPipeline.compilationStarted += OnCompilationStarted;
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
 
             if (!Application.isPlaying)
             {
-                ScheduleInitEditorApp();
+                CreateAppInstanceDelayed<EditModeAppInstance>();
             }
         }
 
@@ -53,7 +59,7 @@ namespace BeardPhantom.Bootstrap
             Logging.Debug($"{nameof(OnCompilationStarted)}");
             EditorApplication.isPlaying = false;
             Quit();
-            Deinitialize();
+            DestroyAppInstance();
         }
 
         private static void OnPlayModeStateChanged(PlayModeStateChange state)
@@ -63,8 +69,8 @@ namespace BeardPhantom.Bootstrap
             {
                 case PlayModeStateChange.EnteredEditMode:
                 {
-                    Deinitialize();
-                    InitializeEditorDelayed<EditModeAppInstance>();
+                    DestroyAppInstance();
+                    CreateAppInstanceDelayed<EditModeAppInstance>();
                     break;
                 }
                 case PlayModeStateChange.ExitingEditMode:
@@ -75,7 +81,7 @@ namespace BeardPhantom.Bootstrap
                     }
 
                     Quit();
-                    Deinitialize();
+                    DestroyAppInstance();
                     break;
                 }
                 case PlayModeStateChange.ExitingPlayMode:
@@ -84,12 +90,6 @@ namespace BeardPhantom.Bootstrap
                     break;
                 }
             }
-        }
-
-        [Conditional("UNITY_EDITOR")]
-        private static void ScheduleInitEditorApp()
-        {
-            InitializeEditorDelayed<EditModeAppInstance>();
         }
     }
 }

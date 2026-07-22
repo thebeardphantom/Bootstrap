@@ -7,26 +7,26 @@ using Object = UnityEngine.Object;
 namespace BeardPhantom.Bootstrap
 {
     /// <summary>
-    /// Base class for an instance of the running app, owning its <see cref="ServiceLocator"/>,
-    /// <see cref="TaskScheduler"/>, and bootstrap lifecycle.
+    /// Base class for an instance of the running app, owning its <see cref="ServiceLocator" />,
+    /// <see cref="TaskScheduler" />, and bootstrap lifecycle.
     /// </summary>
     public abstract class AppInstance : IDisposable
     {
         /// <summary>
-        /// Invoked when <see cref="BootstrapState"/> changes.
+        /// Invoked when <see cref="BootstrapState" /> changes.
         /// </summary>
         /// <param name="previousState">The state being transitioned away from.</param>
         /// <param name="newState">The state being transitioned to.</param>
         public delegate void OnAppBootstrapStateChanged(in AppBootstrapState previousState, in AppBootstrapState newState);
 
         /// <summary>
-        /// Raised whenever <see cref="BootstrapState"/> changes.
+        /// Raised whenever <see cref="BootstrapState" /> changes.
         /// </summary>
         public event OnAppBootstrapStateChanged AppBootstrapStateChanged;
 
         private readonly CancellationTokenSource _appLifetimeCancellationTokenSource = new();
 
-        private readonly List<Object> _appScopedObjects = new();
+        private readonly HashSet<Object> _appScopedObjects = new();
 
         private AppBootstrapState _bootstrapState;
 
@@ -41,7 +41,7 @@ namespace BeardPhantom.Bootstrap
         public abstract ServiceList ActiveServiceList { get; }
 
         /// <summary>
-        /// The current phase of the bootstrap lifecycle. Setting this raises <see cref="AppBootstrapStateChanged"/>.
+        /// The current phase of the bootstrap lifecycle. Setting this raises <see cref="AppBootstrapStateChanged" />.
         /// </summary>
         public AppBootstrapState BootstrapState
         {
@@ -85,12 +85,12 @@ namespace BeardPhantom.Bootstrap
         public bool IsRunningTests { get; internal set; }
 
         /// <summary>
-        /// True if <see cref="BootstrapState"/> is <see cref="AppBootstrapState.Quitting"/>.
+        /// True if <see cref="BootstrapState" /> is <see cref="AppBootstrapState.Quitting" />.
         /// </summary>
         public virtual bool IsQuitting => BootstrapState == AppBootstrapState.Quitting;
 
         /// <summary>
-        /// True if <see cref="BootstrapState"/> is <see cref="AppBootstrapState.Resetting"/>.
+        /// True if <see cref="BootstrapState" /> is <see cref="AppBootstrapState.Resetting" />.
         /// </summary>
         public virtual bool IsResetting => BootstrapState == AppBootstrapState.Resetting;
 
@@ -100,7 +100,7 @@ namespace BeardPhantom.Bootstrap
         public TaskScheduler TaskScheduler { get; private set; }
 
         /// <summary>
-        /// True if <see cref="ServiceLocator"/> is available and able to locate services.
+        /// True if <see cref="ServiceLocator" /> is available and able to locate services.
         /// </summary>
         public bool CanLocateServices => ServiceLocator is { CanLocateServices: true, };
 
@@ -110,8 +110,8 @@ namespace BeardPhantom.Bootstrap
         protected bool Disposed { get; private set; }
 
         /// <summary>
-        /// Disposes this app instance, cancelling <see cref="AppLifetimeCancellationToken"/> and disposing
-        /// <see cref="ServiceLocator"/>. Safe to call multiple times.
+        /// Disposes this app instance, cancelling <see cref="AppLifetimeCancellationToken" /> and disposing
+        /// <see cref="ServiceLocator" />. Safe to call multiple times.
         /// </summary>
         public virtual void Dispose()
         {
@@ -128,7 +128,7 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <summary>
-        /// Attempts to locate a service of type <typeparamref name="T"/> via <see cref="ServiceLocator"/>.
+        /// Attempts to locate a service of type <typeparamref name="T" /> via <see cref="ServiceLocator" />.
         /// </summary>
         /// <typeparam name="T">The service type to locate.</typeparam>
         /// <param name="service">The located service, or null if not found.</param>
@@ -139,7 +139,7 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <summary>
-        /// Locates a service of type <typeparamref name="T"/> via <see cref="ServiceLocator"/>.
+        /// Locates a service of type <typeparamref name="T" /> via <see cref="ServiceLocator" />.
         /// </summary>
         /// <typeparam name="T">The service type to locate.</typeparam>
         public T Locate<T>() where T : class
@@ -148,13 +148,13 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <summary>
-        /// Marks <paramref name="obj"/> as scoped to this app instance: it is preserved across scene loads via
-        /// <see cref="Object.DontDestroyOnLoad"/> and destroyed when this app instance resets.
+        /// Marks <paramref name="obj" /> as scoped to this app instance: it is preserved across scene loads via
+        /// <see cref="Object.DontDestroyOnLoad" /> and destroyed when this app instance resets.
         /// </summary>
-        /// <typeparam name="T">The type of <paramref name="obj"/>.</typeparam>
+        /// <typeparam name="T">The type of <paramref name="obj" />.</typeparam>
         /// <param name="obj">The object to scope to this app instance.</param>
-        /// <returns><paramref name="obj"/>, for chaining.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is null.</exception>
+        /// <returns><paramref name="obj" />, for chaining.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj" /> is null.</exception>
         public T ScopeToApp<T>(T obj) where T : Object
         {
             if (obj.IsNull())
@@ -165,6 +165,25 @@ namespace BeardPhantom.Bootstrap
             Object.DontDestroyOnLoad(obj);
             _appScopedObjects.Add(obj);
             return obj;
+        }
+
+        /// <summary>
+        /// Instantiates a clone of <paramref name="original" /> and scopes it to the current app instance.
+        /// See <see cref="ScopeToApp{T}" />.
+        /// </summary>
+        /// <typeparam name="T">The type of object to instantiate.</typeparam>
+        /// <param name="original">The object to clone.</param>
+        /// <returns>The cloned instance of <paramref name="original" />.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="original" /> is null.</exception>
+        public T InstantiateAndScopeToApp<T>(T original) where T : Object
+        {
+            if (original.IsNull())
+            {
+                throw new ArgumentNullException(nameof(original));
+            }
+
+            T clone = Object.Instantiate(original);
+            return ScopeToApp(clone);
         }
 
         internal void NotifyQuitting()
@@ -181,8 +200,13 @@ namespace BeardPhantom.Bootstrap
             Dispose();
             foreach (Object appScopedObject in _appScopedObjects)
             {
-                Object.Destroy(appScopedObject);
+                if (appScopedObject.IsNotNull())
+                {
+                    Object.Destroy(appScopedObject);
+                }
             }
+
+            _appScopedObjects.Clear();
         }
 
         internal virtual Awaitable BootstrapAsync()

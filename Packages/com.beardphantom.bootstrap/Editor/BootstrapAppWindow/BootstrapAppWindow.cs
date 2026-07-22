@@ -42,17 +42,17 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private void OnEnable()
         {
-            App.Deinitialized -= OnAppDeinitialized;
-            App.Deinitialized += OnAppDeinitialized;
+            App.AppInstanceDestroyed -= OnAppInstanceDestroyed;
+            App.AppInstanceDestroyed += OnAppInstanceDestroyed;
 
-            App.Initialized -= OnAppInitialized;
-            App.Initialized += OnAppInitialized;
+            App.AppInstanceCreated -= OnAppInstanceCreated;
+            App.AppInstanceCreated += OnAppInstanceCreated;
         }
 
         private void OnDisable()
         {
-            App.Deinitialized -= OnAppDeinitialized;
-            App.Initialized -= OnAppInitialized;
+            App.AppInstanceDestroyed -= OnAppInstanceDestroyed;
+            App.AppInstanceCreated -= OnAppInstanceCreated;
         }
 
         private void CreateGUI()
@@ -69,12 +69,12 @@ namespace BeardPhantom.Bootstrap.Editor
             RefreshUI();
         }
 
-        private void OnAppInitialized()
+        private void OnAppInstanceCreated()
         {
             RefreshUI();
         }
 
-        private void OnAppDeinitialized()
+        private void OnAppInstanceDestroyed()
         {
             RefreshUI();
         }

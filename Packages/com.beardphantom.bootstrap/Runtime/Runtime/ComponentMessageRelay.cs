@@ -31,7 +31,6 @@ namespace BeardPhantom.Bootstrap
             return Instance;
         }
 
-#if !UNITY_6000_5_OR_NEWER
         private void OnApplicationQuit()
         {
             if (App.TryGetInstance(out AppInstance appInstance))
@@ -41,7 +40,6 @@ namespace BeardPhantom.Bootstrap
 
             DestroyImmediate(gameObject);
         }
-#endif
 
         private void OnDestroy()
         {
@@ -62,8 +60,10 @@ namespace BeardPhantom.Bootstrap
             }
 
             float deltaTime = Time.deltaTime;
-            foreach (IService service in appInstance.ServiceLocator)
+            ServiceLocator serviceLocator = appInstance.ServiceLocator;
+            for (var i = 0; i < serviceLocator.Count; i++)
             {
+                IService service = serviceLocator[i];
                 if (service is IServiceWithUpdateLoop serviceWithUpdateLoop)
                 {
                     serviceWithUpdateLoop.Update(deltaTime);
@@ -85,8 +85,10 @@ namespace BeardPhantom.Bootstrap
             }
 
             float deltaTime = Time.deltaTime;
-            foreach (IService service in appInstance.ServiceLocator)
+            ServiceLocator serviceLocator = appInstance.ServiceLocator;
+            for (var i = 0; i < serviceLocator.Count; i++)
             {
+                IService service = serviceLocator[i];
                 if (service is IServiceWithLateUpdateLoop serviceWithLateUpdateLoop)
                 {
                     serviceWithLateUpdateLoop.LateUpdate(deltaTime);
@@ -108,19 +110,15 @@ namespace BeardPhantom.Bootstrap
             }
 
             float fixedDeltaTime = Time.fixedDeltaTime;
-            foreach (IService service in appInstance.ServiceLocator)
+            ServiceLocator serviceLocator = appInstance.ServiceLocator;
+            for (var i = 0; i < serviceLocator.Count; i++)
             {
+                IService service = serviceLocator[i];
                 if (service is IServiceWithFixedUpdateLoop serviceWithFixedUpdateLoop)
                 {
                     serviceWithFixedUpdateLoop.FixedUpdate(fixedDeltaTime);
                 }
             }
-        }
-
-        private void OnRenderObject()
-        {
-            Logging.Trace("OnRenderObject!");
-            // TODO: Add new interface for this. Replace boilerplate in this class with pre-filtered services in ServiceLocator.
         }
     }
 }

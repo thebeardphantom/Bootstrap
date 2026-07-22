@@ -48,6 +48,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         /// <inheritdoc />
         public override void OnDeactivate()
         {
+            _settingsEditor?.Dispose();
             _settingsEditor = null;
         }
 

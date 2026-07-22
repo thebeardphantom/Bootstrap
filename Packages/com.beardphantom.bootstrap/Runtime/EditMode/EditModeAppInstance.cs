@@ -93,7 +93,8 @@ namespace BeardPhantom.Bootstrap.EditMode
                 || serviceList != _editModeServiceListInstance.Source)
             {
                 App.Quit();
-                App.Initialize<EditModeAppInstance>();
+                App.DestroyAppInstance();
+                App.CreateAppInstance<EditModeAppInstance>();
             }
         }
 

@@ -37,7 +37,7 @@ namespace BeardPhantom.Bootstrap.Environment
         /// </summary>
         [field: SerializeField]
         [field: Tooltip("The ServiceList this environment bootstraps.")]
-        public ServiceList ServiceListAsset { get; private set; }
+        public ServiceList ServiceListAsset { get; internal set; }
 
         internal BootstrapEnvironmentAsset StartEnvironment()
         {

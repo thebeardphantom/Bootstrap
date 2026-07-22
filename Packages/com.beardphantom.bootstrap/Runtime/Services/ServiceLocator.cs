@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -9,10 +8,10 @@ using UnityEngine.Pool;
 namespace BeardPhantom.Bootstrap
 {
     /// <summary>
-    /// Discovers, binds, and initializes services from a <see cref="ServiceList"/>, and allows locating
+    /// Discovers, binds, and initializes services from a <see cref="ServiceList" />, and allows locating
     /// them by type at runtime.
     /// </summary>
-    public class ServiceLocator : IDisposable, IEnumerable<IService>
+    public class ServiceLocator : IDisposable
     {
         /// <summary>
         /// Signature for events raised in response to a service lifecycle change.
@@ -37,12 +36,30 @@ namespace BeardPhantom.Bootstrap
         private ServiceList _serviceList;
 
         /// <summary>
-        /// Whether services can currently be located, i.e. binding has completed.
+        /// Whether services are currently allowed to be located.
         /// </summary>
-        public bool CanLocateServices => App.Instance.BootstrapState > AppBootstrapState.ServiceBinding;
+        public bool CanLocateServices => App.Instance.BootstrapState > AppBootstrapState.ServiceInit;
 
         /// <summary>
-        /// Discovers, binds, and initializes all services in <paramref name="serviceList"/>.
+        /// Gets the number of <see cref="IService">IServices</see> contained in the <see cref="ServiceLocator" />.
+        /// </summary>
+        public int Count => _services.Count;
+
+        /// <summary>
+        /// Gets the <see cref="IService" /> at the given <paramref name="index" />.
+        /// </summary>
+        /// <returns>The <see cref="IService" /> at the specified index.</returns>
+        /// <param name="index">The zero-based index of the <see cref="IService" /> to get.</param>
+        /// <exception cref="InvalidOperationException"><see cref="CanLocateServices" /> is false.</exception>
+        public IService this[int index] => CanLocateServices ? _services[index] : throw GetServiceAccessException();
+
+        private static Exception GetServiceAccessException()
+        {
+            return new InvalidOperationException("Attempted to access services before services can be located.");
+        }
+
+        /// <summary>
+        /// Discovers, binds, and initializes all services in <paramref name="serviceList" />.
         /// </summary>
         /// <param name="context">The bootstrap context passed to each service's initialization.</param>
         /// <param name="serviceList">The list of services to discover and initialize.</param>
@@ -109,7 +126,7 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <summary>
-        /// Disposes all services that implement <see cref="IDisposable"/>, and destroys the cloned service list
+        /// Disposes all services that implement <see cref="IDisposable" />, and destroys the cloned service list
         /// asset if applicable.
         /// </summary>
         public void Dispose()
@@ -133,12 +150,14 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <summary>
-        /// Attempts to locate a service bound to type <typeparamref name="T"/>.
+        /// Attempts to locate a service bound to type <typeparamref name="T" />.
         /// </summary>
         /// <typeparam name="T">The type of service to locate.</typeparam>
         /// <param name="service">The located service, or null if not found.</param>
-        /// <param name="throwIfCannotLocateServices">If true, throws an <see cref="InvalidOperationException"/>
-        /// when called before <see cref="CanLocateServices"/> is true.</param>
+        /// <param name="throwIfCannotLocateServices">
+        /// If true, throws an <see cref="InvalidOperationException" />
+        /// when called before <see cref="CanLocateServices" /> is true.
+        /// </param>
         /// <returns>True if a service was located; otherwise false.</returns>
         public bool TryLocateService<T>(out T service, bool throwIfCannotLocateServices = false) where T : class
         {
@@ -153,12 +172,14 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <summary>
-        /// Attempts to locate a service bound to <paramref name="serviceType"/>.
+        /// Attempts to locate a service bound to <paramref name="serviceType" />.
         /// </summary>
         /// <param name="serviceType">The type of service to locate.</param>
         /// <param name="service">The located service, or null if not found.</param>
-        /// <param name="throwIfCannotLocateServices">If true, throws an <see cref="InvalidOperationException"/>
-        /// when called before <see cref="CanLocateServices"/> is true.</param>
+        /// <param name="throwIfCannotLocateServices">
+        /// If true, throws an <see cref="InvalidOperationException" />
+        /// when called before <see cref="CanLocateServices" /> is true.
+        /// </param>
         /// <returns>True if a service was located; otherwise false.</returns>
         public bool TryLocateService(Type serviceType, out IService service, bool throwIfCannotLocateServices = false)
         {
@@ -177,42 +198,25 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <summary>
-        /// Locates a service bound to type <typeparamref name="T"/>.
+        /// Locates a service bound to type <typeparamref name="T" />.
         /// </summary>
         /// <typeparam name="T">The type of service to locate.</typeparam>
-        /// <exception cref="ServiceNotFoundException">Thrown if no service is bound to <typeparamref name="T"/>.</exception>
+        /// <exception cref="ServiceNotFoundException">Thrown if no service is bound to <typeparamref name="T" />.</exception>
         public T LocateService<T>() where T : class
         {
             return (T)LocateService(typeof(T));
         }
 
         /// <summary>
-        /// Locates a service bound to <paramref name="serviceType"/>.
+        /// Locates a service bound to <paramref name="serviceType" />.
         /// </summary>
         /// <param name="serviceType">The type of service to locate.</param>
-        /// <exception cref="ServiceNotFoundException">Thrown if no service is bound to <paramref name="serviceType"/>.</exception>
+        /// <exception cref="ServiceNotFoundException">Thrown if no service is bound to <paramref name="serviceType" />.</exception>
         public IService LocateService(Type serviceType)
         {
             return TryLocateService(serviceType, out IService service)
                 ? service
                 : throw new ServiceNotFoundException(serviceType);
-        }
-
-        /// <summary>
-        /// Returns an enumerator over all discovered services.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">Thrown if called before <see cref="CanLocateServices"/> is
-        /// true.</exception>
-        public IEnumerator<IService> GetEnumerator()
-        {
-            return CanLocateServices
-                ? _services.GetEnumerator()
-                : throw new InvalidOperationException("Attempted to access services before services can be located.");
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

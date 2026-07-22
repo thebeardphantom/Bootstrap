@@ -1,28 +1,28 @@
-﻿using System;
+﻿using BeardPhantom.Bootstrap.EditMode;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Assemblies;
 using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 
 namespace BeardPhantom.Bootstrap
 {
     /// <summary>
-    /// Static entry point for accessing and managing the current <see cref="AppInstance"/>.
+    /// Static entry point for accessing and managing the current <see cref="AppInstance" />.
     /// </summary>
     public static partial class App
     {
         /// <summary>
-        /// Raised after the current <see cref="AppInstance"/> finishes bootstrapping.
+        /// Raised after the current <see cref="AppInstance" /> finishes bootstrapping.
         /// </summary>
-        public static event Action Initialized;
+        public static event Action AppInstanceCreated;
 
         /// <summary>
-        /// Raised after the current <see cref="AppInstance"/> is deinitialized.
+        /// Raised after the current <see cref="AppInstance" /> is deinitialized.
         /// </summary>
-        public static event Action Deinitialized;
+        public static event Action AppInstanceDestroyed;
 
         private static readonly Dictionary<Type, IAppExtension> s_typeToAppExtensions = new();
 
@@ -45,61 +45,10 @@ namespace BeardPhantom.Bootstrap
             {
                 if (s_instance.IsNull())
                 {
-                    throw new InvalidOperationException("AppInstance is null.");
+                    throw new InvalidOperationException($"{nameof(AppInstance)} is null.");
                 }
 
                 return s_instance;
-            }
-        }
-
-        /// <summary>
-        /// Instantiates a clone of <paramref name="original"/> and scopes it to the current app instance.
-        /// </summary>
-        /// <typeparam name="T">The type of object to instantiate.</typeparam>
-        /// <param name="original">The object to clone.</param>
-        public static T InstantiateAndScopeToApp<T>(T original) where T : Object
-        {
-            T clone = Object.Instantiate(original);
-            return ScopeToApp(clone);
-        }
-
-        /// <summary>
-        /// Scopes <paramref name="obj"/> to the current app instance, if one exists. See
-        /// <see cref="AppInstance.ScopeToApp{T}"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of <paramref name="obj"/>.</typeparam>
-        /// <param name="obj">The object to scope to the current app instance.</param>
-        /// <returns><paramref name="obj"/>, for chaining.</returns>
-        public static T ScopeToApp<T>(T obj) where T : Object
-        {
-            if (TryGetInstance(out AppInstance appInstance))
-            {
-                appInstance.ScopeToApp(obj);
-            }
-            else
-            {
-                Logging.Warn("No current AppInstance.");
-            }
-
-            return obj;
-        }
-
-        /// <summary>
-        /// Scopes each object in <paramref name="objs"/> to the current app instance, if one exists. See
-        /// <see cref="AppInstance.ScopeToApp{T}"/>.
-        /// </summary>
-        /// <param name="objs">The objects to scope to the current app instance.</param>
-        public static void ScopeToApp(IEnumerable<Object> objs)
-        {
-            if (!TryGetInstance(out AppInstance appInstance))
-            {
-                Logging.Warn("No current AppInstance.");
-                return;
-            }
-
-            foreach (Object obj in objs)
-            {
-                appInstance.ScopeToApp(obj);
             }
         }
 
@@ -115,12 +64,14 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <summary>
-        /// Attempts to get the current app instance as type <typeparamref name="T"/>.
+        /// Attempts to get the current app instance as type <typeparamref name="T" />.
         /// </summary>
         /// <typeparam name="T">The expected app instance type.</typeparam>
-        /// <param name="instance">The current app instance cast to <typeparamref name="T"/>, or null if none is
-        /// initialized or the current instance is not of type <typeparamref name="T"/>.</param>
-        /// <returns>True if an app instance of type <typeparamref name="T"/> is currently initialized.</returns>
+        /// <param name="instance">
+        /// The current app instance cast to <typeparamref name="T" />, or null if none is
+        /// initialized or the current instance is not of type <typeparamref name="T" />.
+        /// </param>
+        /// <returns>True if an app instance of type <typeparamref name="T" /> is currently initialized.</returns>
         public static bool TryGetInstance<T>(out T instance) where T : AppInstance
         {
             if (TryGetInstance(out AppInstance untypedInstance) && untypedInstance is T typedInstance)
@@ -134,7 +85,7 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <summary>
-        /// Attempts to locate a service of type <typeparamref name="T"/> via the current app instance.
+        /// Attempts to locate a service of type <typeparamref name="T" /> via the current app instance.
         /// </summary>
         /// <typeparam name="T">The service type to locate.</typeparam>
         /// <param name="service">The located service, or null if not found or no app instance is initialized.</param>
@@ -151,7 +102,7 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <summary>
-        /// Locates a service of type <typeparamref name="T"/> via <see cref="Instance"/>.
+        /// Locates a service of type <typeparamref name="T" /> via <see cref="Instance" />.
         /// </summary>
         /// <typeparam name="T">The service type to locate.</typeparam>
         public static T Locate<T>() where T : class
@@ -160,10 +111,10 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <summary>
-        /// Gets the registered <see cref="IAppExtension"/> instance of type <typeparamref name="T"/>.
+        /// Gets the registered <see cref="IAppExtension" /> instance of type <typeparamref name="T" />.
         /// </summary>
         /// <typeparam name="T">The extension type to get.</typeparam>
-        /// <exception cref="Exception">No extension of type <typeparamref name="T"/> is registered.</exception>
+        /// <exception cref="Exception">No extension of type <typeparamref name="T" /> is registered.</exception>
         public static T GetExtension<T>() where T : IAppExtension
         {
             if (s_typeToAppExtensions.TryGetValue(typeof(T), out IAppExtension extension))
@@ -181,12 +132,12 @@ namespace BeardPhantom.Bootstrap
         {
             if (!TryGetInstance(out AppInstance appInstance))
             {
-                Logging.Warn("No current AppInstance.");
+                Logging.Warn($"No current {nameof(AppInstance)}.");
                 return;
             }
 
             appInstance.NotifyResetting();
-            Deinitialize();
+            DestroyAppInstance();
 
             if (Application.isPlaying)
             {
@@ -198,7 +149,7 @@ namespace BeardPhantom.Bootstrap
             }
             else
             {
-                ScheduleInitEditorApp();
+                CreateAppInstanceDelayed<EditModeAppInstance>();
             }
         }
 
@@ -206,49 +157,49 @@ namespace BeardPhantom.Bootstrap
         {
             if (!TryGetInstance(out AppInstance appInstance))
             {
-                Logging.Warn("No current AppInstance.");
+                Logging.Warn($"No current {nameof(AppInstance)}.");
                 return;
             }
 
             appInstance.NotifyQuitting();
         }
 
-        internal static void Initialize<T>() where T : AppInstance, new()
+        internal static void CreateAppInstance<T>() where T : AppInstance, new()
         {
-            InitializeAsync<T>().Forget();
+            CreateAppInstanceAsync<T>().Forget();
         }
 
-        internal static void Deinitialize()
+        internal static void DestroyAppInstance()
         {
-            Logging.Debug($"Deinitializing instance {s_instance}.");
+            Logging.Debug($"Destroying {nameof(AppInstance)} {s_instance}.");
             s_instance = null;
-            Deinitialized?.Invoke();
+            AppInstanceDestroyed?.Invoke();
         }
 
-        private static Awaitable InitializeAsync<T>() where T : AppInstance, new()
+        private static Awaitable CreateAppInstanceAsync<T>() where T : AppInstance, new()
         {
-            ThrowIfInitialized();
-            return InitializeAsync(new T());
+            ThrowIfAppInstanceCreated();
+            return CreateAppInstanceAsync(new T());
         }
 
-        private static async Awaitable InitializeAsync(AppInstance appInstance)
+        private static async Awaitable CreateAppInstanceAsync(AppInstance appInstance)
         {
-            ThrowIfInitialized();
-            Logging.Info($"Initializing instance {appInstance}.");
+            ThrowIfAppInstanceCreated();
+            Logging.Info($"Creating {nameof(AppInstance)} {appInstance}.");
             s_instance = appInstance;
             await appInstance.BootstrapAsync();
-            Initialized?.Invoke();
+            AppInstanceCreated?.Invoke();
         }
 
-        private static void ThrowIfInitialized()
+        private static void ThrowIfAppInstanceCreated()
         {
             if (s_instance.IsNotNull())
             {
-                throw new InvalidOperationException($"App already initialized with instance {s_instance}.");
+                throw new InvalidOperationException($"{nameof(AppInstance)} already exists: {s_instance}.");
             }
         }
 
-        private static void InitCommon()
+        private static void Init()
         {
             s_mainThreadId = Thread.CurrentThread.ManagedThreadId;
             Logging.Trace($"Got main thread ID {s_mainThreadId}.");
@@ -278,9 +229,9 @@ namespace BeardPhantom.Bootstrap
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void RuntimeEntryPoint()
         {
-            InitCommon();
+            Init();
             RuntimeAppInstance appInstance = GetRuntimeAppInstance();
-            InitializeAsync(appInstance).Forget();
+            CreateAppInstanceAsync(appInstance).Forget();
         }
 
         private static RuntimeAppInstance GetRuntimeAppInstance()

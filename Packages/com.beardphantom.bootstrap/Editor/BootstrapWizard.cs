@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 
 namespace BeardPhantom.Bootstrap.Editor
@@ -43,32 +44,34 @@ namespace BeardPhantom.Bootstrap.Editor
         /// If true, adds the bootstrap scene to the build settings scene list.
         /// </summary>
         [field: SerializeField]
-        [field: Tooltip("If true, adds the bootstrap scene to the build settings scene list.")]
+        [field: Tooltip("If true, adds the bootstrap scene to the build settings scene list at index 0.")]
         private bool ModifyScenesList { get; set; } = true;
 
         /// <summary>
-        /// If true, creates the default Bootstrap environment asset and assigns it in editor settings.
+        /// If true, creates a nEnvironment asset and assigns it as the default for play mode and builds..
         /// </summary>
         [field: SerializeField]
-        [field: Tooltip("If true, creates the default Bootstrap environment asset and assigns it in editor settings.")]
+        [field: Tooltip("If true, creates an Environment asset and assigns it as the default for play mode and builds.")]
         private bool CreateDefaultEnvironment { get; set; } = true;
+
+        /// <summary>
+        /// If true, creates a ServiceList asset. If also creating a default environment it will use this ServiceList.
+        /// </summary>
+        [field: SerializeField]
+        [field: Tooltip("If true, creates a ServiceList asset. If also creating a default environment it will use this ServiceList.")]
+        private bool CreateRuntimeServiceList { get; set; } = true;
 
         /// <summary>
         /// If true, creates the edit mode service list asset and assigns it in editor settings.
         /// </summary>
         [field: SerializeField]
         [field: Tooltip("If true, creates the edit mode service list asset and assigns it in editor settings.")]
-        private bool CreateEditModeServiceListAsset { get; set; } = true;
+        private bool CreateEditModeServiceList { get; set; } = true;
 
         [MenuItem("Edit/Bootstrap Wizard")]
         private static void Open()
         {
             DisplayWizard<BootstrapWizard>("Bootstrap Wizard", "Run Setup");
-        }
-
-        private static bool DoesAssetPathExist(string path)
-        {
-            return !string.IsNullOrWhiteSpace(AssetDatabase.AssetPathToGUID(path));
         }
 
         private void OnWizardCreate()
@@ -79,8 +82,11 @@ namespace BeardPhantom.Bootstrap.Editor
             {
                 Directory.CreateDirectory(OutputDirectory);
 
-                bootstrapScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-                SceneManager.SetActiveScene(bootstrapScene);
+                if (CreateBootstrapScene)
+                {
+                    bootstrapScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+                    SceneManager.SetActiveScene(bootstrapScene);
+                }
 
                 CreateRuntimeAssets(bootstrapScene);
                 CreateEditModeAssets();
@@ -102,6 +108,7 @@ namespace BeardPhantom.Bootstrap.Editor
         {
             if (CreateBootstrapScene)
             {
+                Assert.IsTrue(bootstrapScene.IsValid(), "bootstrapScene.IsValid() == false");
                 bool didSave = EditorSceneManager.SaveScene(bootstrapScene, ScenePath);
                 if (!didSave)
                 {
@@ -117,23 +124,34 @@ namespace BeardPhantom.Bootstrap.Editor
                 EditorBuildSettings.scenes = scenesList.ToArray();
             }
 
+            BootstrapEnvironmentAsset environmentAsset = null;
             if (CreateDefaultEnvironment)
             {
-                var environmentAsset = CreateInstance<BootstrapEnvironmentAsset>();
+                environmentAsset = CreateInstance<BootstrapEnvironmentAsset>();
                 environmentAsset.name = EnvironmentName;
                 AssetDatabase.CreateAsset(environmentAsset, EnvironmentPath);
 
-                var bootstrapSceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath);
                 IBootstrapEditorSettingsAsset settings = BootstrapEditorSettingsUtility.GetWithScope(SettingsScope.Project);
                 settings.DefaultPlayModeEnvironment.SetValue(environmentAsset);
                 settings.DefaultBuildEnvironment.SetValue(environmentAsset);
-                settings.EditorSceneEnvironments.Value.AddOrReplace(bootstrapSceneAsset, environmentAsset);
+            }
+
+            if (CreateRuntimeServiceList)
+            {
+                var servicesListAsset = CreateInstance<ServiceList>();
+                servicesListAsset.name = ServiceListAssetName;
+                AssetDatabase.CreateAsset(servicesListAsset, ServiceListAssetPath);
+                if (CreateDefaultEnvironment)
+                {
+                    Assert.IsNotNull(environmentAsset, "environmentAsset == null");
+                    environmentAsset.ServiceListAsset = servicesListAsset;
+                }
             }
         }
 
         private void CreateEditModeAssets()
         {
-            if (!CreateEditModeServiceListAsset)
+            if (!CreateEditModeServiceList)
             {
                 return;
             }

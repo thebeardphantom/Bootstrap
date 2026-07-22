@@ -54,7 +54,7 @@
             }
 
             s_subscribed = true;
-            App.Deinitialized += Clear;
+            App.AppInstanceDestroyed += Clear;
         }
 
         private static void Clear()

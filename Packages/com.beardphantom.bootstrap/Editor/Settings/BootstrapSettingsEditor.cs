@@ -13,10 +13,10 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
     /// Builds and manages the UI for the Bootstrap settings page, binding it to the project or user
     /// scoped settings asset and swapping between them via tabs.
     /// </summary>
-    public class BootstrapSettingsEditor
+    public class BootstrapSettingsEditor : IDisposable
     {
         /// <summary>
-        /// Raised whenever the bound <see cref="SerializedObject"/> changes, e.g. due to switching scope tabs.
+        /// Raised whenever the bound <see cref="SerializedObject" /> changes, e.g. due to switching scope tabs.
         /// </summary>
         public event Action<SerializedObject> SerializedObjectChanged;
 
@@ -26,17 +26,18 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
 
         private readonly VisualElement _tabViewContent;
 
-        private UnityEditor.Editor _editor;
-
         private readonly VisualElement _rootElement;
 
+        private UnityEditor.Editor _editor;
+
         /// <summary>
-        /// Creates the settings editor UI and attaches it under <paramref name="rootElement"/>.
+        /// Creates the settings editor UI and attaches it under <paramref name="rootElement" />.
         /// </summary>
         /// <param name="rootElement">The root visual element to build the settings UI into.</param>
         public BootstrapSettingsEditor(VisualElement rootElement)
         {
             _rootElement = rootElement;
+            CompilationPipeline.compilationStarted -= OnCompilationStarted;
             CompilationPipeline.compilationStarted += OnCompilationStarted;
 
             var uxml = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(AssetDatabase.GUIDToAssetPath(UxmlGuid));
@@ -52,11 +53,6 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
             SetupTabViewTab(projectToggle, SettingsScope.Project, userToggle);
             SetupTabViewTab(userToggle, SettingsScope.User, projectToggle);
             BindToScope(SettingsScope.Project);
-        }
-
-        ~BootstrapSettingsEditor()
-        {
-            CompilationPipeline.compilationStarted -= OnCompilationStarted;
         }
 
         private static void OnSerializedObjectPropertyChanged(SerializedObject obj)
@@ -106,8 +102,13 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
             }
 
             App.Quit();
-            App.Deinitialize();
-            App.Initialize<EditModeAppInstance>();
+            App.DestroyAppInstance();
+            App.CreateAppInstance<EditModeAppInstance>();
+        }
+
+        public void Dispose()
+        {
+            CompilationPipeline.compilationStarted -= OnCompilationStarted;
         }
 
         private void OnCompilationStarted(object obj)
