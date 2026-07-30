@@ -11,7 +11,7 @@ namespace BeardPhantom.Bootstrap.SourceGen
     public class GenerateSingletonAttribute : BootstrapGeneratorAttribute
     {
         private const string PropertyFormatStr = @"
-        private static {0} Instance
+        public static {0} Instance
         {{
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ServiceRef<{0}>.Instance;
