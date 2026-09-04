@@ -1,4 +1,7 @@
-﻿using BeardPhantom.Bootstrap.EditMode;
+﻿#if UNITY_EDITOR
+#define IS_EDITOR
+#endif
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -6,6 +9,9 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.Assemblies;
 using UnityEngine.SceneManagement;
+#if IS_EDITOR
+using BeardPhantom.Bootstrap.EditMode;
+#endif
 
 namespace BeardPhantom.Bootstrap
 {
@@ -149,7 +155,9 @@ namespace BeardPhantom.Bootstrap
             }
             else
             {
+#if IS_EDITOR
                 CreateAppInstanceDelayed<EditModeAppInstance>();
+#endif
             }
         }
 
@@ -236,7 +244,7 @@ namespace BeardPhantom.Bootstrap
 
         private static RuntimeAppInstance GetRuntimeAppInstance()
         {
-#if UNITY_EDITOR
+#if IS_EDITOR
             return new PlayModeAppInstance();
 #else
             return new BuildAppInstance();
