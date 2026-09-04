@@ -111,6 +111,14 @@ namespace BeardPhantom.Bootstrap.Editor
                 return;
             }
 
+            BootstrapEnvironmentAsset defaultBuildEnvironment =
+                BootstrapEditorSettingsUtility.GetValue(t => t.DefaultBuildEnvironment);
+            if (defaultBuildEnvironment.IsNotNull())
+            {
+                PackEnvironmentAsset(defaultBuildEnvironment);
+                return;
+            }
+
             Logging.Warn("Unable to determine suitable environment for build.");
         }
 
