@@ -7,7 +7,7 @@ using UnityEngine.Pool;
 namespace BeardPhantom.Bootstrap
 {
     /// <summary>
-    /// Queues <see cref="ScheduledTask"/> instances and flushes them in priority order, within a time budget.
+    /// Queues <see cref="ScheduledTask" /> instances and flushes them in priority order, within a time budget.
     /// </summary>
     public class TaskScheduler
     {
@@ -16,7 +16,7 @@ namespace BeardPhantom.Bootstrap
         private bool _isFlushingQueue;
 
         /// <summary>
-        /// The maximum time, in milliseconds, that a single <see cref="FlushQueueAsync"/> call will spend
+        /// The maximum time, in milliseconds, that a single <see cref="FlushQueueAsync" /> call will spend
         /// executing queued tasks before yielding.
         /// </summary>
         public long QueueFlushTimeoutMs { get; set; } = 1000;
@@ -26,10 +26,10 @@ namespace BeardPhantom.Bootstrap
         /// </summary>
         public bool IsIdle => !_isFlushingQueue && _tasks.Count == 0;
 
-        private static async Awaitable ExecuteTaskAsync(ScheduledTask task)
+        private static async Awaitable ExecuteTaskAsync(ScheduledTask task, CancellationToken cancellationToken = default)
         {
             Logging.Trace($"Invoking scheduled task {task}.");
-            await task.InvokeAsync();
+            await task.InvokeAsync(cancellationToken);
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace BeardPhantom.Bootstrap
         /// </summary>
         /// <param name="asyncTask">The asynchronous work to schedule.</param>
         /// <param name="priority">The priority used to order this task relative to others.</param>
-        public void Schedule(in Func<Awaitable> asyncTask, int priority = 0)
+        public void Schedule(in AsyncTask asyncTask, int priority = 0)
         {
             Schedule(new ScheduledTask(asyncTask, priority));
         }
@@ -53,7 +53,7 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <summary>
-        /// Queues an already-constructed <see cref="ScheduledTask"/> for later execution.
+        /// Queues an already-constructed <see cref="ScheduledTask" /> for later execution.
         /// </summary>
         /// <param name="scheduledTask">The task to schedule.</param>
         public void Schedule(in ScheduledTask scheduledTask)
@@ -63,10 +63,10 @@ namespace BeardPhantom.Bootstrap
 
         /// <summary>
         /// Dequeues and executes queued tasks in priority order until the queue is empty or
-        /// <see cref="QueueFlushTimeoutMs"/> elapses. Does nothing if a flush is already in progress.
+        /// <see cref="QueueFlushTimeoutMs" /> elapses. Does nothing if a flush is already in progress.
         /// </summary>
-        /// <param name="token">A token used to cancel the flush.</param>
-        public async Awaitable FlushQueueAsync(CancellationToken token = default)
+        /// <param name="cancellationToken">A token used to cancel the flush.</param>
+        public async Awaitable FlushQueueAsync(CancellationToken cancellationToken = default)
         {
             if (_isFlushingQueue)
             {
@@ -77,12 +77,12 @@ namespace BeardPhantom.Bootstrap
             {
                 _isFlushingQueue = true;
 
-                using PooledObject<Stopwatch> __ = GenericPool<Stopwatch>.Get(out Stopwatch stopwatch);
+                using var __ = GenericPool<Stopwatch>.Get(out var stopwatch);
                 stopwatch.Restart();
-                while (stopwatch.ElapsedMilliseconds < QueueFlushTimeoutMs && _tasks.TryDequeue(out ScheduledTask task, out _))
+                while (stopwatch.ElapsedMilliseconds < QueueFlushTimeoutMs && _tasks.TryDequeue(out var task, out _))
                 {
-                    token.ThrowIfCancellationRequested();
-                    await ExecuteTaskAsync(task);
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await ExecuteTaskAsync(task, cancellationToken);
                 }
             }
             finally

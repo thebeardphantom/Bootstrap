@@ -1,18 +1,21 @@
 ﻿using System;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace BeardPhantom.Bootstrap
 {
+    public delegate Awaitable AsyncTask(CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Wraps a synchronous or asynchronous unit of work along with the priority used to order it within a
-    /// <see cref="TaskScheduler"/>.
+    /// <see cref="TaskScheduler" />.
     /// </summary>
     public readonly struct ScheduledTask : IEquatable<ScheduledTask>, IComparable<ScheduledTask>, IComparable
     {
         internal readonly int Priority;
 
-        private readonly Func<Awaitable> _asyncTask;
+        private readonly AsyncTask _asyncTask;
 
         private readonly Action _syncTask;
 
@@ -21,7 +24,7 @@ namespace BeardPhantom.Bootstrap
         /// </summary>
         /// <param name="asyncTask">The asynchronous work to invoke.</param>
         /// <param name="priority">The priority used to order this task relative to others.</param>
-        public ScheduledTask(Func<Awaitable> asyncTask, int priority = 0) : this(null, asyncTask, priority) { }
+        public ScheduledTask(AsyncTask asyncTask, int priority = 0) : this(null, asyncTask, priority) { }
 
         /// <summary>
         /// Creates a scheduled task wrapping a synchronous unit of work.
@@ -30,7 +33,7 @@ namespace BeardPhantom.Bootstrap
         /// <param name="priority">The priority used to order this task relative to others.</param>
         public ScheduledTask(Action syncTask, int priority = 0) : this(syncTask, null, priority) { }
 
-        private ScheduledTask(Action syncTask, Func<Awaitable> asyncTask, int priority)
+        private ScheduledTask(Action syncTask, AsyncTask asyncTask, int priority)
         {
             _asyncTask = asyncTask;
             _syncTask = syncTask;
@@ -41,12 +44,13 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Invokes the wrapped task, awaiting it if asynchronous.
         /// </summary>
-        public Awaitable InvokeAsync()
+        /// <param name="cancellationToken"></param>
+        public Awaitable InvokeAsync(CancellationToken cancellationToken = default)
         {
             AssertState();
             if (_syncTask.IsNull())
             {
-                return _asyncTask.Invoke();
+                return _asyncTask.Invoke(cancellationToken);
             }
 
             _syncTask.Invoke();
@@ -100,7 +104,7 @@ namespace BeardPhantom.Bootstrap
             Assert.IsFalse(_syncTask.IsNotNull() && _asyncTask.IsNotNull(), "SyncTask and AsyncTask both have a value.");
         }
 
-        public static implicit operator ScheduledTask(Func<Awaitable> asyncTask)
+        public static implicit operator ScheduledTask(AsyncTask asyncTask)
         {
             return new ScheduledTask(asyncTask);
         }

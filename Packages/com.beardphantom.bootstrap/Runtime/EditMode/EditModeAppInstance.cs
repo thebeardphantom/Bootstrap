@@ -205,7 +205,7 @@ namespace BeardPhantom.Bootstrap.EditMode
                 Logging.Trace($"Waiting for idle {nameof(TaskScheduler)}.");
                 while (!TaskScheduler.IsIdle)
                 {
-                    await TaskScheduler.FlushQueueAsync();
+                    await TaskScheduler.FlushQueueAsync(AppLifetimeCancellationToken);
                 }
 
                 EditorUtility.ClearProgressBar();
