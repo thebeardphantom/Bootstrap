@@ -24,7 +24,7 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// The <see cref="ServiceList"/> of the current <see cref="SessionEnvironment"/>.
         /// </summary>
-        public override ServiceList ActiveServiceList => SessionEnvironment.ServiceListAsset;
+        public override ServiceList ActiveServiceList => SessionEnvironment.IsNull() ? null : SessionEnvironment.ServiceListAsset;
 
         /// <summary>
         /// Determines the <see cref="BootstrapEnvironmentAsset"/> to use for this session.
