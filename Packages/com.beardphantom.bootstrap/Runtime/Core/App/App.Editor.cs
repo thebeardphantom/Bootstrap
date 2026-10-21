@@ -45,6 +45,8 @@ namespace BeardPhantom.Bootstrap
         private static void EditorEntryPoint()
         {
             Init();
+            var minLogLevel = BootstrapEditorSettingsUtility.GetValue(asset => asset.MinLogLevel);
+            Logging.MinLogLevel = minLogLevel;
             CompilationPipeline.compilationStarted += OnCompilationStarted;
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
 
