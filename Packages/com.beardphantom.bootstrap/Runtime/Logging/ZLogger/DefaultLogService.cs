@@ -118,7 +118,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
                 $"[{0:short}] [{1}] [{2}] ",
                 (in MessageTemplate template, in LogInfo info) =>
                 {
-                    var frame = Time.frameCount;
+                    var frame = BootstrapUtility.GetFrameCountString();
                     template.Format(info.LogLevel, frame, info.Category);
                 });
         }
@@ -130,12 +130,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         /// <param name="formatter">The formatter to configure.</param>
         protected virtual void SetPrefixFormatterThreadSafe(PlainTextZLoggerFormatter formatter)
         {
-            formatter.SetPrefixFormatter(
-                $"[{0:short}] [{1}] ",
-                (in MessageTemplate template, in LogInfo info) =>
-                {
-                    template.Format(info.LogLevel, info.Category);
-                });
+            SetPrefixFormatter(formatter);
         }
 
         /// <summary>

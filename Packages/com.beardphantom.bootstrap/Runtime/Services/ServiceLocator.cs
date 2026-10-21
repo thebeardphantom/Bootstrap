@@ -132,12 +132,20 @@ namespace BeardPhantom.Bootstrap
         public void Dispose()
         {
             Logging.Debug("Disposing ServiceLocator.");
-            foreach (var service in _services)
+            for (var i = _services.Count - 1; i >= 0; i--)
             {
-                if (service is IDisposable disposable)
+                try
                 {
-                    Logging.Debug($"Disposing service {service.GetType()}.");
-                    disposable.Dispose();
+                    var service = _services[i];
+                    if (service is IDisposable disposable)
+                    {
+                        Logging.Debug($"Disposing service {service.GetType()}.");
+                        disposable.Dispose();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logging.Error(e);
                 }
             }
 

@@ -260,7 +260,7 @@ namespace BeardPhantom.Bootstrap
         private static IReadOnlyList<Assembly> GetLoadedAssemblies()
         {
 #if UNITY_6000_4_OR_NEWER
-            return UnityEngine.Assemblies.GetLoadedAssemblies();
+            return UnityEngine.Assemblies.CurrentAssemblies.GetLoadedAssemblies();
 #else
             return AppDomain.CurrentDomain.GetAssemblies();
 #endif

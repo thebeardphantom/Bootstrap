@@ -13,6 +13,8 @@ namespace BeardPhantom.Bootstrap
     {
         private readonly PriorityQueue<ScheduledTask, int> _tasks = new();
 
+        private int _scheduledTaskCount;
+
         private bool _isFlushingQueue;
 
         /// <summary>
@@ -58,7 +60,9 @@ namespace BeardPhantom.Bootstrap
         /// <param name="scheduledTask">The task to schedule.</param>
         public void Schedule(in ScheduledTask scheduledTask)
         {
-            _tasks.Enqueue(scheduledTask, scheduledTask.Priority);
+            var priority = scheduledTask.Priority + _scheduledTaskCount;
+            _scheduledTaskCount++;
+            _tasks.Enqueue(scheduledTask, priority);
         }
 
         /// <summary>

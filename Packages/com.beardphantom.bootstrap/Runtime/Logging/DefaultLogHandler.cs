@@ -39,7 +39,7 @@ namespace BeardPhantom.Bootstrap
             }
 
             var formatString = GetFormatString(logLevel);
-            message = string.Format(formatString, Time.frameCount, message);
+            message = string.Format(formatString, BootstrapUtility.GetFrameCountString(), message);
 
             var logType = logLevel.GetUnityLogType();
             Debug.unityLogger.Log(logType, message, context);

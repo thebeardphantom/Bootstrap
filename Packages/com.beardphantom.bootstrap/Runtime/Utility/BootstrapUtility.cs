@@ -1,6 +1,7 @@
 ﻿// #undef UNITY_EDITOR
 
 using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 #if UNITY_EDITOR
@@ -50,6 +51,11 @@ namespace BeardPhantom.Bootstrap
 
             var guidString = scene.name["InitTestScene".Length..];
             return Guid.TryParse(guidString, out _);
+        }
+
+        public static string GetFrameCountString()
+        {
+            return App.IsMainThread ? Time.frameCount.ToString() : "-";
         }
     }
 }
