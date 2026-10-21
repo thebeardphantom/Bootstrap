@@ -187,6 +187,11 @@ namespace BeardPhantom.Bootstrap
 
         internal static void DestroyAppInstance()
         {
+            if (s_instance.IsNull())
+            {
+                return;
+            }
+
             Logging.Debug($"Destroying {nameof(AppInstance)} {s_instance}.");
             s_instance = null;
             AppInstanceDestroyed?.Invoke();
