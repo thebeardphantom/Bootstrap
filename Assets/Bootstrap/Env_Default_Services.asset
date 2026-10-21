@@ -27,6 +27,6 @@ MonoBehaviour:
     - rid: 4723834488732516502
       type: {class: DefaultLogService, ns: BeardPhantom.Bootstrap.ZLogger, asm: BeardPhantom.Bootstrap.ZLogger}
       data:
-        <ConsoleMinLogLevel>k__BackingField: 1
+        <ConsoleMinLogLevel>k__BackingField: 0
         <FileMinLogLevel>k__BackingField: 0
         <FilePath>k__BackingField: Logs/App.log
