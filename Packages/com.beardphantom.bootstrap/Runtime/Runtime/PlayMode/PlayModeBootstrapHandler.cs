@@ -59,7 +59,7 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <inheritdoc />
-        Awaitable IPreBootstrapHandler.OnPreBootstrapAsync(in BootstrapContext context)
+        Awaitable IPreBootstrapHandler.OnPreBootstrapAsync(BootstrapContext context)
         {
             string editModeStateJson = SessionState.GetString(EditModeAppInstance.EditModeStateSessionStateKey, "");
             if (string.IsNullOrWhiteSpace(editModeStateJson))

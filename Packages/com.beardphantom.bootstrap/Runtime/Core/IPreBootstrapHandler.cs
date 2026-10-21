@@ -11,6 +11,6 @@ namespace BeardPhantom.Bootstrap
         /// Invoked before service discovery and binding occur during bootstrap.
         /// </summary>
         /// <param name="context">The bootstrap context for the app instance being initialized.</param>
-        Awaitable OnPreBootstrapAsync(in BootstrapContext context);
+        Awaitable OnPreBootstrapAsync(BootstrapContext context);
     }
 }

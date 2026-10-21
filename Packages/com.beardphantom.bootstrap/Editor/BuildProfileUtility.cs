@@ -6,6 +6,12 @@ using UnityEditor.Build;
 using UnityEditor.Build.Profile;
 using UnityEditor.Build.Reporting;
 
+#if UNITY_6000_4_OR_NEWER
+using GUID = UnityEngine.GUID;
+#else
+using GUID = UnityEditor.GUID;
+#endif
+
 namespace BeardPhantom.Bootstrap.Editor
 {
     /// <summary>
@@ -71,7 +77,7 @@ namespace BeardPhantom.Bootstrap.Editor
             s_isClassicPlatformProfileMethod = buildProfileContextType.GetMethod(
                 "IsClassicPlatformProfile",
                 BindingFlags.NonPublic | BindingFlags.Static);
-
+            
             Type buildTargetDiscoveryType = editorAssembly.GetType("UnityEditor.BuildTargetDiscovery");
             MethodInfo[] methods = buildTargetDiscoveryType.GetMethods(
                 BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
@@ -129,13 +135,13 @@ namespace BeardPhantom.Bootstrap.Editor
         /// </summary>
         /// <param name="namedBuildTarget">The named build target.</param>
         /// <param name="buildTarget">The build target.</param>
-        public static UnityEngine.GUID GetGuidFromBuildTarget(NamedBuildTarget namedBuildTarget, BuildTarget buildTarget)
+        public static GUID GetGuidFromBuildTarget(NamedBuildTarget namedBuildTarget, BuildTarget buildTarget)
         {
             try
             {
                 s_twoArgArray[0] = namedBuildTarget;
                 s_twoArgArray[1] = buildTarget;
-                return (UnityEngine.GUID)s_getGUIDFromBuildTargetMethod.Invoke(null, s_twoArgArray);
+                return (GUID)s_getGUIDFromBuildTargetMethod.Invoke(null, s_twoArgArray);
             }
             finally
             {

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.Assemblies;
 using UnityEngine.SceneManagement;
 #if IS_EDITOR
 using BeardPhantom.Bootstrap.EditMode;
@@ -221,7 +220,7 @@ namespace BeardPhantom.Bootstrap
                 return;
             }
 
-            IReadOnlyList<Assembly> assemblies = CurrentAssemblies.GetLoadedAssemblies();
+            IReadOnlyList<Assembly> assemblies = GetLoadedAssemblies();
             foreach (Assembly assembly in assemblies)
             {
                 IEnumerable<AppExtensionTypeAttribute> attributes = assembly.GetCustomAttributes<AppExtensionTypeAttribute>();
@@ -232,6 +231,15 @@ namespace BeardPhantom.Bootstrap
                     Logging.Debug($"Registered extension {attribute.ExtensionType.Name}.");
                 }
             }
+        }
+
+        private static IReadOnlyList<Assembly> GetLoadedAssemblies()
+        {
+#if UNITY_6000_4_OR_NEWER
+            return UnityEngine.Assemblies.GetLoadedAssemblies();
+#else
+            return AppDomain.CurrentDomain.GetAssemblies();
+#endif
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]

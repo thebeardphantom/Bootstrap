@@ -19,17 +19,28 @@ public class CustomBootstrapHandler : IPreBootstrapHandler, IPostBootstrapHandle
     private string StringProperty { get; set; }
 
     /// <inheritdoc />
-    Awaitable IPreBootstrapHandler.OnPreBootstrapAsync(in BootstrapContext context)
+    async Awaitable IPreBootstrapHandler.OnPreBootstrapAsync(BootstrapContext context)
     {
-        BootstrapUtility.GetDefaultBootstrapHandlers(out _defaultPreHandler, out _defaultPostHandler);
+        if (!App.TryGetInstance<RuntimeAppInstance>(out var runtimeAppInstance))
+        {
+            return;
+        }
+
+        runtimeAppInstance.GetDefaultBootstrapHandlers(out _defaultPreHandler, out _defaultPostHandler);
+
         Debug.Log("USING CUSTOM OnPreBootstrapAsync");
-        return _defaultPreHandler.OnPreBootstrapAsync(context);
+        await _defaultPreHandler.OnPreBootstrapAsync(context);
     }
 
     /// <inheritdoc />
-    Awaitable IPostBootstrapHandler.OnPostBootstrapAsync(BootstrapContext context)
+    async Awaitable IPostBootstrapHandler.OnPostBootstrapAsync(BootstrapContext context)
     {
+        if (_defaultPostHandler == null)
+        {
+            return;
+        }
+
         Debug.Log("USING CUSTOM OnPostBootstrapAsync");
-        return _defaultPostHandler.OnPostBootstrapAsync(context);
+        await _defaultPostHandler.OnPostBootstrapAsync(context);
     }
 }

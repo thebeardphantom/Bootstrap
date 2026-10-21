@@ -2,7 +2,6 @@
 using BeardPhantom.Bootstrap.Environment;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using UnityEditor;
@@ -15,18 +14,12 @@ using Object = UnityEngine.Object;
 namespace BeardPhantom.Bootstrap.EditMode
 {
     /// <summary>
-    /// The <see cref="AppInstance"/> used while bootstrapping edit mode services in the Unity editor.
+    /// The <see cref="AppInstance" /> used while bootstrapping edit mode services in the Unity editor.
     /// </summary>
     public class EditModeAppInstance : AppInstance
     {
         /// <summary>
-        /// <see cref="SessionState"/> key under which the entity ID of the active edit mode
-        /// <see cref="ServiceList"/> instance is stored.
-        /// </summary>
-        public const string EditModeServicesEntityIdSessionStateKey = "EditModeServicesIId";
-
-        /// <summary>
-        /// <see cref="SessionState"/> key under which the serialized <see cref="EditModeState"/> snapshot is stored.
+        /// <see cref="SessionState" /> key under which the serialized <see cref="EditModeState" /> snapshot is stored.
         /// </summary>
         public const string EditModeStateSessionStateKey = "EDIT_MODE_STATE";
 
@@ -58,9 +51,9 @@ namespace BeardPhantom.Bootstrap.EditMode
 
         private static bool TryFindActiveSceneEnvironment(out BootstrapEnvironmentAsset environment)
         {
-            Scene activeScene = SceneManager.GetActiveScene();
+            var activeScene = SceneManager.GetActiveScene();
             var sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(activeScene.path);
-            MappedEnvironmentCollection<SceneAsset> sceneEnvironments =
+            var sceneEnvironments =
                 BootstrapEditorSettingsUtility.GetValue(a => a.EditorSceneEnvironments);
             return sceneEnvironments.TryFindEnvironmentForKey(sceneAsset, out environment);
         }
@@ -80,7 +73,7 @@ namespace BeardPhantom.Bootstrap.EditMode
         /// </summary>
         public void ReinitializeIfNecessary()
         {
-            ServiceList serviceList = BootstrapEditorSettingsUtility.GetValue(asset => asset.EditModeServices);
+            var serviceList = BootstrapEditorSettingsUtility.GetValue(asset => asset.EditModeServices);
 
             /*
              * Bootstrap if:
@@ -110,7 +103,7 @@ namespace BeardPhantom.Bootstrap.EditMode
                     return;
                 }
 
-                if (!TryFindActiveSceneEnvironment(out BootstrapEnvironmentAsset environment))
+                if (!TryFindActiveSceneEnvironment(out var environment))
                 {
                     environment = BootstrapEditorSettingsUtility.GetValue(a => a.DefaultPlayModeEnvironment);
                 }
@@ -121,7 +114,7 @@ namespace BeardPhantom.Bootstrap.EditMode
                     EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
 
                     Logging.Trace("BootstrapEditorHelper prepping for playmode.");
-                    EditorBuildSettingsScene bootstrapScene =
+                    var bootstrapScene =
                         EditorBuildSettings.scenes.FirstOrDefault(s => AssetDatabase.LoadAssetAtPath<SceneAsset>(s.path));
                     if (bootstrapScene.IsNull())
                     {
@@ -132,18 +125,18 @@ namespace BeardPhantom.Bootstrap.EditMode
                     var bootstrapSceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(bootstrapScene.path);
                     EditorSceneManager.playModeStartScene = bootstrapSceneAsset;
 
-                    using (ListPool<string>.Get(out List<string> scenePaths))
+                    using (ListPool<string>.Get(out var scenePaths))
                     {
                         for (var i = 0; i < SceneManager.sceneCount; i++)
                         {
-                            Scene scene = SceneManager.GetSceneAt(i);
+                            var scene = SceneManager.GetSceneAt(i);
                             if (scene.buildIndex != 0 && scene.IsValid())
                             {
                                 scenePaths.Add(scene.path);
                             }
                         }
 
-                        SelectedObjectPath[] selectedObjectPaths = Selection.gameObjects
+                        var selectedObjectPaths = Selection.gameObjects
                             .Where(g => g && g.scene.IsValid())
                             .Select(SelectedObjectPath.CreateInstance)
                             .ToArray();
@@ -153,7 +146,7 @@ namespace BeardPhantom.Bootstrap.EditMode
                             LoadedScenes = scenePaths,
                             SelectedObjects = selectedObjectPaths,
                         };
-                        string editModeStateJson = JsonConvert.SerializeObject(editModeState);
+                        var editModeStateJson = JsonConvert.SerializeObject(editModeState);
                         SessionState.SetString(EditModeStateSessionStateKey, editModeStateJson);
                     }
                 }
@@ -171,7 +164,7 @@ namespace BeardPhantom.Bootstrap.EditMode
 
             using var _ = EditModeAwaitableSupportScope.Create();
 
-            int progressId = Progress.Start(
+            var progressId = Progress.Start(
                 $"Edit Mode Bootstrapping @ {DateTime.Now}",
                 "Cleanup",
                 Progress.Options.Indefinite | Progress.Options.Managed | Progress.Options.Sticky);
@@ -179,9 +172,9 @@ namespace BeardPhantom.Bootstrap.EditMode
             {
                 var sw = Stopwatch.StartNew();
 
-                ServiceList serviceListSource = BootstrapEditorSettingsUtility.GetValue(
+                var serviceListSource = BootstrapEditorSettingsUtility.GetValue(
                     asset => asset.EditModeServices,
-                    out SettingsScope definedScope);
+                    out var definedScope);
                 if (serviceListSource.IsNull())
                 {
                     sw.Stop();
@@ -194,7 +187,6 @@ namespace BeardPhantom.Bootstrap.EditMode
                 }
 
                 _editModeServiceListInstance = serviceListSource.CreateClone();
-                SessionState.SetString(EditModeServicesEntityIdSessionStateKey, _editModeServiceListInstance.GetEntityId().ToString());
 
                 var context = new BootstrapContext(TaskScheduler);
                 var description = $"Creating edit mode services from prefab '{serviceListSource.name}' from {definedScope} scope.";

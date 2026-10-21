@@ -1,5 +1,6 @@
 ﻿using BeardPhantom.Bootstrap;
 using System;
+using System.Threading;
 using UnityEngine;
 
 [Serializable]
@@ -14,13 +15,13 @@ public class TestService : IService
     [field: SerializeField]
     private string StringProperty { get; set; }
 
-    private static async Awaitable AsyncTask()
+    private static async Awaitable AsyncTask(CancellationToken cancellationToken = default)
     {
         var timer = 0f;
         const float Duration = 0.5f;
         while (timer < Duration)
         {
-            await Awaitable.NextFrameAsync();
+            await Awaitable.NextFrameAsync(cancellationToken);
             timer += Time.deltaTime;
         }
     }
@@ -32,6 +33,6 @@ public class TestService : IService
             return;
         }
 
-        context.Scheduler.Schedule(new AsyncScheduledTask(AsyncTask));
+        context.Scheduler.Schedule(AsyncTask);
     }
 }

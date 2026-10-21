@@ -17,7 +17,7 @@ namespace BeardPhantom.Bootstrap
         public static readonly BuildBootstrapHandler Instance = new();
 
         /// <inheritdoc />
-        public Awaitable OnPreBootstrapAsync(in BootstrapContext context)
+        public Awaitable OnPreBootstrapAsync(BootstrapContext context)
         {
             return AwaitableUtility.Completed;
         }
