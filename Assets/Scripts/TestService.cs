@@ -1,11 +1,14 @@
 ﻿using BeardPhantom.Bootstrap;
+using BeardPhantom.Bootstrap.SourceGen;
 using System;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using ZLogger;
 
 [Serializable]
-public class TestService : IServiceWithUpdateLoop
+[GenerateLogger]
+public partial class TestService : IServiceWithUpdateLoop
 {
     [field: SerializeField]
     private int IntProperty { get; set; }
@@ -35,6 +38,7 @@ public class TestService : IServiceWithUpdateLoop
 
     void IService.InitService(BootstrapContext context)
     {
+        s_logger.ZLogDebug($"Hello from TestService.");
         context.Scheduler.Schedule(AsyncTask);
     }
 

@@ -9,5 +9,7 @@
         bool IsRunningTests { get; internal set; }
 
         bool IsResetting { get; internal set; }
+
+        public bool IsQuittingOrResetting => IsQuitting || IsResetting;
     }
 }

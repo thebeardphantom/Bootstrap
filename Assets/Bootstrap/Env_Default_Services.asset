@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Env_Default_Services
   m_EditorClassIdentifier: 
   <Services>k__BackingField:
+  - rid: 4723834488732516502
   - rid: 4723834488732516458
   references:
     version: 2
@@ -23,3 +24,9 @@ MonoBehaviour:
         <IntProperty>k__BackingField: 0
         <FloatProperty>k__BackingField: 0
         <StringProperty>k__BackingField: 
+    - rid: 4723834488732516502
+      type: {class: DefaultLogService, ns: BeardPhantom.Bootstrap.ZLogger, asm: BeardPhantom.Bootstrap.ZLogger}
+      data:
+        <ConsoleMinLogLevel>k__BackingField: 1
+        <FileMinLogLevel>k__BackingField: 0
+        <FilePath>k__BackingField: Logs/App.log

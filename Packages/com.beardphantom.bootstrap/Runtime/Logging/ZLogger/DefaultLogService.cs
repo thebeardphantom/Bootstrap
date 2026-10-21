@@ -23,10 +23,12 @@ namespace BeardPhantom.Bootstrap.ZLogger
     [SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
     public partial class DefaultLogService : IServiceWithCustomBindings, IServiceWithInitPriority, ILogService, IDisposable
     {
+        public const int ServiceInitPriority = -1000;
+
         private ILoggerFactory _loggerFactory;
 
         /// <inheritdoc />
-        int IServiceWithInitPriority.InitPriority => -1000;
+        int IServiceWithInitPriority.InitPriority => ServiceInitPriority;
 
         /// <summary>
         /// The minimum level of messages written to the console provider.
@@ -216,10 +218,9 @@ namespace BeardPhantom.Bootstrap.ZLogger
         void IService.InitService(BootstrapContext context)
         {
             s_logger.ZLogTrace($"Test startup log.");
-            Logging.LogHandler = BootstrapZLogHandler.Instance;
             _loggerFactory = CreateLoggerFactory();
             s_logger.ZLogInformation($"Log system setup complete.");
-            FlushStartupLogs();
+            context.Scheduler.Schedule(FlushStartupLogs, ServiceInitPriority);
         }
 
         /// <summary>

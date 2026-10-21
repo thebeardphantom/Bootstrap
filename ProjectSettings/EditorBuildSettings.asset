@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Packages/com.beardphantom.bootstrap/Runtime/Bootstrap.unity
+    path: Packages/com.beardphantom.bootstrap/Bootstrap.unity
     guid: 029246215c60ca34caeb581706cf59b5
   - enabled: 1
     path: Assets/SampleScene.unity

@@ -147,7 +147,6 @@ namespace BeardPhantom.Bootstrap
             }
 
             State.IsResetting = true;
-            State.IsQuitting = true;
 
             appInstance.NotifyResetting();
             DestroyAppInstance();
