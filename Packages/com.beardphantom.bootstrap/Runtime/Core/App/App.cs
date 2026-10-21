@@ -140,6 +140,12 @@ namespace BeardPhantom.Bootstrap
                 return;
             }
 
+            if (appInstance.BootstrapState != AppBootstrapState.Ready)
+            {
+                Logging.Warn($"Can only reset when {nameof(appInstance.BootstrapState)} is {nameof(AppBootstrapState.Ready)}.");
+                return;
+            }
+
             State.IsResetting = true;
             State.IsQuitting = true;
 
