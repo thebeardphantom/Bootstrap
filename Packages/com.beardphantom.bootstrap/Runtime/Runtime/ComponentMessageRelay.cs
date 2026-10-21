@@ -33,11 +33,7 @@ namespace BeardPhantom.Bootstrap
 
         private void OnApplicationQuit()
         {
-            if (App.TryGetInstance(out AppInstance appInstance))
-            {
-                appInstance.NotifyQuitting();
-            }
-
+            App.Quit();
             DestroyImmediate(gameObject);
         }
 
@@ -48,7 +44,6 @@ namespace BeardPhantom.Bootstrap
 
         private void Update()
         {
-            Logging.Trace("Update!");
             if (!App.TryGetInstance(out AppInstance appInstance))
             {
                 return;
@@ -73,7 +68,6 @@ namespace BeardPhantom.Bootstrap
 
         private void LateUpdate()
         {
-            Logging.Trace("LateUpdate!");
             if (!App.TryGetInstance(out AppInstance appInstance))
             {
                 return;
@@ -98,7 +92,6 @@ namespace BeardPhantom.Bootstrap
 
         private void FixedUpdate()
         {
-            Logging.Trace("FixedUpdate!");
             if (!App.TryGetInstance(out AppInstance appInstance))
             {
                 return;

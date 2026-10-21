@@ -53,7 +53,7 @@ namespace BeardPhantom.Bootstrap
                     return;
                 }
 
-                AppBootstrapState previousState = _bootstrapState;
+                var previousState = _bootstrapState;
                 _bootstrapState = value;
                 AppBootstrapStateChanged?.Invoke(previousState, value);
             }
@@ -73,26 +73,6 @@ namespace BeardPhantom.Bootstrap
         /// A unique identifier generated for this app instance's session.
         /// </summary>
         public Guid SessionGuid { get; private set; }
-
-        /// <summary>
-        /// True if the app instance is currently running (e.g. in play mode or a build).
-        /// </summary>
-        public bool IsPlaying { get; protected set; }
-
-        /// <summary>
-        /// True if this app instance is running under a test runner.
-        /// </summary>
-        public bool IsRunningTests { get; internal set; }
-
-        /// <summary>
-        /// True if <see cref="BootstrapState" /> is <see cref="AppBootstrapState.Quitting" />.
-        /// </summary>
-        public virtual bool IsQuitting => BootstrapState == AppBootstrapState.Quitting;
-
-        /// <summary>
-        /// True if <see cref="BootstrapState" /> is <see cref="AppBootstrapState.Resetting" />.
-        /// </summary>
-        public virtual bool IsResetting => BootstrapState == AppBootstrapState.Resetting;
 
         /// <summary>
         /// The task scheduler associated with this app instance.
@@ -182,23 +162,21 @@ namespace BeardPhantom.Bootstrap
                 throw new ArgumentNullException(nameof(original));
             }
 
-            T clone = Object.Instantiate(original);
+            var clone = Object.Instantiate(original);
             return ScopeToApp(clone);
         }
 
         internal void NotifyQuitting()
         {
             Logging.Debug($"{this} is quitting.");
-            BootstrapState = AppBootstrapState.Quitting;
             Dispose();
         }
 
         internal void NotifyResetting()
         {
             Logging.Debug($"{this} is resetting.");
-            BootstrapState = AppBootstrapState.Resetting;
             Dispose();
-            foreach (Object appScopedObject in _appScopedObjects)
+            foreach (var appScopedObject in _appScopedObjects)
             {
                 if (appScopedObject.IsNotNull())
                 {

@@ -25,11 +25,6 @@ namespace BeardPhantom.Bootstrap
         /// <inheritdoc />
         public async Awaitable OnPostBootstrapAsync(BootstrapContext context)
         {
-            if (App.Instance.IsRunningTests)
-            {
-                return;
-            }
-
             await SceneManager.LoadSceneAsync(1);
         }
     }

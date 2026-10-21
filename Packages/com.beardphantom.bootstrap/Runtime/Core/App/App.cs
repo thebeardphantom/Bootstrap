@@ -30,10 +30,9 @@ namespace BeardPhantom.Bootstrap
         public static event Action AppInstanceDestroyed;
 
         private static readonly Dictionary<Type, IAppExtension> s_typeToAppExtensions = new();
-
         private static int s_mainThreadId;
-
         private static AppInstance s_instance;
+        public static readonly IAppStateContainer State = CreateAppStateContainer();
 
         /// <summary>
         /// True if the calling thread is the main thread the app was initialized on.
@@ -79,7 +78,7 @@ namespace BeardPhantom.Bootstrap
         /// <returns>True if an app instance of type <typeparamref name="T" /> is currently initialized.</returns>
         public static bool TryGetInstance<T>(out T instance) where T : AppInstance
         {
-            if (TryGetInstance(out AppInstance untypedInstance) && untypedInstance is T typedInstance)
+            if (TryGetInstance(out var untypedInstance) && untypedInstance is T typedInstance)
             {
                 instance = typedInstance;
                 return true;
@@ -97,7 +96,7 @@ namespace BeardPhantom.Bootstrap
         /// <returns>True if the service was located.</returns>
         public static bool TryLocate<T>(out T service) where T : class
         {
-            if (TryGetInstance(out AppInstance appInstance))
+            if (TryGetInstance(out var appInstance))
             {
                 return appInstance.TryLocate(out service);
             }
@@ -122,7 +121,7 @@ namespace BeardPhantom.Bootstrap
         /// <exception cref="Exception">No extension of type <typeparamref name="T" /> is registered.</exception>
         public static T GetExtension<T>() where T : IAppExtension
         {
-            if (s_typeToAppExtensions.TryGetValue(typeof(T), out IAppExtension extension))
+            if (s_typeToAppExtensions.TryGetValue(typeof(T), out var extension))
             {
                 return (T)extension;
             }
@@ -135,16 +134,19 @@ namespace BeardPhantom.Bootstrap
         /// </summary>
         public static void Reset()
         {
-            if (!TryGetInstance(out AppInstance appInstance))
+            if (!TryGetInstance(out var appInstance))
             {
                 Logging.Warn($"No current {nameof(AppInstance)}.");
                 return;
             }
 
+            State.IsResetting = true;
+            State.IsQuitting = true;
+
             appInstance.NotifyResetting();
             DestroyAppInstance();
 
-            if (Application.isPlaying)
+            if (State.IsPlaying)
             {
                 Logging.Debug("Reloading scene at index 0.");
                 SceneManager.LoadScene(0);
@@ -152,22 +154,23 @@ namespace BeardPhantom.Bootstrap
                 Logging.Debug($"Re-entering {nameof(RuntimeEntryPoint)}.");
                 RuntimeEntryPoint();
             }
+#if IS_EDITOR
             else
             {
-#if IS_EDITOR
                 CreateAppInstanceDelayed<EditModeAppInstance>();
-#endif
             }
+#endif
         }
 
         internal static void Quit()
         {
-            if (!TryGetInstance(out AppInstance appInstance))
+            if (!TryGetInstance(out var appInstance))
             {
                 Logging.Warn($"No current {nameof(AppInstance)}.");
                 return;
             }
 
+            State.IsQuitting = true;
             appInstance.NotifyQuitting();
         }
 
@@ -181,6 +184,15 @@ namespace BeardPhantom.Bootstrap
             Logging.Debug($"Destroying {nameof(AppInstance)} {s_instance}.");
             s_instance = null;
             AppInstanceDestroyed?.Invoke();
+        }
+
+        private static IAppStateContainer CreateAppStateContainer()
+        {
+#if UNITY_EDITOR
+            return new EditorAppStateContainer();
+#else
+            return new BuildAppStateContainer();
+#endif
         }
 
         private static Awaitable CreateAppInstanceAsync<T>() where T : AppInstance, new()
@@ -208,6 +220,8 @@ namespace BeardPhantom.Bootstrap
 
         private static void Init()
         {
+            State.IsQuitting = false;
+            State.IsResetting = false;
             s_mainThreadId = Thread.CurrentThread.ManagedThreadId;
             Logging.Trace($"Got main thread ID {s_mainThreadId}.");
             RegisterAllExtensions();
@@ -220,11 +234,11 @@ namespace BeardPhantom.Bootstrap
                 return;
             }
 
-            IReadOnlyList<Assembly> assemblies = GetLoadedAssemblies();
-            foreach (Assembly assembly in assemblies)
+            var assemblies = GetLoadedAssemblies();
+            foreach (var assembly in assemblies)
             {
-                IEnumerable<AppExtensionTypeAttribute> attributes = assembly.GetCustomAttributes<AppExtensionTypeAttribute>();
-                foreach (AppExtensionTypeAttribute attribute in attributes)
+                var attributes = assembly.GetCustomAttributes<AppExtensionTypeAttribute>();
+                foreach (var attribute in attributes)
                 {
                     var appExtensionInstance = (IAppExtension)Activator.CreateInstance(attribute.ExtensionType);
                     s_typeToAppExtensions.Add(attribute.ExtensionType, appExtensionInstance);
@@ -245,8 +259,9 @@ namespace BeardPhantom.Bootstrap
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void RuntimeEntryPoint()
         {
+            State.IsPlaying = true;
             Init();
-            RuntimeAppInstance appInstance = GetRuntimeAppInstance();
+            var appInstance = GetRuntimeAppInstance();
             CreateAppInstanceAsync(appInstance).Forget();
         }
 

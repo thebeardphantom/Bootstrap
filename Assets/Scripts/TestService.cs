@@ -2,9 +2,10 @@
 using System;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [Serializable]
-public class TestService : IService
+public class TestService : IServiceWithUpdateLoop
 {
     [field: SerializeField]
     private int IntProperty { get; set; }
@@ -18,21 +19,30 @@ public class TestService : IService
     private static async Awaitable AsyncTask(CancellationToken cancellationToken = default)
     {
         var timer = 0f;
-        const float Duration = 0.5f;
+        var lastTimerInt = -1;
+        const float Duration = 3f;
         while (timer < Duration)
         {
             await Awaitable.NextFrameAsync(cancellationToken);
             timer += Time.deltaTime;
+            if ((int)timer != lastTimerInt)
+            {
+                lastTimerInt = (int)timer;
+                Debug.Log($"TestService async task {lastTimerInt}");
+            }
         }
     }
 
     void IService.InitService(BootstrapContext context)
     {
-        if (Application.isPlaying)
-        {
-            return;
-        }
-
         context.Scheduler.Schedule(AsyncTask);
+    }
+
+    void IServiceWithUpdateLoop.Update(float deltaTime)
+    {
+        if (Keyboard.current.rKey.wasPressedThisFrame)
+        {
+            App.Reset();
+        }
     }
 }

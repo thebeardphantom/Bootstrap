@@ -66,19 +66,15 @@ namespace BeardPhantom.Bootstrap
             {
                 return AwaitableUtility.Completed;
             }
-
+            
             context.EditModeState = JsonConvert.DeserializeObject<EditModeState>(editModeStateJson);
+            App.State.IsRunningTests |= context.EditModeState.HasTestRunnerScene;
             return AwaitableUtility.Completed;
         }
 
         /// <inheritdoc />
         async Awaitable IPostBootstrapHandler.OnPostBootstrapAsync(BootstrapContext context)
         {
-            if (App.Instance.IsRunningTests)
-            {
-                return;
-            }
-
             List<string> editModeScenePaths = context.EditModeState.LoadedScenes;
             if (editModeScenePaths.IsNull() || editModeScenePaths.Count == 0)
             {

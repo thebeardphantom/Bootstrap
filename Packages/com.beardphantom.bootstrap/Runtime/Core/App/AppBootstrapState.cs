@@ -50,15 +50,5 @@ namespace BeardPhantom.Bootstrap
         /// Bootstrapping has completed and the app instance is fully running.
         /// </summary>
         Ready = 8,
-
-        /// <summary>
-        /// The app instance is quitting and disposing.
-        /// </summary>
-        Quitting = 9,
-
-        /// <summary>
-        /// The app instance is being disposed as part of a reset, before reinitializing.
-        /// </summary>
-        Resetting = 10,
     }
 }

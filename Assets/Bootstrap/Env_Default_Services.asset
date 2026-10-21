@@ -10,23 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 123a134a49e34c0b99ac53ba97e245a5, type: 3}
-  m_Name: New Services List Asset 1
+  m_Name: Env_Default_Services
   m_EditorClassIdentifier: 
   <Services>k__BackingField:
-  - rid: 4282680910139359237
-  - rid: 4282680910338326777
+  - rid: 4723834488732516458
   references:
     version: 2
     RefIds:
-    - rid: 4282680910139359237
+    - rid: 4723834488732516458
       type: {class: TestService, ns: , asm: Bootstrap.Project}
       data:
-        <IntProperty>k__BackingField: 194
-        <FloatProperty>k__BackingField: 58.4
+        <IntProperty>k__BackingField: 0
+        <FloatProperty>k__BackingField: 0
         <StringProperty>k__BackingField: 
-    - rid: 4282680910338326777
-      type: {class: DefaultLogService, ns: BeardPhantom.Bootstrap.ZLogger, asm: BeardPhantom.Bootstrap.ZLogger}
-      data:
-        <ConsoleMinLogLevel>k__BackingField: 1
-        <FileMinLogLevel>k__BackingField: 0
-        <FilePath>k__BackingField: Temp/log.txt

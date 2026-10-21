@@ -24,13 +24,7 @@ namespace BeardPhantom.Bootstrap.Tests
             {
                 yield return null;
             }
-
-            if (appInstance.BootstrapState == AppBootstrapState.Ready)
-            {
-                yield break;
-            }
-
-            yield return SceneManager.LoadSceneAsync(0, LoadSceneMode.Additive);
+            
             while (appInstance.BootstrapState != AppBootstrapState.Ready)
             {
                 yield return null;

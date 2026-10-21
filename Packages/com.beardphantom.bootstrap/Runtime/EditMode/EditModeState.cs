@@ -9,8 +9,7 @@ using UnityEditor;
 namespace BeardPhantom.Bootstrap.EditMode
 {
     /// <summary>
-    /// Snapshot of editor state captured before entering play mode, so it can be restored when returning to
-    /// edit mode.
+    /// Snapshot of editor state captured before entering play mode.
     /// </summary>
     [Serializable]
     public class EditModeState
@@ -35,6 +34,8 @@ namespace BeardPhantom.Bootstrap.EditMode
         /// The asset GUID of <see cref="Environment"/>, used to resolve it across serialization.
         /// </summary>
         public string EnvironmentGuid { get; set; }
+
+        public bool HasTestRunnerScene { get; set; }
 
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)

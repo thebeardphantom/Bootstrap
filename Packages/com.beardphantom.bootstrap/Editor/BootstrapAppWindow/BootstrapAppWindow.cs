@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 namespace BeardPhantom.Bootstrap.Editor
 {
     /// <summary>
-    /// Editor window displaying the status of the currently running <see cref="AppInstance"/>, including its
+    /// Editor window displaying the status of the currently running <see cref="AppInstance" />, including its
     /// session GUID, create timestamp, and active service list.
     /// </summary>
     public class BootstrapAppWindow : EditorWindow
@@ -28,6 +28,16 @@ namespace BeardPhantom.Bootstrap.Editor
         private ObjectField _sourceAsset;
 
         private Label _appType;
+
+        private Toggle _isPlaying;
+
+        private Toggle _isQuitting;
+
+        private Toggle _isResetting;
+
+        private Toggle _isRunningTests;
+
+        private Label _bootstrapState;
 
         /// <summary>
         /// Opens (or focuses) the Bootstrap Status window.
@@ -55,11 +65,22 @@ namespace BeardPhantom.Bootstrap.Editor
             App.AppInstanceCreated -= OnAppInstanceCreated;
         }
 
+        private void OnDestroy()
+        {
+            App.AppInstanceDestroyed -= OnAppInstanceDestroyed;
+            App.AppInstanceCreated -= OnAppInstanceCreated;
+        }
+
         private void CreateGUI()
         {
             var visualTreeAsset = AssetDatabase.LoadAssetByGUID<VisualTreeAsset>(s_uxmlGuid);
             visualTreeAsset.CloneTree(rootVisualElement);
 
+            _isPlaying = rootVisualElement.Q<Toggle>("is-playing");
+            _isQuitting = rootVisualElement.Q<Toggle>("is-quitting");
+            _isResetting = rootVisualElement.Q<Toggle>("is-resetting");
+            _isRunningTests = rootVisualElement.Q<Toggle>("is-running-tests");
+            _bootstrapState = rootVisualElement.Q<Label>("bootstrap-state");
             _sessionGuidTextField = rootVisualElement.Q<Label>("session-guid");
             _appCreateTimestampTextField = rootVisualElement.Q<Label>("app-create-timestamp");
             _noActiveServicesBox = rootVisualElement.Q<HelpBox>();
@@ -89,6 +110,19 @@ namespace BeardPhantom.Bootstrap.Editor
             RefreshUI();
         }
 
+        private void Update()
+        {
+            var state = App.State;
+            _isPlaying.SetValueWithoutNotify(state.IsPlaying);
+            _isQuitting.SetValueWithoutNotify(state.IsQuitting);
+            _isResetting.SetValueWithoutNotify(state.IsResetting);
+            _isRunningTests.SetValueWithoutNotify(state.IsRunningTests);
+
+            _bootstrapState.text = App.TryGetInstance(out var appInstance)
+                ? appInstance.BootstrapState.ToString()
+                : null;
+        }
+
         private void RefreshUI()
         {
             _inspectorElement?.RemoveFromHierarchy();
@@ -98,7 +132,7 @@ namespace BeardPhantom.Bootstrap.Editor
             _noActiveServicesBox.style.display = DisplayStyle.Flex;
             _sourceAsset.SetValueWithoutNotify(null);
 
-            if (!App.TryGetInstance(out AppInstance appInstance))
+            if (!App.TryGetInstance(out var appInstance))
             {
                 _appType.text = null;
                 _sessionGuidTextField.text = null;

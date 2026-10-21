@@ -31,11 +31,6 @@ namespace BeardPhantom.Bootstrap.EditMode
         public override ServiceList ActiveServiceList => _editModeServiceListInstance;
 
         /// <summary>
-        /// Always false; edit mode instances are not considered to be quitting.
-        /// </summary>
-        public override bool IsQuitting => false;
-
-        /// <summary>
         /// Creates a new instance, wires up the default log handler, and subscribes to edit mode service list changes.
         /// </summary>
         public EditModeAppInstance()
@@ -122,33 +117,46 @@ namespace BeardPhantom.Bootstrap.EditMode
                         return;
                     }
 
-                    var bootstrapSceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(bootstrapScene.path);
-                    EditorSceneManager.playModeStartScene = bootstrapSceneAsset;
-
-                    using (ListPool<string>.Get(out var scenePaths))
+                    using var _ = ListPool<string>.Get(out var scenePaths);
+                    var hasTestRunnerScene = false;
+                    for (var i = 0; i < SceneManager.sceneCount; i++)
                     {
-                        for (var i = 0; i < SceneManager.sceneCount; i++)
+                        var scene = SceneManager.GetSceneAt(i);
+                        if (BootstrapUtility.IsTestRunnerScene(scene))
                         {
-                            var scene = SceneManager.GetSceneAt(i);
-                            if (scene.buildIndex != 0 && scene.IsValid())
-                            {
-                                scenePaths.Add(scene.path);
-                            }
+                            hasTestRunnerScene = true;
+                            break;
                         }
 
-                        var selectedObjectPaths = Selection.gameObjects
-                            .Where(g => g && g.scene.IsValid())
-                            .Select(SelectedObjectPath.CreateInstance)
-                            .ToArray();
-                        var editModeState = new EditModeState
+                        if (scene.buildIndex != 0 && scene.IsValid())
                         {
-                            Environment = environment,
-                            LoadedScenes = scenePaths,
-                            SelectedObjects = selectedObjectPaths,
-                        };
-                        var editModeStateJson = JsonConvert.SerializeObject(editModeState);
-                        SessionState.SetString(EditModeStateSessionStateKey, editModeStateJson);
+                            scenePaths.Add(scene.path);
+                        }
                     }
+
+                    if (hasTestRunnerScene)
+                    {
+                        scenePaths.Clear();
+                    }
+                    else
+                    {
+                        var bootstrapSceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(bootstrapScene.path);
+                        EditorSceneManager.playModeStartScene = bootstrapSceneAsset;
+                    }
+
+                    var selectedObjectPaths = Selection.gameObjects
+                        .Where(g => g && g.scene.IsValid())
+                        .Select(SelectedObjectPath.CreateInstance)
+                        .ToArray();
+                    var editModeState = new EditModeState
+                    {
+                        Environment = environment,
+                        LoadedScenes = scenePaths,
+                        SelectedObjects = selectedObjectPaths,
+                        HasTestRunnerScene = hasTestRunnerScene,
+                    };
+                    var editModeStateJson = JsonConvert.SerializeObject(editModeState);
+                    SessionState.SetString(EditModeStateSessionStateKey, editModeStateJson);
                 }
             }
         }
@@ -201,6 +209,7 @@ namespace BeardPhantom.Bootstrap.EditMode
                 }
 
                 EditorUtility.ClearProgressBar();
+                Logging.Trace($"{nameof(EditModeAppInstance)} is ready.");
                 BootstrapState = AppBootstrapState.Ready;
 
                 sw.Stop();

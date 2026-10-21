@@ -1,6 +1,8 @@
 ﻿// #undef UNITY_EDITOR
 
-using UnityEngine;
+using System;
+using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -37,6 +39,17 @@ namespace BeardPhantom.Bootstrap
         {
             Object.DestroyImmediate(obj, allowDestroyingAssets);
             obj = null;
+        }
+
+        public static bool IsTestRunnerScene(in Scene scene)
+        {
+            if (!scene.path.StartsWith("Assets/InitTestScene"))
+            {
+                return false;
+            }
+
+            var guidString = scene.name["InitTestScene".Length..];
+            return Guid.TryParse(guidString, out _);
         }
     }
 }

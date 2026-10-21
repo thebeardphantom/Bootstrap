@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 using BeardPhantom.Bootstrap.EditMode;
+using System;
 using System.Diagnostics;
 using UnityEditor;
 using UnityEditor.Compilation;
@@ -64,11 +65,15 @@ namespace BeardPhantom.Bootstrap
 
         private static void OnPlayModeStateChanged(PlayModeStateChange state)
         {
-            Logging.Debug($"{nameof(OnPlayModeStateChanged)}({state})");
+            Logging.Trace($"{nameof(OnPlayModeStateChanged)}({state})");
             switch (state)
             {
                 case PlayModeStateChange.EnteredEditMode:
                 {
+                    State.IsPlaying = false;
+                    State.IsQuitting = false;
+                    State.IsResetting = false;
+                    State.IsRunningTests = false;
                     DestroyAppInstance();
                     CreateAppInstanceDelayed<EditModeAppInstance>();
                     break;
