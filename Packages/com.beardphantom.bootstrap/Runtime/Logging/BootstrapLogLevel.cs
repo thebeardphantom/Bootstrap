@@ -45,12 +45,12 @@ namespace BeardPhantom.Bootstrap
     }
 
     /// <summary>
-    /// Extension methods for <see cref="BootstrapLogLevel"/>.
+    /// Extension methods for <see cref="BootstrapLogLevel" />.
     /// </summary>
     public static class BootstrapLogLevelUtility
     {
         /// <summary>
-        /// Converts a <see cref="BootstrapLogLevel"/> to the equivalent Unity <see cref="LogType"/>.
+        /// Converts a <see cref="BootstrapLogLevel" /> to the equivalent Unity <see cref="LogType" />.
         /// </summary>
         /// <param name="logLevel">The log level to convert.</param>
         public static LogType GetUnityLogType(this BootstrapLogLevel logLevel)

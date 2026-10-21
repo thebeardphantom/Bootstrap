@@ -7,8 +7,8 @@ using UnityEngine;
 namespace BeardPhantom.Bootstrap.EditMode
 {
     /// <summary>
-    /// Base class for Bootstrap's editor settings assets, backed by Unity's <see cref="ScriptableSingleton{T}"/>
-    /// and storing the values defined by <see cref="IBootstrapEditorSettingsAsset"/>.
+    /// Base class for Bootstrap's editor settings assets, backed by Unity's <see cref="ScriptableSingleton{T}" />
+    /// and storing the values defined by <see cref="IBootstrapEditorSettingsAsset" />.
     /// </summary>
     /// <typeparam name="T">The concrete settings asset type.</typeparam>
     public abstract class BootstrapEditorSettingsAsset<T> : ScriptableSingleton<T>, IBootstrapEditorSettingsAsset

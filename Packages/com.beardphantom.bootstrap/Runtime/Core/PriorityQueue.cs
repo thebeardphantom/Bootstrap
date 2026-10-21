@@ -93,7 +93,7 @@ namespace BeardPhantom.Bootstrap
         {
             if (source is ICollection<T> ic)
             {
-                int count = ic.Count;
+                var count = ic.Count;
                 if (count != 0)
                 {
                     // Allocate an array of the desired size, then copy the elements into it. Note that this has the same
@@ -110,7 +110,7 @@ namespace BeardPhantom.Bootstrap
             }
             else
             {
-                using (IEnumerator<T> en = source.GetEnumerator())
+                using (var en = source.GetEnumerator())
                 {
                     if (en.MoveNext())
                     {
@@ -129,7 +129,7 @@ namespace BeardPhantom.Bootstrap
                                 // 2^30, since doubling to 2^31 is 1 larger than Int32.MaxValue.  In that case, we instead
                                 // constrain the length to be Array.MaxLength (this overflow check works because of the
                                 // cast to uint).
-                                int newLength = count << 1;
+                                var newLength = count << 1;
                                 if ((uint)newLength > ArrayEx.MaxLength)
                                 {
                                     newLength = ArrayEx.MaxLength <= count ? count + 1 : ArrayEx.MaxLength;
@@ -382,7 +382,7 @@ namespace BeardPhantom.Bootstrap
             // Note that the node being enqueued does not need to be physically placed
             // there at this point, as such an assignment would be redundant.
 
-            int currentSize = _size++;
+            var currentSize = _size++;
             _version++;
 
             if (_nodes.Length == currentSize)
@@ -427,7 +427,7 @@ namespace BeardPhantom.Bootstrap
                 throw new InvalidOperationException(SR.InvalidOperation_EmptyQueue);
             }
 
-            TElement element = _nodes[0].Element;
+            var element = _nodes[0].Element;
             RemoveRootNode();
             return element;
         }
@@ -503,7 +503,7 @@ namespace BeardPhantom.Bootstrap
         {
             if (_size != 0)
             {
-                (TElement Element, TPriority Priority) root = _nodes[0];
+                var root = _nodes[0];
 
                 if (_comparer == null)
                 {
@@ -560,7 +560,7 @@ namespace BeardPhantom.Bootstrap
                 {
                     var i = 0;
                     (TElement, TPriority)[] nodes = _nodes;
-                    foreach ((TElement element, TPriority priority) in items)
+                    foreach (var (element, priority) in items)
                     {
                         if (nodes.Length == i)
                         {
@@ -583,7 +583,7 @@ namespace BeardPhantom.Bootstrap
             }
             else
             {
-                foreach ((TElement element, TPriority priority) in items)
+                foreach (var (element, priority) in items)
                 {
                     Enqueue(element, priority);
                 }
@@ -616,7 +616,7 @@ namespace BeardPhantom.Bootstrap
 
                 var i = 0;
                 (TElement, TPriority)[] nodes = _nodes;
-                foreach (TElement element in elements)
+                foreach (var element in elements)
                 {
                     if (nodes.Length == i)
                     {
@@ -637,7 +637,7 @@ namespace BeardPhantom.Bootstrap
             }
             else
             {
-                foreach (TElement element in elements)
+                foreach (var element in elements)
                 {
                     Enqueue(element, priority);
                 }
@@ -712,7 +712,7 @@ namespace BeardPhantom.Bootstrap
             const int GrowFactor = 2;
             const int MinimumGrow = 4;
 
-            int newcapacity = GrowFactor * _nodes.Length;
+            var newcapacity = GrowFactor * _nodes.Length;
 
             // Allow the queue to grow to maximum possible capacity (~2G elements) before encountering overflow.
             // Note that this check works even when _nodes.Length overflowed thanks to the (uint) cast
@@ -739,12 +739,12 @@ namespace BeardPhantom.Bootstrap
         /// </summary>
         private void RemoveRootNode()
         {
-            int lastNodeIndex = --_size;
+            var lastNodeIndex = --_size;
             _version++;
 
             if (lastNodeIndex > 0)
             {
-                (TElement Element, TPriority Priority) lastNode = _nodes[lastNodeIndex];
+                var lastNode = _nodes[lastNodeIndex];
                 if (_comparer.IsNull())
                 {
                     MoveDownDefaultComparer(lastNode, 0);
@@ -771,19 +771,19 @@ namespace BeardPhantom.Bootstrap
             // only for higher nodes, starting from the first node that has children.
             // It is the parent of the very last element in the array.
 
-            (TElement Element, TPriority Priority)[] nodes = _nodes;
-            int lastParentWithChildren = GetParentIndex(_size - 1);
+            var nodes = _nodes;
+            var lastParentWithChildren = GetParentIndex(_size - 1);
 
             if (_comparer.IsNull())
             {
-                for (int index = lastParentWithChildren; index >= 0; --index)
+                for (var index = lastParentWithChildren; index >= 0; --index)
                 {
                     MoveDownDefaultComparer(nodes[index], index);
                 }
             }
             else
             {
-                for (int index = lastParentWithChildren; index >= 0; --index)
+                for (var index = lastParentWithChildren; index >= 0; --index)
                 {
                     MoveDownCustomComparer(nodes[index], index);
                 }
@@ -801,12 +801,12 @@ namespace BeardPhantom.Bootstrap
             Debug.Assert(_comparer is null);
             Debug.Assert(0 <= nodeIndex && nodeIndex < _size);
 
-            (TElement Element, TPriority Priority)[] nodes = _nodes;
+            var nodes = _nodes;
 
             while (nodeIndex > 0)
             {
-                int parentIndex = GetParentIndex(nodeIndex);
-                (TElement Element, TPriority Priority) parent = nodes[parentIndex];
+                var parentIndex = GetParentIndex(nodeIndex);
+                var parent = nodes[parentIndex];
 
                 if (Comparer<TPriority>.Default.Compare(node.Priority, parent.Priority) < 0)
                 {
@@ -833,13 +833,13 @@ namespace BeardPhantom.Bootstrap
             Debug.Assert(_comparer is not null);
             Debug.Assert(0 <= nodeIndex && nodeIndex < _size);
 
-            IComparer<TPriority> comparer = _comparer;
-            (TElement Element, TPriority Priority)[] nodes = _nodes;
+            var comparer = _comparer;
+            var nodes = _nodes;
 
             while (nodeIndex > 0)
             {
-                int parentIndex = GetParentIndex(nodeIndex);
-                (TElement Element, TPriority Priority) parent = nodes[parentIndex];
+                var parentIndex = GetParentIndex(nodeIndex);
+                var parent = nodes[parentIndex];
 
                 if (comparer.Compare(node.Priority, parent.Priority) < 0)
                 {
@@ -867,20 +867,20 @@ namespace BeardPhantom.Bootstrap
             Debug.Assert(_comparer is null);
             Debug.Assert(0 <= nodeIndex && nodeIndex < _size);
 
-            (TElement Element, TPriority Priority)[] nodes = _nodes;
-            int size = _size;
+            var nodes = _nodes;
+            var size = _size;
 
             int i;
             while ((i = GetFirstChildIndex(nodeIndex)) < size)
             {
                 // Find the child node with the minimal priority
-                (TElement Element, TPriority Priority) minChild = nodes[i];
-                int minChildIndex = i;
+                var minChild = nodes[i];
+                var minChildIndex = i;
 
-                int childIndexUpperBound = Math.Min(i + Arity, size);
+                var childIndexUpperBound = Math.Min(i + Arity, size);
                 while (++i < childIndexUpperBound)
                 {
-                    (TElement Element, TPriority Priority) nextChild = nodes[i];
+                    var nextChild = nodes[i];
                     if (Comparer<TPriority>.Default.Compare(nextChild.Priority, minChild.Priority) < 0)
                     {
                         minChild = nextChild;
@@ -915,21 +915,21 @@ namespace BeardPhantom.Bootstrap
             Debug.Assert(_comparer is not null);
             Debug.Assert(0 <= nodeIndex && nodeIndex < _size);
 
-            IComparer<TPriority> comparer = _comparer;
-            (TElement Element, TPriority Priority)[] nodes = _nodes;
-            int size = _size;
+            var comparer = _comparer;
+            var nodes = _nodes;
+            var size = _size;
 
             int i;
             while ((i = GetFirstChildIndex(nodeIndex)) < size)
             {
                 // Find the child node with the minimal priority
-                (TElement Element, TPriority Priority) minChild = nodes[i];
-                int minChildIndex = i;
+                var minChild = nodes[i];
+                var minChildIndex = i;
 
-                int childIndexUpperBound = Math.Min(i + Arity, size);
+                var childIndexUpperBound = Math.Min(i + Arity, size);
                 while (++i < childIndexUpperBound)
                 {
-                    (TElement Element, TPriority Priority) nextChild = nodes[i];
+                    var nextChild = nodes[i];
                     if (comparer.Compare(nextChild.Priority, minChild.Priority) < 0)
                     {
                         minChild = nextChild;
@@ -1067,7 +1067,7 @@ namespace BeardPhantom.Bootstrap
                 /// </returns>
                 public bool MoveNext()
                 {
-                    PriorityQueue<TElement, TPriority> localQueue = _queue;
+                    var localQueue = _queue;
 
                     if (_version == localQueue._version && (uint)_index < (uint)localQueue._size)
                     {

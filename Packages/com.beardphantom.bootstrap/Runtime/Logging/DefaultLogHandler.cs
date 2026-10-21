@@ -38,10 +38,10 @@ namespace BeardPhantom.Bootstrap
                 return;
             }
 
-            string formatString = GetFormatString(logLevel);
+            var formatString = GetFormatString(logLevel);
             message = string.Format(formatString, Time.frameCount, message);
 
-            LogType logType = logLevel.GetUnityLogType();
+            var logType = logLevel.GetUnityLogType();
             Debug.unityLogger.Log(logType, message, context);
         }
     }

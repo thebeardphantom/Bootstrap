@@ -27,10 +27,10 @@ namespace BeardPhantom.Bootstrap
         /// Creates a runtime clone of this asset, so services can be safely mutated without affecting the
         /// asset on disk.
         /// </summary>
-        /// <returns>The cloned <see cref="ServiceList"/>, with <see cref="Source"/> set to this instance.</returns>
+        /// <returns>The cloned <see cref="ServiceList" />, with <see cref="Source" /> set to this instance.</returns>
         public ServiceList CreateClone()
         {
-            ServiceList clone = Instantiate(this);
+            var clone = Instantiate(this);
             clone.Source = this;
             clone.name = $"{name} Instance";
             return clone;

@@ -1,8 +1,8 @@
 namespace BeardPhantom.Bootstrap
 {
     /// <summary>
-    /// The phases an <see cref="AppInstance"/> passes through during bootstrap, exposed via
-    /// <see cref="AppInstance.BootstrapState"/>.
+    /// The phases an <see cref="AppInstance" /> passes through during bootstrap, exposed via
+    /// <see cref="AppInstance.BootstrapState" />.
     /// </summary>
     public enum AppBootstrapState
     {
@@ -17,12 +17,12 @@ namespace BeardPhantom.Bootstrap
         BootstrapHandlerDiscovery = 1,
 
         /// <summary>
-        /// Running the selected <see cref="IPreBootstrapHandler"/>.
+        /// Running the selected <see cref="IPreBootstrapHandler" />.
         /// </summary>
         PreBootstrap = 2,
 
         /// <summary>
-        /// Discovering the services contained in the session's <see cref="ServiceList"/>.
+        /// Discovering the services contained in the session's <see cref="ServiceList" />.
         /// </summary>
         ServiceDiscovery = 3,
 
@@ -37,12 +37,12 @@ namespace BeardPhantom.Bootstrap
         ServiceInit = 5,
 
         /// <summary>
-        /// Flushing the <see cref="TaskScheduler"/> queue until it is idle.
+        /// Flushing the <see cref="TaskScheduler" /> queue until it is idle.
         /// </summary>
         AsyncTaskFlush = 6,
 
         /// <summary>
-        /// Running the selected <see cref="IPostBootstrapHandler"/>.
+        /// Running the selected <see cref="IPostBootstrapHandler" />.
         /// </summary>
         PostBootstrap = 7,
 

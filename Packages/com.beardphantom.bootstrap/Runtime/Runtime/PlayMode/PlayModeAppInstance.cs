@@ -7,15 +7,15 @@ using UnityEditor;
 namespace BeardPhantom.Bootstrap
 {
     /// <summary>
-    /// <see cref="RuntimeAppInstance"/> used when entering play mode in the editor. Determines the session
-    /// environment from the <see cref="EditModeState"/> persisted before entering play mode and defaults to
-    /// <see cref="PlayModeBootstrapHandler"/> for bootstrap handling.
+    /// <see cref="RuntimeAppInstance" /> used when entering play mode in the editor. Determines the session
+    /// environment from the <see cref="EditModeState" /> persisted before entering play mode and defaults to
+    /// <see cref="PlayModeBootstrapHandler" /> for bootstrap handling.
     /// </summary>
     public class PlayModeAppInstance : RuntimeAppInstance
     {
         internal static bool TryLoadEditModeState(out EditModeState editModeState)
         {
-            string json = SessionState.GetString(EditModeAppInstance.EditModeStateSessionStateKey, null);
+            var json = SessionState.GetString(EditModeAppInstance.EditModeStateSessionStateKey, null);
             if (string.IsNullOrWhiteSpace(json))
             {
                 editModeState = null;
@@ -27,9 +27,18 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <inheritdoc />
+        public override void GetDefaultBootstrapHandlers(
+            out IPreBootstrapHandler preBootstrapHandler,
+            out IPostBootstrapHandler postBootstrapHandler)
+        {
+            preBootstrapHandler = PlayModeBootstrapHandler.Instance;
+            postBootstrapHandler = PlayModeBootstrapHandler.Instance;
+        }
+
+        /// <inheritdoc />
         protected override bool TryDetermineSessionEnvironment(out BootstrapEnvironmentAsset environment)
         {
-            if (!TryLoadEditModeState(out EditModeState editModeState))
+            if (!TryLoadEditModeState(out var editModeState))
             {
                 environment = null;
                 return false;
@@ -37,15 +46,6 @@ namespace BeardPhantom.Bootstrap
 
             environment = editModeState.Environment;
             return editModeState.Environment;
-        }
-
-        /// <inheritdoc />
-        public override void GetDefaultBootstrapHandlers(
-            out IPreBootstrapHandler preBootstrapHandler,
-            out IPostBootstrapHandler postBootstrapHandler)
-        {
-            preBootstrapHandler = PlayModeBootstrapHandler.Instance;
-            postBootstrapHandler = PlayModeBootstrapHandler.Instance;
         }
     }
 }

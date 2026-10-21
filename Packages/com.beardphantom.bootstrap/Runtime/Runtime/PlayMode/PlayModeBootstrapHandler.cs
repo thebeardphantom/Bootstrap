@@ -16,7 +16,7 @@ namespace BeardPhantom.Bootstrap
 {
     /// <summary>
     /// Default pre/post bootstrap handler used when entering play mode in the editor. Restores the scenes and
-    /// selection recorded in <see cref="EditModeState"/> before play mode was entered.
+    /// selection recorded in <see cref="EditModeState" /> before play mode was entered.
     /// </summary>
     [Serializable]
     public class PlayModeBootstrapHandler : IPreBootstrapHandler, IPostBootstrapHandler
@@ -39,7 +39,7 @@ namespace BeardPhantom.Bootstrap
             var loadFirstAsSingle = true;
             for (var i = 0; i < SceneManager.sceneCount; i++)
             {
-                Scene scene = SceneManager.GetSceneAt(i);
+                var scene = SceneManager.GetSceneAt(i);
                 if (scene.buildIndex != 0)
                 {
                     loadFirstAsSingle = false;
@@ -49,7 +49,7 @@ namespace BeardPhantom.Bootstrap
 
             for (var i = 0; i < scenePaths.Count; i++)
             {
-                string path = scenePaths[i];
+                var path = scenePaths[i];
                 var loadSceneParameters = new LoadSceneParameters(
                     loadFirstAsSingle && i == 0
                         ? LoadSceneMode.Single
@@ -61,12 +61,12 @@ namespace BeardPhantom.Bootstrap
         /// <inheritdoc />
         Awaitable IPreBootstrapHandler.OnPreBootstrapAsync(BootstrapContext context)
         {
-            string editModeStateJson = SessionState.GetString(EditModeAppInstance.EditModeStateSessionStateKey, "");
+            var editModeStateJson = SessionState.GetString(EditModeAppInstance.EditModeStateSessionStateKey, "");
             if (string.IsNullOrWhiteSpace(editModeStateJson))
             {
                 return AwaitableUtility.Completed;
             }
-            
+
             context.EditModeState = JsonConvert.DeserializeObject<EditModeState>(editModeStateJson);
             App.State.IsRunningTests |= context.EditModeState.HasTestRunnerScene;
             return AwaitableUtility.Completed;
@@ -75,7 +75,7 @@ namespace BeardPhantom.Bootstrap
         /// <inheritdoc />
         async Awaitable IPostBootstrapHandler.OnPostBootstrapAsync(BootstrapContext context)
         {
-            List<string> editModeScenePaths = context.EditModeState.LoadedScenes;
+            var editModeScenePaths = context.EditModeState.LoadedScenes;
             if (editModeScenePaths.IsNull() || editModeScenePaths.Count == 0)
             {
                 SceneManager.LoadScene(1);
@@ -85,7 +85,7 @@ namespace BeardPhantom.Bootstrap
                 LoadScenesInPlayMode(editModeScenePaths);
             }
 
-            SelectedObjectPath[] serializedSelectedObjs = context.EditModeState.SelectedObjects;
+            var serializedSelectedObjs = context.EditModeState.SelectedObjects;
             if (serializedSelectedObjs.IsNull() || serializedSelectedObjs.Length == 0)
             {
                 return;
@@ -94,24 +94,24 @@ namespace BeardPhantom.Bootstrap
             await Awaitable.NextFrameAsync();
 
             // Restore editor selection
-            using (HashSetPool<Object>.Get(out HashSet<Object> selectedObjs))
+            using (HashSetPool<Object>.Get(out var selectedObjs))
             {
-                foreach (Object o in Selection.objects)
+                foreach (var o in Selection.objects)
                 {
                     selectedObjs.Add(o);
                 }
 
                 for (var i = 0; i < SceneManager.sceneCount; i++)
                 {
-                    Scene scene = SceneManager.GetSceneAt(i);
-                    foreach (SelectedObjectPath serializedSelectedObj in serializedSelectedObjs)
+                    var scene = SceneManager.GetSceneAt(i);
+                    foreach (var serializedSelectedObj in serializedSelectedObjs)
                     {
                         if (scene.path != serializedSelectedObj.ScenePath)
                         {
                             continue;
                         }
 
-                        GameObject foundObj = GameObject.Find(serializedSelectedObj.ObjectPath);
+                        var foundObj = GameObject.Find(serializedSelectedObj.ObjectPath);
                         if (!foundObj)
                         {
                             continue;

@@ -4,16 +4,25 @@ using UnityEngine;
 namespace BeardPhantom.Bootstrap
 {
     /// <summary>
-    /// <see cref="RuntimeAppInstance"/> used for standalone builds. Determines the session environment from
-    /// <see cref="BootstrapEnvironmentAsset"/> instances loaded in memory and defaults to
-    /// <see cref="BuildBootstrapHandler"/> for bootstrap handling.
+    /// <see cref="RuntimeAppInstance" /> used for standalone builds. Determines the session environment from
+    /// <see cref="BootstrapEnvironmentAsset" /> instances loaded in memory and defaults to
+    /// <see cref="BuildBootstrapHandler" /> for bootstrap handling.
     /// </summary>
     public class BuildAppInstance : RuntimeAppInstance
     {
         /// <inheritdoc />
+        public override void GetDefaultBootstrapHandlers(
+            out IPreBootstrapHandler preBootstrapHandler,
+            out IPostBootstrapHandler postBootstrapHandler)
+        {
+            preBootstrapHandler = BuildBootstrapHandler.Instance;
+            postBootstrapHandler = BuildBootstrapHandler.Instance;
+        }
+
+        /// <inheritdoc />
         protected override bool TryDetermineSessionEnvironment(out BootstrapEnvironmentAsset environment)
         {
-            BootstrapEnvironmentAsset[] bootstrapEnvironmentAssets = Resources.FindObjectsOfTypeAll<BootstrapEnvironmentAsset>();
+            var bootstrapEnvironmentAssets = Resources.FindObjectsOfTypeAll<BootstrapEnvironmentAsset>();
             if (bootstrapEnvironmentAssets.Length == 0)
             {
                 environment = null;
@@ -22,7 +31,7 @@ namespace BeardPhantom.Bootstrap
 
             environment = bootstrapEnvironmentAssets[0];
             var foundValid = false;
-            foreach (BootstrapEnvironmentAsset asset in bootstrapEnvironmentAssets)
+            foreach (var asset in bootstrapEnvironmentAssets)
             {
                 if (asset.IsNotNull())
                 {
@@ -38,15 +47,6 @@ namespace BeardPhantom.Bootstrap
             }
 
             return foundValid;
-        }
-
-        /// <inheritdoc />
-        public override void GetDefaultBootstrapHandlers(
-            out IPreBootstrapHandler preBootstrapHandler,
-            out IPostBootstrapHandler postBootstrapHandler)
-        {
-            preBootstrapHandler = BuildBootstrapHandler.Instance;
-            postBootstrapHandler = BuildBootstrapHandler.Instance;
         }
     }
 }

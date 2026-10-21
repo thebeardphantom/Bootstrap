@@ -1,6 +1,5 @@
 ﻿#if UNITY_INCLUDE_TESTS
 using System.Collections;
-using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 namespace BeardPhantom.Bootstrap.Tests
@@ -12,7 +11,7 @@ namespace BeardPhantom.Bootstrap.Tests
     public abstract class ServicesDependentTestSuite
     {
         /// <summary>
-        /// Waits for the app instance to exist and for bootstrap to reach <see cref="AppBootstrapState.Ready"/>,
+        /// Waits for the app instance to exist and for bootstrap to reach <see cref="AppBootstrapState.Ready" />,
         /// loading the bootstrap scene additively if needed.
         /// </summary>
         /// <returns>An enumerator suitable for use as a Unity test coroutine.</returns>
@@ -24,7 +23,7 @@ namespace BeardPhantom.Bootstrap.Tests
             {
                 yield return null;
             }
-            
+
             while (appInstance.BootstrapState != AppBootstrapState.Ready)
             {
                 yield return null;

@@ -16,7 +16,7 @@ namespace BeardPhantom.Bootstrap.Editor
         /// <returns>The backing field name, e.g. <c>&lt;PropertyName&gt;k__BackingField</c>.</returns>
         public static string GetSerializedBackingFieldName(this string propertyName)
         {
-            int totalLength = propertyName.Length + BackingFieldFmt.Length;
+            var totalLength = propertyName.Length + BackingFieldFmt.Length;
             var serializedBackingFieldName = string.Create(totalLength, propertyName, BuildFormattedString);
             return serializedBackingFieldName;
         }
@@ -26,7 +26,7 @@ namespace BeardPhantom.Bootstrap.Editor
             var writeIndex = 0;
             span[writeIndex] = BackingFieldFmt[writeIndex];
             writeIndex++;
-            foreach (char c in input)
+            foreach (var c in input)
             {
                 span[writeIndex++] = c;
             }

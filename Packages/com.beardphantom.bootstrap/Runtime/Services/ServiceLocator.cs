@@ -66,13 +66,13 @@ namespace BeardPhantom.Bootstrap
         public void Create(BootstrapContext context, ServiceList serviceList)
         {
             _serviceList = serviceList;
-            AppInstance appInstance = App.Instance;
+            var appInstance = App.Instance;
 
             /*
              * Service Discovery
              */
             appInstance.BootstrapState = AppBootstrapState.ServiceDiscovery;
-            foreach (IService service in serviceList.Services)
+            foreach (var service in serviceList.Services)
             {
                 Logging.Debug($"Discovered service {service.GetType()}.");
                 _services.Add(service);
@@ -85,20 +85,20 @@ namespace BeardPhantom.Bootstrap
              * Service Binding
              */
             appInstance.BootstrapState = AppBootstrapState.ServiceBinding;
-            foreach (IService service in _services)
+            foreach (var service in _services)
             {
                 if (service is IServiceWithCustomBindings serviceWithCustomBindings)
                 {
-                    using (ListPool<Type>.Get(out List<Type> bindingTypes))
+                    using (ListPool<Type>.Get(out var bindingTypes))
                     {
-                        serviceWithCustomBindings.GetCustomBindings(bindingTypes, out bool autoIncludeDeclaredType);
+                        serviceWithCustomBindings.GetCustomBindings(bindingTypes, out var autoIncludeDeclaredType);
                         if (autoIncludeDeclaredType)
                         {
                             Logging.Debug($"Binding service to {service.GetType()}.");
                             _typeToServices.Add(service.GetType(), service);
                         }
 
-                        foreach (Type type in bindingTypes)
+                        foreach (var type in bindingTypes)
                         {
                             Logging.Debug($"Binding service to {type}.");
                             _typeToServices.Add(type, service);
@@ -107,7 +107,7 @@ namespace BeardPhantom.Bootstrap
                 }
                 else
                 {
-                    Type serviceType = service.GetType();
+                    var serviceType = service.GetType();
                     Logging.Debug($"Binding service to {serviceType}.");
                     _typeToServices.Add(serviceType, service);
                 }
@@ -118,7 +118,7 @@ namespace BeardPhantom.Bootstrap
              */
             appInstance.BootstrapState = AppBootstrapState.ServiceInit;
             Logging.Debug("Initializing services.");
-            foreach (IService service in _services)
+            foreach (var service in _services)
             {
                 Logging.Debug($"InitService on {service.GetType()}.");
                 service.InitService(context);
@@ -132,7 +132,7 @@ namespace BeardPhantom.Bootstrap
         public void Dispose()
         {
             Logging.Debug("Disposing ServiceLocator.");
-            foreach (IService service in _services)
+            foreach (var service in _services)
             {
                 if (service is IDisposable disposable)
                 {
@@ -161,7 +161,7 @@ namespace BeardPhantom.Bootstrap
         /// <returns>True if a service was located; otherwise false.</returns>
         public bool TryLocateService<T>(out T service, bool throwIfCannotLocateServices = false) where T : class
         {
-            if (TryLocateService(typeof(T), out IService untypedService, throwIfCannotLocateServices))
+            if (TryLocateService(typeof(T), out var untypedService, throwIfCannotLocateServices))
             {
                 service = (T)untypedService;
                 return true;
@@ -214,7 +214,7 @@ namespace BeardPhantom.Bootstrap
         /// <exception cref="ServiceNotFoundException">Thrown if no service is bound to <paramref name="serviceType" />.</exception>
         public IService LocateService(Type serviceType)
         {
-            return TryLocateService(serviceType, out IService service)
+            return TryLocateService(serviceType, out var service)
                 ? service
                 : throw new ServiceNotFoundException(serviceType);
         }

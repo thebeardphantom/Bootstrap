@@ -7,7 +7,8 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 namespace BeardPhantom.Bootstrap.ZLogger
 {
     /// <summary>
-    /// A log entry captured before a real <see cref="ILogger"/> was available, to be replayed later.
+    /// A log entry captured before a real <see cref="Microsoft.Extensions.Logging.ILogger" /> was available, to be replayed
+    /// later.
     /// </summary>
     public class StartupLog
     {
@@ -25,7 +26,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         public string LoggerCategory { get; }
 
         /// <summary>
-        /// Creates a new <see cref="StartupLog"/>.
+        /// Creates a new <see cref="StartupLog" />.
         /// </summary>
         /// <param name="loggerCategory">The category of the logger that produced this entry.</param>
         /// <param name="stateString">The formatted log message.</param>
@@ -47,7 +48,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         }
 
         /// <summary>
-        /// Replays this entry on <paramref name="logger"/>.
+        /// Replays this entry on <paramref name="logger" />.
         /// </summary>
         /// <param name="logger">The logger to replay this entry on.</param>
         [HideInCallstack]

@@ -1,3 +1,8 @@
+#if UNITY_6000_4_OR_NEWER
+using GUID = UnityEngine.GUID;
+#else
+using GUID = UnityEditor.GUID;
+#endif
 using System;
 using System.Linq;
 using System.Reflection;
@@ -5,12 +10,6 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Profile;
 using UnityEditor.Build.Reporting;
-
-#if UNITY_6000_4_OR_NEWER
-using GUID = UnityEngine.GUID;
-#else
-using GUID = UnityEditor.GUID;
-#endif
 
 namespace BeardPhantom.Bootstrap.Editor
 {
@@ -72,14 +71,14 @@ namespace BeardPhantom.Bootstrap.Editor
                 .GetEvent("drawingMultiplayerBuildOptions", BindingFlags.Static | BindingFlags.NonPublic);
 
             // Get function for determining if build profile is a "classic" profile
-            Assembly editorAssembly = typeof(UnityEditor.Editor).Assembly;
-            Type buildProfileContextType = editorAssembly.GetType("UnityEditor.Build.Profile.BuildProfileContext");
+            var editorAssembly = typeof(UnityEditor.Editor).Assembly;
+            var buildProfileContextType = editorAssembly.GetType("UnityEditor.Build.Profile.BuildProfileContext");
             s_isClassicPlatformProfileMethod = buildProfileContextType.GetMethod(
                 "IsClassicPlatformProfile",
                 BindingFlags.NonPublic | BindingFlags.Static);
-            
-            Type buildTargetDiscoveryType = editorAssembly.GetType("UnityEditor.BuildTargetDiscovery");
-            MethodInfo[] methods = buildTargetDiscoveryType.GetMethods(
+
+            var buildTargetDiscoveryType = editorAssembly.GetType("UnityEditor.BuildTargetDiscovery");
+            var methods = buildTargetDiscoveryType.GetMethods(
                 BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
             s_getGUIDFromBuildTargetMethod = methods
                 .Where(n => n.Name == "GetGUIDFromBuildTarget")
@@ -93,7 +92,8 @@ namespace BeardPhantom.Bootstrap.Editor
         }
 
         /// <summary>
-        /// Resolves a <see cref="NamedBuildTarget"/> from a <see cref="BuildTarget"/> and subtarget index via Unity's internal API.
+        /// Resolves a <see cref="NamedBuildTarget" /> from a <see cref="BuildTarget" /> and subtarget index via Unity's internal
+        /// API.
         /// </summary>
         /// <param name="buildTarget">The build target.</param>
         /// <param name="subTarget">The subtarget index.</param>
@@ -113,7 +113,7 @@ namespace BeardPhantom.Bootstrap.Editor
         }
 
         /// <summary>
-        /// Checks whether <paramref name="buildProfile"/> is a "classic" platform profile via Unity's internal API.
+        /// Checks whether <paramref name="buildProfile" /> is a "classic" platform profile via Unity's internal API.
         /// </summary>
         /// <param name="buildProfile">The build profile to check.</param>
         /// <returns>True if the profile is a classic platform profile.</returns>
@@ -131,7 +131,8 @@ namespace BeardPhantom.Bootstrap.Editor
         }
 
         /// <summary>
-        /// Resolves the platform GUID for a given <see cref="NamedBuildTarget"/> and <see cref="BuildTarget"/> via Unity's internal API.
+        /// Resolves the platform GUID for a given <see cref="NamedBuildTarget" /> and <see cref="BuildTarget" /> via Unity's
+        /// internal API.
         /// </summary>
         /// <param name="namedBuildTarget">The named build target.</param>
         /// <param name="buildTarget">The build target.</param>
@@ -151,7 +152,7 @@ namespace BeardPhantom.Bootstrap.Editor
         }
 
         /// <summary>
-        /// Reads the internal subtarget value from a <see cref="BuildSummary"/> via reflection.
+        /// Reads the internal subtarget value from a <see cref="BuildSummary" /> via reflection.
         /// </summary>
         /// <param name="reportSummary">The build summary to read from.</param>
         public static int GetSubtarget(BuildSummary reportSummary)
@@ -160,13 +161,13 @@ namespace BeardPhantom.Bootstrap.Editor
         }
 
         /// <summary>
-        /// Reads the serialized platform ID for a <see cref="BuildProfile"/>.
+        /// Reads the serialized platform ID for a <see cref="BuildProfile" />.
         /// </summary>
         /// <param name="profile">The build profile to read from.</param>
         public static string GetPlatformIdForProfile(BuildProfile profile)
         {
             using var serializedObject = new SerializedObject(profile);
-            SerializedProperty platformIdProperty = serializedObject.FindProperty("m_PlatformId");
+            var platformIdProperty = serializedObject.FindProperty("m_PlatformId");
             return platformIdProperty.stringValue;
         }
     }

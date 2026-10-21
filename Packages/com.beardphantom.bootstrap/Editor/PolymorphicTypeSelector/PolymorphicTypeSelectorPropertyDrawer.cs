@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 namespace BeardPhantom.Bootstrap.Editor
 {
     /// <summary>
-    /// Property drawer for fields marked with <see cref="PolymorphicTypeSelectorAttribute"/>, presenting a
+    /// Property drawer for fields marked with <see cref="PolymorphicTypeSelectorAttribute" />, presenting a
     /// button to select and instantiate a concrete type into a <c>SerializeReference</c> field.
     /// </summary>
     [CustomPropertyDrawer(typeof(PolymorphicTypeSelectorAttribute))]
@@ -40,7 +40,7 @@ namespace BeardPhantom.Bootstrap.Editor
             private Rect _createNewButtonRepaintRect;
 
             /// <summary>
-            /// Creates the stateful element for <paramref name="property"/>, using <paramref name="attribute"/>
+            /// Creates the stateful element for <paramref name="property" />, using <paramref name="attribute" />
             /// to determine the selectable base type.
             /// </summary>
             /// <param name="attribute">The attribute specifying the base type to select from.</param>
@@ -60,13 +60,13 @@ namespace BeardPhantom.Bootstrap.Editor
 
             private string GetLabel()
             {
-                object managedReferenceValue = _property.managedReferenceValue;
+                var managedReferenceValue = _property.managedReferenceValue;
                 if (managedReferenceValue.IsNull())
                 {
                     return _property.displayName;
                 }
 
-                string typeName = managedReferenceValue.GetType().Name;
+                var typeName = managedReferenceValue.GetType().Name;
                 typeName = ObjectNames.NicifyVariableName(typeName);
                 return $"{_property.displayName} ({typeName})";
             }
@@ -75,13 +75,13 @@ namespace BeardPhantom.Bootstrap.Editor
             {
                 Clear();
 
-                string label = GetLabel();
-                bool isAsset = EditorUtility.IsPersistent(_property.serializedObject.targetObject);
+                var label = GetLabel();
+                var isAsset = EditorUtility.IsPersistent(_property.serializedObject.targetObject);
                 if (_property.managedReferenceValue.IsNull())
                 {
                     UnregisterCallback<MouseEnterEvent>(OnMouseEnterRoot);
                     UnregisterCallback<MouseLeaveEvent>(OnMouseLeaveRoot);
-                    if(isAsset)
+                    if (isAsset)
                     {
                         var buttonField = IMGUIField.Create(label, OnDrawCreateNewButtonIMGUI);
                         buttonField.name = "create-button";
@@ -122,8 +122,8 @@ namespace BeardPhantom.Bootstrap.Editor
 
             private void OnDrawCreateNewButtonIMGUI()
             {
-                GUIContent content = EditorGUIUtility.TrTempContent(_createNewButtonText);
-                Rect createNewButtonRect = GUILayoutUtility.GetRect(content, GUI.skin.button);
+                var content = EditorGUIUtility.TrTempContent(_createNewButtonText);
+                var createNewButtonRect = GUILayoutUtility.GetRect(content, GUI.skin.button);
                 if (Event.current.type == EventType.Repaint)
                 {
                     _createNewButtonRepaintRect = createNewButtonRect;
@@ -134,7 +134,7 @@ namespace BeardPhantom.Bootstrap.Editor
                     return;
                 }
 
-                Rect dropdownRect = _createNewButtonRepaintRect;
+                var dropdownRect = _createNewButtonRepaintRect;
                 var dropdown = new PolymorphicTypeSelectorDropdown(_baseType);
                 dropdown.ComponentTypeSelected += OnComponentTypeSelected;
                 dropdown.Show(dropdownRect);
@@ -169,7 +169,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
             private void OnComponentTypeSelected(Type type)
             {
-                object instance = Activator.CreateInstance(type);
+                var instance = Activator.CreateInstance(type);
                 _property.managedReferenceValue = instance;
                 _property.serializedObject.ApplyModifiedProperties();
                 RebuildUI();

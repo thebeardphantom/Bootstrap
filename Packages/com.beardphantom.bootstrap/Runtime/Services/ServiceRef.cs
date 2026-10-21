@@ -1,7 +1,7 @@
 ﻿namespace BeardPhantom.Bootstrap
 {
     /// <summary>
-    /// Caches a lazily-located service of type <typeparamref name="T"/>, clearing the cache when the app
+    /// Caches a lazily-located service of type <typeparamref name="T" />, clearing the cache when the app
     /// deinitializes.
     /// </summary>
     /// <typeparam name="T">The type of service to cache.</typeparam>

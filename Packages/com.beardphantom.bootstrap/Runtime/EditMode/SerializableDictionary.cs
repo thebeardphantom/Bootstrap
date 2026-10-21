@@ -6,7 +6,7 @@ using UnityEngine;
 namespace BeardPhantom.Bootstrap.EditMode
 {
     /// <summary>
-    /// A <see cref="Dictionary{TKey, TValue}"/> that Unity can serialize, by mirroring its contents into a
+    /// A <see cref="Dictionary{TKey,TValue}" /> that Unity can serialize, by mirroring its contents into a
     /// serialized list of key/value pairs before and after serialization.
     /// </summary>
     /// <typeparam name="TKey">The type of the dictionary keys.</typeparam>
@@ -22,7 +22,7 @@ namespace BeardPhantom.Bootstrap.EditMode
         private List<SerializedPair> SerializedPairs { get; set; } = new();
 
         /// <summary>
-        /// Removes all key/value pairs that match <paramref name="predicate"/>.
+        /// Removes all key/value pairs that match <paramref name="predicate" />.
         /// </summary>
         /// <param name="predicate">The predicate used to test each pair for removal.</param>
         public void RemoveAll(Predicate<KeyValuePair<TKey, TValue>> predicate)
@@ -41,7 +41,7 @@ namespace BeardPhantom.Bootstrap.EditMode
         private void CopyToSerializedList()
         {
             SerializedPairs.Clear();
-            foreach (KeyValuePair<TKey, TValue> pair in this)
+            foreach (var pair in this)
             {
                 SerializedPairs.Add(pair);
             }
@@ -50,7 +50,7 @@ namespace BeardPhantom.Bootstrap.EditMode
         private void CopyFromSerializedList()
         {
             Clear();
-            foreach (SerializedPair serializedPair in SerializedPairs)
+            foreach (var serializedPair in SerializedPairs)
             {
                 this[serializedPair.Key] = serializedPair.Value;
             }

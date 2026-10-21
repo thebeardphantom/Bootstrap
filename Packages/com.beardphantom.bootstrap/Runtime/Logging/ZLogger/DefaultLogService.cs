@@ -15,8 +15,8 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 namespace BeardPhantom.Bootstrap.ZLogger
 {
     /// <summary>
-    /// Default <see cref="ILogService"/> implementation. Configures ZLogger console and file logging providers
-    /// and installs <see cref="BootstrapZLogHandler"/> as the active <see cref="ILogHandler"/>.
+    /// Default <see cref="ILogService" /> implementation. Configures ZLogger console and file logging providers
+    /// and installs <see cref="BootstrapZLogHandler" /> as the active <see cref="ILogHandler" />.
     /// </summary>
     [Serializable]
     [GenerateLogger]
@@ -50,7 +50,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         private string FilePath { get; set; } = "Logs/App.log";
 
         /// <summary>
-        /// Gets a logger for the given <paramref name="category"/>.
+        /// Gets a logger for the given <paramref name="category" />.
         /// </summary>
         /// <param name="category">The logger category name.</param>
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
@@ -73,7 +73,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         }
 
         /// <summary>
-        /// Creates the <see cref="ILoggerFactory"/> used by this service, configured with the console and file
+        /// Creates the <see cref="ILoggerFactory" /> used by this service, configured with the console and file
         /// providers.
         /// </summary>
         protected virtual ILoggerFactory CreateLoggerFactory()
@@ -89,7 +89,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         }
 
         /// <summary>
-        /// Determines whether a message at <paramref name="level"/> should be written to the console provider.
+        /// Determines whether a message at <paramref name="level" /> should be written to the console provider.
         /// </summary>
         /// <param name="level">The level of the message being logged.</param>
         protected virtual bool ShouldLogToConsole(LogLevel level)
@@ -98,7 +98,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         }
 
         /// <summary>
-        /// Determines whether a message at <paramref name="level"/> should be written to the file provider.
+        /// Determines whether a message at <paramref name="level" /> should be written to the file provider.
         /// </summary>
         /// <param name="level">The level of the message being logged.</param>
         protected virtual bool ShouldLogToFile(LogLevel level)
@@ -116,7 +116,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
                 $"[{0:short}] [{1}] [{2}] ",
                 (in MessageTemplate template, in LogInfo info) =>
                 {
-                    int frame = Time.frameCount;
+                    var frame = Time.frameCount;
                     template.Format(info.LogLevel, frame, info.Category);
                 });
         }
@@ -137,8 +137,8 @@ namespace BeardPhantom.Bootstrap.ZLogger
         }
 
         /// <summary>
-        /// Adds and configures the file logging provider on <paramref name="builder"/>, rotating the previous
-        /// log file at <see cref="FilePath"/> if one exists.
+        /// Adds and configures the file logging provider on <paramref name="builder" />, rotating the previous
+        /// log file at <see cref="FilePath" /> if one exists.
         /// </summary>
         /// <param name="builder">The logging builder to configure.</param>
         protected virtual void ConfigureFileProvider(ILoggingBuilder builder)
@@ -150,11 +150,11 @@ namespace BeardPhantom.Bootstrap.ZLogger
 
             if (File.Exists(FilePath))
             {
-                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(FilePath);
-                string extension = Path.GetExtension(FilePath);
-                string directory = Path.GetDirectoryName(FilePath);
-                string prevFileName = string.Concat(fileNameWithoutExtension, "_prev", extension);
-                string prevFilePath = directory == null ? prevFileName : Path.Combine(directory, prevFileName);
+                var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(FilePath);
+                var extension = Path.GetExtension(FilePath);
+                var directory = Path.GetDirectoryName(FilePath);
+                var prevFileName = string.Concat(fileNameWithoutExtension, "_prev", extension);
+                var prevFilePath = directory == null ? prevFileName : Path.Combine(directory, prevFileName);
                 File.Copy(FilePath, prevFilePath, true);
                 File.Delete(FilePath);
             }
@@ -170,7 +170,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         }
 
         /// <summary>
-        /// Adds and configures the Unity console logging provider on <paramref name="builder"/>.
+        /// Adds and configures the Unity console logging provider on <paramref name="builder" />.
         /// </summary>
         /// <param name="builder">The logging builder to configure.</param>
         protected virtual void ConfigureConsoleProvider(ILoggingBuilder builder)
@@ -184,7 +184,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         }
 
         /// <summary>
-        /// Flushes any log entries queued by <see cref="StartupLogsAppExtension"/> before this service was
+        /// Flushes any log entries queued by <see cref="StartupLogsAppExtension" /> before this service was
         /// available, if there are any.
         /// </summary>
         [HideInCallstack]
@@ -209,8 +209,8 @@ namespace BeardPhantom.Bootstrap.ZLogger
         }
 
         /// <summary>
-        /// Initializes the logging system: records the main thread id, installs <see cref="BootstrapZLogHandler"/>
-        /// as the active <see cref="ILogHandler"/>, creates the logger factory, and flushes any queued startup logs.
+        /// Initializes the logging system: records the main thread id, installs <see cref="BootstrapZLogHandler" />
+        /// as the active <see cref="ILogHandler" />, creates the logger factory, and flushes any queued startup logs.
         /// </summary>
         /// <param name="context">The context for this initialization.</param>
         void IService.InitService(BootstrapContext context)
@@ -223,7 +223,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         }
 
         /// <summary>
-        /// Registers <see cref="ILogService"/> as an additional binding for this service.
+        /// Registers <see cref="ILogService" /> as an additional binding for this service.
         /// </summary>
         /// <param name="bindingTypes">The list of types to add bindings to.</param>
         /// <param name="autoIncludeDeclaredType">Whether the declared type should also be automatically bound.</param>

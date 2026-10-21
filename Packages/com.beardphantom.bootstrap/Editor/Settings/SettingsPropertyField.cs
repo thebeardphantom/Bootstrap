@@ -5,8 +5,8 @@ using UnityEngine.UIElements;
 namespace BeardPhantom.Bootstrap.Editor.Settings
 {
     /// <summary>
-    /// Visual element for a <see cref="SettingsProperty{T}"/> field, pairing an override-enabled toggle with
-    /// the underlying value's <see cref="UnityEditor.UIElements.PropertyField"/>.
+    /// Visual element for a <see cref="SettingsProperty{T}" /> field, pairing an override-enabled toggle with
+    /// the underlying value's <see cref="UnityEditor.UIElements.PropertyField" />.
     /// </summary>
     public class SettingsPropertyField : VisualElement
     {
@@ -26,18 +26,18 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         public SettingsPropertyField() { }
 
         /// <summary>
-        /// Creates a field for <paramref name="property"/>, wiring up the override toggle and value field.
+        /// Creates a field for <paramref name="property" />, wiring up the override toggle and value field.
         /// </summary>
-        /// <param name="property">The serialized <see cref="SettingsProperty{T}"/> to build UI for.</param>
+        /// <param name="property">The serialized <see cref="SettingsProperty{T}" /> to build UI for.</param>
         public SettingsPropertyField(SerializedProperty property)
         {
             style.flexDirection = FlexDirection.Row;
-            SerializedProperty overrideEnabledProperty = property.FindPropertyRelative(
+            var overrideEnabledProperty = property.FindPropertyRelative(
                 "OverrideEnabled".GetSerializedBackingFieldName());
             OverrideEnabledToggle = new PropertyField(overrideEnabledProperty, "");
             Add(OverrideEnabledToggle);
 
-            SerializedProperty valueProperty = property.FindPropertyRelative(
+            var valueProperty = property.FindPropertyRelative(
                 "Value".GetSerializedBackingFieldName());
             PropertyField = new PropertyField(valueProperty, property.displayName)
             {
@@ -59,7 +59,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
             var propertyField = (PropertyField)evt.target;
             propertyField.schedule.Execute(() =>
                 {
-                    string labelText = propertyField.label;
+                    var labelText = propertyField.label;
                     var label = propertyField.Q<Label>(className: PropertyField.labelUssClassName);
                     if (label.IsNotNull())
                     {
@@ -72,8 +72,10 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         /// <summary>
         /// Enables or disables the always-override behavior for this field.
         /// </summary>
-        /// <param name="alwaysOverride">If true, hides the override toggle and always enables the value field.
-        /// If false, shows the toggle and enables the value field based on its state.</param>
+        /// <param name="alwaysOverride">
+        /// If true, hides the override toggle and always enables the value field.
+        /// If false, shows the toggle and enables the value field based on its state.
+        /// </param>
         public void SetAlwaysOverride(bool alwaysOverride)
         {
             if (alwaysOverride)

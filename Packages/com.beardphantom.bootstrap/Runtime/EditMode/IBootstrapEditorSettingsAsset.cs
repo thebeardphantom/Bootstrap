@@ -7,7 +7,7 @@ namespace BeardPhantom.Bootstrap.EditMode
 {
     /// <summary>
     /// Common contract implemented by Bootstrap's editor settings assets (project- and user-scoped), exposing
-    /// the settings values consumed by <see cref="BootstrapEditorSettingsUtility"/>.
+    /// the settings values consumed by <see cref="BootstrapEditorSettingsUtility" />.
     /// </summary>
     public interface IBootstrapEditorSettingsAsset
     {

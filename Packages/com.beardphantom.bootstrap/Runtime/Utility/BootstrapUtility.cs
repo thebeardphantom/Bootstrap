@@ -16,7 +16,7 @@ namespace BeardPhantom.Bootstrap
     public static class BootstrapUtility
     {
         /// <summary>
-        /// Checks whether <paramref name="obj"/> is a persistent asset (e.g. stored on disk) rather than a
+        /// Checks whether <paramref name="obj" /> is a persistent asset (e.g. stored on disk) rather than a
         /// scene or runtime object. Always returns false outside of the editor.
         /// </summary>
         /// <param name="obj">The object to check.</param>
@@ -30,9 +30,9 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <summary>
-        /// Immediately destroys <paramref name="obj"/> and sets the reference to null.
+        /// Immediately destroys <paramref name="obj" /> and sets the reference to null.
         /// </summary>
-        /// <typeparam name="T">The type of the Unity <see cref="Object"/>.</typeparam>
+        /// <typeparam name="T">The type of the Unity <see cref="Object" />.</typeparam>
         /// <param name="obj">The reference to destroy and clear.</param>
         /// <param name="allowDestroyingAssets">If true, allows destroying persistent assets in the editor.</param>
         public static void DestroyReferenceImmediate<T>(ref T obj, bool allowDestroyingAssets = false) where T : Object

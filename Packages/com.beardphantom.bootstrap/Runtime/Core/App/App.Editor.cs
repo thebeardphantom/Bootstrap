@@ -1,6 +1,5 @@
 ﻿#if UNITY_EDITOR
 using BeardPhantom.Bootstrap.EditMode;
-using System;
 using System.Diagnostics;
 using UnityEditor;
 using UnityEditor.Compilation;

@@ -5,9 +5,9 @@ using System;
 namespace BeardPhantom.Bootstrap.ZLogger
 {
     /// <summary>
-    /// <see cref="ILogger"/> wrapper safe to hold in static fields across app sessions. It lazily reacquires
-    /// the underlying logger for the current <see cref="AppInstance"/> and queues log entries as
-    /// <see cref="StartupLog"/> instances when no underlying logger is currently available.
+    /// <see cref="ILogger" /> wrapper safe to hold in static fields across app sessions. It lazily reacquires
+    /// the underlying logger for the current <see cref="AppInstance" /> and queues log entries as
+    /// <see cref="StartupLog" /> instances when no underlying logger is currently available.
     /// </summary>
     public class StaticSafeLogger : ILogger
     {
@@ -18,7 +18,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         private Guid? _acquisitionGuid;
 
         /// <summary>
-        /// Creates a new <see cref="StaticSafeLogger"/> for the given <paramref name="category"/>.
+        /// Creates a new <see cref="StaticSafeLogger" /> for the given <paramref name="category" />.
         /// </summary>
         /// <param name="category">The logger category name.</param>
         public StaticSafeLogger(string category)
@@ -29,14 +29,17 @@ namespace BeardPhantom.Bootstrap.ZLogger
 
         /// <summary>
         /// Logs the entry via the underlying logger if one is available; otherwise queues it as a
-        /// <see cref="StartupLog"/> to be replayed later.
+        /// <see cref="StartupLog" /> to be replayed later.
         /// </summary>
         /// <typeparam name="TState">The type of the object to be logged.</typeparam>
         /// <param name="logLevel">The severity of the log entry.</param>
         /// <param name="eventId">The event id associated with the log entry.</param>
         /// <param name="state">The entry to be logged.</param>
         /// <param name="exception">The exception related to the entry, if any.</param>
-        /// <param name="formatter">The function used to format <paramref name="state"/> and <paramref name="exception"/> into a message.</param>
+        /// <param name="formatter">
+        /// The function used to format <paramref name="state" /> and <paramref name="exception" /> into a
+        /// message.
+        /// </param>
         public void Log<TState>(
             LogLevel logLevel,
             EventId eventId,
@@ -48,7 +51,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
             if (_wrappedLogger is NullLogger or null)
             {
                 var startupLogsAppExtension = App.GetExtension<StartupLogsAppExtension>();
-                string stateString = formatter.Invoke(state, exception);
+                var stateString = formatter.Invoke(state, exception);
                 var startupLog = new StartupLog(_loggerCategory, stateString, logLevel, eventId, exception);
                 startupLogsAppExtension.EnqueueStartupLog(startupLog);
             }
@@ -59,7 +62,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         }
 
         /// <summary>
-        /// Checks whether the underlying logger is enabled for <paramref name="logLevel"/>.
+        /// Checks whether the underlying logger is enabled for <paramref name="logLevel" />.
         /// </summary>
         /// <param name="logLevel">The level to check.</param>
         public bool IsEnabled(LogLevel logLevel)
@@ -82,7 +85,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
 
         private void ReacquireLogger(bool force = false)
         {
-            if (!App.TryGetInstance(out AppInstance appInstance))
+            if (!App.TryGetInstance(out var appInstance))
             {
                 ClearWrappedLogger();
                 return;
@@ -93,7 +96,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
                 return;
             }
 
-            if (ServiceRef<ILogService>.TryGetInstance(out ILogService logService)
+            if (ServiceRef<ILogService>.TryGetInstance(out var logService)
                 && logService.TryGetLogger(_loggerCategory, out _wrappedLogger))
             {
                 _acquisitionGuid = appInstance.SessionGuid;

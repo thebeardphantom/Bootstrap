@@ -1,6 +1,5 @@
 using BeardPhantom.Bootstrap.EditMode;
 using BeardPhantom.Bootstrap.Environment;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Profile;
@@ -24,14 +23,14 @@ namespace BeardPhantom.Bootstrap.Editor
                 return false;
             }
 
-            MappedEnvironmentCollection<BuildProfile> buildProfileEnvironments =
+            var buildProfileEnvironments =
                 BootstrapEditorSettingsUtility.GetValue(a => a.BuildProfileEnvironments);
             if (buildProfileEnvironments.IsNull())
             {
                 return false;
             }
 
-            foreach (KeyValuePair<BuildProfile, BootstrapEnvironmentAsset> mappedEnvironment in buildProfileEnvironments)
+            foreach (var mappedEnvironment in buildProfileEnvironments)
             {
                 if (mappedEnvironment.Key == buildProfile)
                 {
@@ -48,20 +47,20 @@ namespace BeardPhantom.Bootstrap.Editor
         {
             environment = null;
 
-            int subtarget = BuildProfileUtility.GetSubtarget(buildSummary);
-            NamedBuildTarget namedBuildTarget = BuildProfileUtility.NamedBuildTargetFromTargetAndSubTarget(
+            var subtarget = BuildProfileUtility.GetSubtarget(buildSummary);
+            var namedBuildTarget = BuildProfileUtility.NamedBuildTargetFromTargetAndSubTarget(
                 buildSummary.platform,
                 subtarget);
             var platformId = BuildProfileUtility.GetGuidFromBuildTarget(namedBuildTarget, buildSummary.platform).ToString();
 
-            MappedEnvironmentCollection<string> platformEnvironments =
+            var platformEnvironments =
                 BootstrapEditorSettingsUtility.GetValue(a => a.PlatformEnvironments);
             if (platformEnvironments.IsNull())
             {
                 return false;
             }
 
-            foreach (KeyValuePair<string, BootstrapEnvironmentAsset> mappedEnvironment in platformEnvironments)
+            foreach (var mappedEnvironment in platformEnvironments)
             {
                 if (mappedEnvironment.Key == platformId)
                 {
@@ -77,8 +76,8 @@ namespace BeardPhantom.Bootstrap.Editor
         private static void PackEnvironmentAsset(BootstrapEnvironmentAsset environment)
         {
             Logging.Debug($"Packing environment {environment.name}.");
-            Object[] preloadedAssets = PlayerSettings.GetPreloadedAssets();
-            using (ListPool<Object>.Get(out List<Object> list))
+            var preloadedAssets = PlayerSettings.GetPreloadedAssets();
+            using (ListPool<Object>.Get(out var list))
             {
                 list.AddRange(preloadedAssets);
                 list.Add(environment);
@@ -88,8 +87,8 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private static void UnpackEnvironmentAssets()
         {
-            Object[] preloadedAssets = PlayerSettings.GetPreloadedAssets();
-            using (ListPool<Object>.Get(out List<Object> list))
+            var preloadedAssets = PlayerSettings.GetPreloadedAssets();
+            using (ListPool<Object>.Get(out var list))
             {
                 list.AddRange(preloadedAssets);
                 list.RemoveAll(i => i is BootstrapEnvironmentAsset);
@@ -99,7 +98,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
         void IPreprocessBuildWithReport.OnPreprocessBuild(BuildReport report)
         {
-            if (TryGetEnvironmentForBuildProfile(out BootstrapEnvironmentAsset environment))
+            if (TryGetEnvironmentForBuildProfile(out var environment))
             {
                 PackEnvironmentAsset(environment);
                 return;
@@ -111,7 +110,7 @@ namespace BeardPhantom.Bootstrap.Editor
                 return;
             }
 
-            BootstrapEnvironmentAsset defaultBuildEnvironment =
+            var defaultBuildEnvironment =
                 BootstrapEditorSettingsUtility.GetValue(t => t.DefaultBuildEnvironment);
             if (defaultBuildEnvironment.IsNotNull())
             {

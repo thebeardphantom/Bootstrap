@@ -6,8 +6,8 @@ using UnityEngine.UIElements;
 namespace BeardPhantom.Bootstrap.Editor.Settings
 {
     /// <summary>
-    /// Project Settings page for editing <see cref="BootstrapEditorProjectSettings"/> and
-    /// <see cref="BootstrapEditorUserSettings"/>.
+    /// Project Settings page for editing <see cref="BootstrapEditorProjectSettings" /> and
+    /// <see cref="BootstrapEditorUserSettings" />.
     /// </summary>
     public class BootstrapSettingsProvider : SettingsProvider
     {

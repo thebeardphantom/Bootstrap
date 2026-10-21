@@ -1,6 +1,5 @@
 ﻿using BeardPhantom.Bootstrap.EditMode;
 using BeardPhantom.Bootstrap.Environment;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -77,7 +76,7 @@ namespace BeardPhantom.Bootstrap.Editor
         private void OnWizardCreate()
         {
             Scene bootstrapScene = default;
-            Scene activeScene = SceneManager.GetActiveScene();
+            var activeScene = SceneManager.GetActiveScene();
             try
             {
                 Directory.CreateDirectory(OutputDirectory);
@@ -109,7 +108,7 @@ namespace BeardPhantom.Bootstrap.Editor
             if (CreateBootstrapScene)
             {
                 Assert.IsTrue(bootstrapScene.IsValid(), "bootstrapScene.IsValid() == false");
-                bool didSave = EditorSceneManager.SaveScene(bootstrapScene, ScenePath);
+                var didSave = EditorSceneManager.SaveScene(bootstrapScene, ScenePath);
                 if (!didSave)
                 {
                     Logging.Error("Bootstrap scene not saved.");
@@ -118,7 +117,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
             if (ModifyScenesList)
             {
-                List<EditorBuildSettingsScene> scenesList = EditorBuildSettings.scenes.ToList();
+                var scenesList = EditorBuildSettings.scenes.ToList();
                 scenesList.RemoveAll(a => a.path == ScenePath);
                 scenesList.Insert(0, new EditorBuildSettingsScene(ScenePath, true));
                 EditorBuildSettings.scenes = scenesList.ToArray();
@@ -131,7 +130,7 @@ namespace BeardPhantom.Bootstrap.Editor
                 environmentAsset.name = EnvironmentName;
                 AssetDatabase.CreateAsset(environmentAsset, EnvironmentPath);
 
-                IBootstrapEditorSettingsAsset settings = BootstrapEditorSettingsUtility.GetWithScope(SettingsScope.Project);
+                var settings = BootstrapEditorSettingsUtility.GetWithScope(SettingsScope.Project);
                 settings.DefaultPlayModeEnvironment.SetValue(environmentAsset);
                 settings.DefaultBuildEnvironment.SetValue(environmentAsset);
             }
@@ -158,7 +157,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
             var servicesListAsset = CreateInstance<ServiceList>();
             AssetDatabase.CreateAsset(servicesListAsset, EditModeServiceListAssetPath);
-            IBootstrapEditorSettingsAsset settings = BootstrapEditorSettingsUtility.GetWithScope(SettingsScope.Project);
+            var settings = BootstrapEditorSettingsUtility.GetWithScope(SettingsScope.Project);
             settings.EditModeServices.SetValue(servicesListAsset);
         }
     }

@@ -9,8 +9,8 @@ using UnityEngine.UIElements;
 namespace BeardPhantom.Bootstrap.Editor
 {
     /// <summary>
-    /// Custom inspector for <see cref="SceneAsset"/> that adds a Bootstrap environment selector mapping the
-    /// scene to a <see cref="BootstrapEnvironmentAsset"/>.
+    /// Custom inspector for <see cref="SceneAsset" /> that adds a Bootstrap environment selector mapping the
+    /// scene to a <see cref="BootstrapEnvironmentAsset" />.
     /// </summary>
     [CustomEditor(typeof(SceneAsset))]
     public class SceneAssetEnvironmentEditor : UnityEditor.Editor
@@ -20,10 +20,10 @@ namespace BeardPhantom.Bootstrap.Editor
         /// <inheritdoc />
         public override VisualElement CreateInspectorGUI()
         {
-            MappedEnvironmentCollection<SceneAsset> sceneEnvironments = BootstrapEditorSettingsUtility.GetValue(
+            var sceneEnvironments = BootstrapEditorSettingsUtility.GetValue(
                 s => s.EditorSceneEnvironments,
-                out SettingsScope scope);
-            sceneEnvironments.TryFindEnvironmentForKey((SceneAsset)target, out BootstrapEnvironmentAsset environmentAsset);
+                out var scope);
+            sceneEnvironments.TryFindEnvironmentForKey((SceneAsset)target, out var environmentAsset);
 
             var root = new VisualElement();
             InspectorElement.FillDefaultInspector(root, serializedObject, this);
@@ -40,9 +40,9 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private void OnEnvSelectorValueChanged(ChangeEvent<Object> evt)
         {
-            MappedEnvironmentCollection<SceneAsset> sceneEnvironments = BootstrapEditorSettingsUtility.GetValue(
+            var sceneEnvironments = BootstrapEditorSettingsUtility.GetValue(
                 s => s.EditorSceneEnvironments,
-                out SettingsScope _);
+                out var _);
             sceneEnvironments.AddOrReplace((SceneAsset)target, (BootstrapEnvironmentAsset)evt.newValue);
             BootstrapSettingsProvider.SaveAllAssets();
         }

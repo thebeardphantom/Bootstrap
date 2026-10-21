@@ -3,14 +3,13 @@ using BeardPhantom.Bootstrap;
 using BeardPhantom.Bootstrap.ZLogger;
 using System.Collections.Concurrent;
 using UnityEngine;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 [assembly: AppExtensionType(typeof(StartupLogsAppExtension))]
 
 namespace BeardPhantom.Bootstrap.ZLogger
 {
     /// <summary>
-    /// App extension that queues <see cref="StartupLog"/> entries raised before an <see cref="ILogService"/>
+    /// App extension that queues <see cref="StartupLog" /> entries raised before an <see cref="ILogService" />
     /// is available, then flushes them once one is ready.
     /// </summary>
     public class StartupLogsAppExtension : IAppExtension
@@ -25,7 +24,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         public bool HasStartupLogs => !_startupLogQueue.IsEmpty;
 
         /// <summary>
-        /// Creates a new <see cref="StartupLogsAppExtension"/> and subscribes to <see cref="App.AppInstanceDestroyed"/>
+        /// Creates a new <see cref="StartupLogsAppExtension" /> and subscribes to <see cref="App.AppInstanceDestroyed" />
         /// to reset flush state when the app deinitializes.
         /// </summary>
         public StartupLogsAppExtension()
@@ -34,7 +33,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         }
 
         /// <summary>
-        /// Replays and clears all queued startup logs using <paramref name="logService"/>. Does nothing if
+        /// Replays and clears all queued startup logs using <paramref name="logService" />. Does nothing if
         /// already flushed since the last app deinitialization.
         /// </summary>
         /// <param name="logService">The service used to resolve loggers for queued entries.</param>
@@ -49,10 +48,10 @@ namespace BeardPhantom.Bootstrap.ZLogger
             _hasFlushedStartupLogs = true;
             while (!_startupLogQueue.IsEmpty)
             {
-                while (_startupLogQueue.TryDequeue(out StartupLog queuedLog))
+                while (_startupLogQueue.TryDequeue(out var queuedLog))
                 {
-                    string loggerCategory = queuedLog.LoggerCategory;
-                    if (logService.TryGetLogger(loggerCategory, out ILogger logger))
+                    var loggerCategory = queuedLog.LoggerCategory;
+                    if (logService.TryGetLogger(loggerCategory, out var logger))
                     {
                         queuedLog.Log(logger);
                     }
@@ -65,7 +64,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         }
 
         /// <summary>
-        /// Queues <paramref name="startupLog"/> to be replayed the next time <see cref="Flush"/> is called.
+        /// Queues <paramref name="startupLog" /> to be replayed the next time <see cref="Flush" /> is called.
         /// </summary>
         /// <param name="startupLog">The log entry to queue.</param>
         public void EnqueueStartupLog(StartupLog startupLog)

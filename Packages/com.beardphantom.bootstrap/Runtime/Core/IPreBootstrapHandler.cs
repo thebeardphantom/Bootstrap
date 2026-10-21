@@ -3,7 +3,7 @@
 namespace BeardPhantom.Bootstrap
 {
     /// <summary>
-    /// Implemented by types that need to run logic before an <see cref="AppInstance"/> bootstraps its services.
+    /// Implemented by types that need to run logic before an <see cref="AppInstance" /> bootstraps its services.
     /// </summary>
     public interface IPreBootstrapHandler
     {

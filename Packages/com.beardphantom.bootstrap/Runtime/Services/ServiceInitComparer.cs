@@ -3,8 +3,8 @@
 namespace BeardPhantom.Bootstrap
 {
     /// <summary>
-    /// Compares <see cref="IService"/> instances by their <see cref="IServiceWithInitPriority.InitPriority"/>,
-    /// treating services that don't implement <see cref="IServiceWithInitPriority"/> as priority 0.
+    /// Compares <see cref="IService" /> instances by their <see cref="IServiceWithInitPriority.InitPriority" />,
+    /// treating services that don't implement <see cref="IServiceWithInitPriority" /> as priority 0.
     /// </summary>
     public class ServiceInitComparer : IComparer<IService>
     {
@@ -15,8 +15,8 @@ namespace BeardPhantom.Bootstrap
 
         public int Compare(IService x, IService y)
         {
-            int xPriority = x is IServiceWithInitPriority xWithPriority ? xWithPriority.InitPriority : 0;
-            int yPriority = y is IServiceWithInitPriority yWithPriority ? yWithPriority.InitPriority : 0;
+            var xPriority = x is IServiceWithInitPriority xWithPriority ? xWithPriority.InitPriority : 0;
+            var yPriority = y is IServiceWithInitPriority yWithPriority ? yWithPriority.InitPriority : 0;
             return xPriority.CompareTo(yPriority);
         }
     }

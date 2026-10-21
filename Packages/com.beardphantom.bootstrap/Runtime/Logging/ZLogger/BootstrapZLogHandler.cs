@@ -6,12 +6,12 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 namespace BeardPhantom.Bootstrap.ZLogger
 {
     /// <summary>
-    /// <see cref="ILogHandler"/> implementation that routes log messages through ZLogger.
+    /// <see cref="ILogHandler" /> implementation that routes log messages through ZLogger.
     /// </summary>
     public class BootstrapZLogHandler : ILogHandler
     {
         /// <summary>
-        /// The singleton <see cref="BootstrapZLogHandler"/> instance.
+        /// The singleton <see cref="BootstrapZLogHandler" /> instance.
         /// </summary>
         public static readonly BootstrapZLogHandler Instance = new();
 

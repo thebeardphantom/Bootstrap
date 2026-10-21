@@ -1,13 +1,12 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace BeardPhantom.Bootstrap
 {
     /// <summary>
     /// Serializable reference to an object's location, stored as a scene path plus a hierarchy path, so the
-    /// object can be re-resolved later without holding a direct <see cref="Object"/> reference.
+    /// object can be re-resolved later without holding a direct <see cref="UnityEngine.Object" /> reference.
     /// </summary>
     [Serializable]
     public class SelectedObjectPath
@@ -23,10 +22,13 @@ namespace BeardPhantom.Bootstrap
         public string ObjectPath { get; set; }
 
         /// <summary>
-        /// Creates a <see cref="SelectedObjectPath"/> for a <see cref="GameObject"/> or <see cref="Component"/>.
+        /// Creates a <see cref="SelectedObjectPath" /> for a <see cref="GameObject" /> or <see cref="Component" />.
         /// </summary>
-        /// <param name="obj">The <see cref="GameObject"/> or <see cref="Component"/> to reference.</param>
-        /// <exception cref="ArgumentException"><paramref name="obj"/> is not a <see cref="GameObject"/> or <see cref="Component"/>.</exception>
+        /// <param name="obj">The <see cref="GameObject" /> or <see cref="Component" /> to reference.</param>
+        /// <exception cref="System.ArgumentException">
+        /// <paramref name="obj" /> is not a <see cref="GameObject" /> or
+        /// <see cref="Component" />.
+        /// </exception>
         public static SelectedObjectPath CreateInstance(Object obj)
         {
             return obj switch
@@ -39,7 +41,7 @@ namespace BeardPhantom.Bootstrap
 
         private static SelectedObjectPath CreateFromGameObject(GameObject gameObject)
         {
-            Scene scene = gameObject.scene;
+            var scene = gameObject.scene;
             return new SelectedObjectPath
             {
                 ObjectPath = ObjectUtility.GetGameObjectPath(gameObject),

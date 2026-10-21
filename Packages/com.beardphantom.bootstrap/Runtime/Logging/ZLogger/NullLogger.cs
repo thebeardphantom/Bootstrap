@@ -4,12 +4,12 @@ using System;
 namespace BeardPhantom.Bootstrap.ZLogger
 {
     /// <summary>
-    /// No-op <see cref="ILogger"/> implementation used as a placeholder when no real logger is available.
+    /// No-op <see cref="ILogger" /> implementation used as a placeholder when no real logger is available.
     /// </summary>
     public class NullLogger : ILogger, IDisposable
     {
         /// <summary>
-        /// The singleton <see cref="NullLogger"/> instance.
+        /// The singleton <see cref="NullLogger" /> instance.
         /// </summary>
         public static readonly NullLogger Instance = new();
 

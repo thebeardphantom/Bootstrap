@@ -31,12 +31,12 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private static void DrawEditorForClassicBuildProfile(BuildProfile profile)
         {
-            string platformId = BuildProfileUtility.GetPlatformIdForProfile(profile);
+            var platformId = BuildProfileUtility.GetPlatformIdForProfile(profile);
 
-            MappedEnvironmentCollection<string> platformEnvironments = BootstrapEditorSettingsUtility.GetValue(
+            var platformEnvironments = BootstrapEditorSettingsUtility.GetValue(
                 s => s.PlatformEnvironments,
-                out SettingsScope scope);
-            platformEnvironments.TryFindEnvironmentForKey(platformId, out BootstrapEnvironmentAsset environmentAsset);
+                out var scope);
+            platformEnvironments.TryFindEnvironmentForKey(platformId, out var environmentAsset);
 
             using var changeCheckScope = new EditorGUI.ChangeCheckScope();
             environmentAsset = (BootstrapEnvironmentAsset)EditorGUILayout.ObjectField(
@@ -53,11 +53,11 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private static void DrawEditorForBuildProfile(BuildProfile profile)
         {
-            MappedEnvironmentCollection<BuildProfile> buildProfileEnvironments = BootstrapEditorSettingsUtility.GetValue(
+            var buildProfileEnvironments = BootstrapEditorSettingsUtility.GetValue(
                 s => s.BuildProfileEnvironments,
-                out SettingsScope scope);
+                out var scope);
 
-            buildProfileEnvironments.TryFindEnvironmentForKey(profile, out BootstrapEnvironmentAsset environmentAsset);
+            buildProfileEnvironments.TryFindEnvironmentForKey(profile, out var environmentAsset);
 
             using var changeCheckScope = new EditorGUI.ChangeCheckScope();
             environmentAsset = (BootstrapEnvironmentAsset)EditorGUILayout.ObjectField(

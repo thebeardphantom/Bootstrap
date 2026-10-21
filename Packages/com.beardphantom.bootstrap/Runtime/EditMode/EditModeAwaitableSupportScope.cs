@@ -7,7 +7,7 @@ namespace BeardPhantom.Bootstrap.EditMode
 {
     /// <summary>
     /// Disposable scope that keeps the editor's player loop pumping while it is active, allowing
-    /// <see cref="Awaitable"/>-based async code to make progress in edit mode. Nested scopes are reference-counted.
+    /// <see cref="Awaitable" />-based async code to make progress in edit mode. Nested scopes are reference-counted.
     /// </summary>
     public readonly struct EditModeAwaitableSupportScope : IDisposable
     {

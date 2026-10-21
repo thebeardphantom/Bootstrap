@@ -31,7 +31,7 @@ namespace BeardPhantom.Bootstrap.EditMode
         public BootstrapEnvironmentAsset Environment { get; set; }
 
         /// <summary>
-        /// The asset GUID of <see cref="Environment"/>, used to resolve it across serialization.
+        /// The asset GUID of <see cref="Environment" />, used to resolve it across serialization.
         /// </summary>
         public string EnvironmentGuid { get; set; }
 
@@ -40,7 +40,7 @@ namespace BeardPhantom.Bootstrap.EditMode
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
-            string assetPath = AssetDatabase.GUIDToAssetPath(EnvironmentGuid);
+            var assetPath = AssetDatabase.GUIDToAssetPath(EnvironmentGuid);
             if (string.IsNullOrWhiteSpace(assetPath))
             {
                 return;
@@ -58,7 +58,7 @@ namespace BeardPhantom.Bootstrap.EditMode
                 return;
             }
 
-            EnvironmentGuid = AssetDatabase.TryGetGUIDAndLocalFileIdentifier(Environment, out string guid, out _) ? guid : null;
+            EnvironmentGuid = AssetDatabase.TryGetGUIDAndLocalFileIdentifier(Environment, out var guid, out _) ? guid : null;
         }
     }
 }

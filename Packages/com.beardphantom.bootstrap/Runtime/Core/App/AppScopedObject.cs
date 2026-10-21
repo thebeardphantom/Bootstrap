@@ -13,7 +13,7 @@ namespace BeardPhantom.Bootstrap
     {
         protected virtual void Awake()
         {
-            if (!App.TryGetInstance(out AppInstance appInstance))
+            if (!App.TryGetInstance(out var appInstance))
             {
                 Logging.Warn("No current AppInstance.", this);
                 return;

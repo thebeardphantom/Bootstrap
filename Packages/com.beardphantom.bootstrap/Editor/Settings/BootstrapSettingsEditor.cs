@@ -42,7 +42,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
 
             var uxml = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(AssetDatabase.GUIDToAssetPath(UxmlGuid));
             uxml.CloneTree(rootElement);
-            VisualElement content = rootElement.Q("settings-content");
+            var content = rootElement.Q("settings-content");
             _tabViewContent = content.Q(className: "tab-view-content");
             var projectToggle = content.Q<ToolbarToggle>("project-toggle");
             var userToggle = content.Q<ToolbarToggle>("user-toggle");
@@ -59,7 +59,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         {
             var settingsAsset = (IBootstrapEditorSettingsAsset)obj.targetObject;
             settingsAsset.Save();
-            BootstrapLogLevel minLogLevel = BootstrapEditorSettingsUtility.GetValue(asset => asset.MinLogLevel);
+            var minLogLevel = BootstrapEditorSettingsUtility.GetValue(asset => asset.MinLogLevel);
             Logging.MinLogLevel = minLogLevel;
 
             if (App.TryGetInstance(out EditModeAppInstance editModeAppInstance))
@@ -85,8 +85,8 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
 
         private static void FixComponentObjectField(ObjectField objectField)
         {
-            VisualElement selector = objectField.Q(className: ObjectField.selectorUssClassName);
-            VisualElement selectorParent = selector.parent;
+            var selector = objectField.Q(className: ObjectField.selectorUssClassName);
+            var selectorParent = selector.parent;
             selector.RemoveFromHierarchy();
             selector = new VisualElement();
             selector.AddToClassList(ObjectField.selectorUssClassName);
@@ -140,7 +140,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
 
             var asset = (Object)settingsAsset;
             _tabViewContent.Unbind();
-            for (int i = _tabViewContent.childCount - 1; i >= 1; i--)
+            for (var i = _tabViewContent.childCount - 1; i >= 1; i--)
             {
                 _tabViewContent.RemoveAt(i);
             }
@@ -149,7 +149,7 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
 
             UnityEditor.Editor.CreateCachedEditor(asset, null, ref _editor);
 
-            SerializedObject serializedObject = _editor.serializedObject;
+            var serializedObject = _editor.serializedObject;
 
             InspectorElement.FillDefaultInspector(_tabViewContent, serializedObject, _editor);
             _tabViewContent.Bind(serializedObject);

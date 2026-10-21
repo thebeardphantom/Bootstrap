@@ -1,13 +1,12 @@
 using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace BeardPhantom.Bootstrap.Editor
 {
     /// <summary>
-    /// Custom inspector for <see cref="ServiceList"/> that warns about and allows clearing managed references
+    /// Custom inspector for <see cref="ServiceList" /> that warns about and allows clearing managed references
     /// with missing types.
     /// </summary>
     [CustomEditor(typeof(ServiceList))]
@@ -27,7 +26,7 @@ namespace BeardPhantom.Bootstrap.Editor
         private void RecreateUI()
         {
             _rootVisualElement.Clear();
-            bool hasManagedReferencesWithMissingTypes = targets.Any(SerializationUtility.HasManagedReferencesWithMissingTypes);
+            var hasManagedReferencesWithMissingTypes = targets.Any(SerializationUtility.HasManagedReferencesWithMissingTypes);
             if (hasManagedReferencesWithMissingTypes)
             {
                 _rootVisualElement.Add(new HelpBox(HelpBoxTxt, HelpBoxMessageType.Warning));
@@ -44,7 +43,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private void OnClickRemoveMissingManagedReferencesButton()
         {
-            foreach (Object t in targets)
+            foreach (var t in targets)
             {
                 SerializationUtility.ClearAllManagedReferencesWithMissingTypes(t);
                 EditorUtility.SetDirty(t);

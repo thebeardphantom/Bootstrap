@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace BeardPhantom.Bootstrap.Editor
 {
@@ -27,14 +28,14 @@ namespace BeardPhantom.Bootstrap.Editor
         private readonly Dictionary<int, SelectableType> _itemIdToSelectableType = new();
 
         /// <summary>
-        /// Creates a dropdown listing types derived from <paramref name="baseType"/>.
+        /// Creates a dropdown listing types derived from <paramref name="baseType" />.
         /// </summary>
         /// <param name="baseType">The base type whose derived types are listed.</param>
         public PolymorphicTypeSelectorDropdown(Type baseType)
             : this(baseType, Enumerable.Empty<Type>(), new AdvancedDropdownState()) { }
 
         /// <summary>
-        /// Creates a dropdown listing types derived from <paramref name="baseType"/>, with some types shown
+        /// Creates a dropdown listing types derived from <paramref name="baseType" />, with some types shown
         /// disabled.
         /// </summary>
         /// <param name="baseType">The base type whose derived types are listed.</param>
@@ -43,7 +44,7 @@ namespace BeardPhantom.Bootstrap.Editor
             : this(baseType, disabledTypes, new AdvancedDropdownState()) { }
 
         /// <summary>
-        /// Creates a dropdown listing types derived from <paramref name="baseType"/>, using an existing dropdown
+        /// Creates a dropdown listing types derived from <paramref name="baseType" />, using an existing dropdown
         /// state.
         /// </summary>
         /// <param name="baseType">The base type whose derived types are listed.</param>
@@ -52,7 +53,7 @@ namespace BeardPhantom.Bootstrap.Editor
             this(baseType, Enumerable.Empty<Type>(), state) { }
 
         /// <summary>
-        /// Creates a dropdown listing types derived from <paramref name="baseType"/>, with some types shown
+        /// Creates a dropdown listing types derived from <paramref name="baseType" />, with some types shown
         /// disabled, using an existing dropdown state.
         /// </summary>
         /// <param name="baseType">The base type whose derived types are listed.</param>
@@ -69,13 +70,13 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private static bool IsValidType(Type t)
         {
-            return !t.IsAbstract && !t.IsInterface && !typeof(UnityEngine.Object).IsAssignableFrom(t);
+            return !t.IsAbstract && !t.IsInterface && !typeof(Object).IsAssignableFrom(t);
         }
 
         /// <inheritdoc />
         protected override void ItemSelected(AdvancedDropdownItem item)
         {
-            SelectableType type = _itemIdToSelectableType[item.id];
+            var type = _itemIdToSelectableType[item.id];
             if (!type.IsEnabled)
             {
                 EditorUtility.DisplayDialog(
@@ -91,15 +92,15 @@ namespace BeardPhantom.Bootstrap.Editor
         /// <inheritdoc />
         protected override AdvancedDropdownItem BuildRoot()
         {
-            TypeCache.TypeCollection allDerivedTypes = TypeCache.GetTypesDerivedFrom(_baseType);
-            foreach (Type type in allDerivedTypes)
+            var allDerivedTypes = TypeCache.GetTypesDerivedFrom(_baseType);
+            foreach (var type in allDerivedTypes)
             {
                 if (!IsValidType(type))
                 {
                     continue;
                 }
 
-                bool enabled = !_disabledTypes.Contains(type);
+                var enabled = !_disabledTypes.Contains(type);
                 _selectableTypes.Add(new SelectableType(type, enabled));
             }
 
@@ -113,9 +114,9 @@ namespace BeardPhantom.Bootstrap.Editor
                 .Where(t => t.Type.Namespace.IsNotNull())
                 .GroupBy(t => t.Type.Namespace)
                 .OrderBy(g => g.Key);
-            GUIContent scriptIconContent = EditorGUIUtility.IconContent("cs Script Icon");
+            var scriptIconContent = EditorGUIUtility.IconContent("cs Script Icon");
             var scriptIcon = (Texture2D)scriptIconContent.image;
-            foreach (IGrouping<string, SelectableType> group in selectableTypesByNamespace)
+            foreach (var group in selectableTypesByNamespace)
             {
                 var nsItem = new AdvancedDropdownItem(group.Key)
                 {
@@ -123,7 +124,7 @@ namespace BeardPhantom.Bootstrap.Editor
                 };
                 root.AddChild(nsItem);
 
-                foreach (SelectableType selectableType in group)
+                foreach (var selectableType in group)
                 {
                     var typeItem = new AdvancedDropdownItem(selectableType.Type.Name)
                     {
@@ -135,7 +136,7 @@ namespace BeardPhantom.Bootstrap.Editor
                 }
             }
 
-            foreach (SelectableType selectableType in _selectableTypes.Where(t => t.Type.Namespace.IsNull()))
+            foreach (var selectableType in _selectableTypes.Where(t => t.Type.Namespace.IsNull()))
             {
                 var typeItem = new AdvancedDropdownItem(selectableType.Type.Name)
                 {

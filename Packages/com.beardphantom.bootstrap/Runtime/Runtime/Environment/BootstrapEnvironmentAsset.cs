@@ -5,14 +5,14 @@ using UnityEngine;
 namespace BeardPhantom.Bootstrap.Environment
 {
     /// <summary>
-    /// A <see cref="ScriptableObject"/> that defines a bootstrap environment: its service list and the
+    /// A <see cref="ScriptableObject" /> that defines a bootstrap environment: its service list and the
     /// pre/post bootstrap handlers to run.
     /// </summary>
     [CreateAssetMenu(menuName = "Bootstrap/Environment Asset")]
     public class BootstrapEnvironmentAsset : ScriptableObject
     {
         /// <summary>
-        /// True if this environment has no <see cref="ServiceListAsset"/> or the asset defines no services.
+        /// True if this environment has no <see cref="ServiceListAsset" /> or the asset defines no services.
         /// </summary>
         public bool IsNoOp => ServiceListAsset.IsNull() || ServiceListAsset.Services.Length == 0;
 
@@ -33,7 +33,7 @@ namespace BeardPhantom.Bootstrap.Environment
         public IPostBootstrapHandler PostBootstrapHandler { get; private set; }
 
         /// <summary>
-        /// The <see cref="ServiceList"/> this environment bootstraps.
+        /// The <see cref="ServiceList" /> this environment bootstraps.
         /// </summary>
         [field: SerializeField]
         [field: Tooltip("The ServiceList this environment bootstraps.")]
@@ -42,7 +42,7 @@ namespace BeardPhantom.Bootstrap.Environment
         internal BootstrapEnvironmentAsset StartEnvironment()
         {
 #if UNITY_EDITOR
-            BootstrapEnvironmentAsset copy = Instantiate(this);
+            var copy = Instantiate(this);
             copy.ServiceListAsset = ServiceListAsset.CreateClone();
             return copy;
 #else

@@ -1,7 +1,7 @@
 ﻿namespace BeardPhantom.Bootstrap
 {
     /// <summary>
-    /// Base interface for all services managed by a <see cref="ServiceLocator"/>.
+    /// Base interface for all services managed by a <see cref="ServiceLocator" />.
     /// </summary>
     public interface IService
     {

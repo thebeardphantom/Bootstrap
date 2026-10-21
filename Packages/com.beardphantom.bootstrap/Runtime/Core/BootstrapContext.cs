@@ -7,13 +7,13 @@ using BeardPhantom.Bootstrap.EditMode;
 namespace BeardPhantom.Bootstrap
 {
     /// <summary>
-    /// Carries state through an <see cref="AppInstance"/>'s bootstrap process, passed to
-    /// <see cref="IPreBootstrapHandler"/> and <see cref="IPostBootstrapHandler"/> implementations.
+    /// Carries state through an <see cref="AppInstance" />'s bootstrap process, passed to
+    /// <see cref="IPreBootstrapHandler" /> and <see cref="IPostBootstrapHandler" /> implementations.
     /// </summary>
     public partial class BootstrapContext
     {
         /// <summary>
-        /// The task scheduler associated with the <see cref="AppInstance"/> being bootstrapped.
+        /// The task scheduler associated with the <see cref="AppInstance" /> being bootstrapped.
         /// </summary>
         public readonly TaskScheduler Scheduler;
 

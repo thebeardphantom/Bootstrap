@@ -44,7 +44,7 @@ namespace BeardPhantom.Bootstrap
 
         private void Update()
         {
-            if (!App.TryGetInstance(out AppInstance appInstance))
+            if (!App.TryGetInstance(out var appInstance))
             {
                 return;
             }
@@ -54,11 +54,11 @@ namespace BeardPhantom.Bootstrap
                 return;
             }
 
-            float deltaTime = Time.deltaTime;
-            ServiceLocator serviceLocator = appInstance.ServiceLocator;
+            var deltaTime = Time.deltaTime;
+            var serviceLocator = appInstance.ServiceLocator;
             for (var i = 0; i < serviceLocator.Count; i++)
             {
-                IService service = serviceLocator[i];
+                var service = serviceLocator[i];
                 if (service is IServiceWithUpdateLoop serviceWithUpdateLoop)
                 {
                     serviceWithUpdateLoop.Update(deltaTime);
@@ -68,7 +68,7 @@ namespace BeardPhantom.Bootstrap
 
         private void LateUpdate()
         {
-            if (!App.TryGetInstance(out AppInstance appInstance))
+            if (!App.TryGetInstance(out var appInstance))
             {
                 return;
             }
@@ -78,11 +78,11 @@ namespace BeardPhantom.Bootstrap
                 return;
             }
 
-            float deltaTime = Time.deltaTime;
-            ServiceLocator serviceLocator = appInstance.ServiceLocator;
+            var deltaTime = Time.deltaTime;
+            var serviceLocator = appInstance.ServiceLocator;
             for (var i = 0; i < serviceLocator.Count; i++)
             {
-                IService service = serviceLocator[i];
+                var service = serviceLocator[i];
                 if (service is IServiceWithLateUpdateLoop serviceWithLateUpdateLoop)
                 {
                     serviceWithLateUpdateLoop.LateUpdate(deltaTime);
@@ -92,7 +92,7 @@ namespace BeardPhantom.Bootstrap
 
         private void FixedUpdate()
         {
-            if (!App.TryGetInstance(out AppInstance appInstance))
+            if (!App.TryGetInstance(out var appInstance))
             {
                 return;
             }
@@ -102,11 +102,11 @@ namespace BeardPhantom.Bootstrap
                 return;
             }
 
-            float fixedDeltaTime = Time.fixedDeltaTime;
-            ServiceLocator serviceLocator = appInstance.ServiceLocator;
+            var fixedDeltaTime = Time.fixedDeltaTime;
+            var serviceLocator = appInstance.ServiceLocator;
             for (var i = 0; i < serviceLocator.Count; i++)
             {
-                IService service = serviceLocator[i];
+                var service = serviceLocator[i];
                 if (service is IServiceWithFixedUpdateLoop serviceWithFixedUpdateLoop)
                 {
                     serviceWithFixedUpdateLoop.FixedUpdate(fixedDeltaTime);

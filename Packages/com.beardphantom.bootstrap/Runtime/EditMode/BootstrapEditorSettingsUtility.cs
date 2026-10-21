@@ -5,7 +5,7 @@ using UnityEditor;
 namespace BeardPhantom.Bootstrap.EditMode
 {
     /// <summary>
-    /// Helper methods for resolving <see cref="SettingsProperty{T}"/> values across the user and project settings
+    /// Helper methods for resolving <see cref="SettingsProperty{T}" /> values across the user and project settings
     /// scopes.
     /// </summary>
     public static class BootstrapEditorSettingsUtility
@@ -15,7 +15,7 @@ namespace BeardPhantom.Bootstrap.EditMode
         /// project-scoped value otherwise.
         /// </summary>
         /// <typeparam name="T">The type of the settings value.</typeparam>
-        /// <param name="valueSelector">Selects the <see cref="SettingsProperty{T}"/> to read from a settings asset.</param>
+        /// <param name="valueSelector">Selects the <see cref="SettingsProperty{T}" /> to read from a settings asset.</param>
         public static T GetValue<T>(Func<IBootstrapEditorSettingsAsset, SettingsProperty<T>> valueSelector)
         {
             return GetValue(valueSelector, out _);
@@ -26,13 +26,13 @@ namespace BeardPhantom.Bootstrap.EditMode
         /// project-scoped value otherwise.
         /// </summary>
         /// <typeparam name="T">The type of the settings value.</typeparam>
-        /// <param name="valueSelector">Selects the <see cref="SettingsProperty{T}"/> to read from a settings asset.</param>
+        /// <param name="valueSelector">Selects the <see cref="SettingsProperty{T}" /> to read from a settings asset.</param>
         /// <param name="definedScope">The scope the returned value was resolved from.</param>
         public static T GetValue<T>(
             Func<IBootstrapEditorSettingsAsset, SettingsProperty<T>> valueSelector,
             out SettingsScope definedScope)
         {
-            SettingsProperty<T> property = valueSelector(BootstrapEditorUserSettings.instance);
+            var property = valueSelector(BootstrapEditorUserSettings.instance);
             if (property.OverrideEnabled)
             {
                 definedScope = SettingsScope.User;
