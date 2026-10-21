@@ -103,7 +103,6 @@ namespace BeardPhantom.Bootstrap
             Logging.Debug($"Disposing {this}.");
             Disposed = true;
             _appLifetimeCancellationTokenSource.Cancel();
-            _appLifetimeCancellationTokenSource.Dispose();
             ServiceLocator.Dispose();
         }
 
@@ -178,7 +177,16 @@ namespace BeardPhantom.Bootstrap
             Dispose();
             foreach (var appScopedObject in _appScopedObjects)
             {
-                if (appScopedObject.IsNotNull())
+                if (appScopedObject.IsNull())
+                {
+                    continue;
+                }
+
+                if (appScopedObject is Component component)
+                {
+                    Object.Destroy(component.gameObject);
+                }
+                else
                 {
                     Object.Destroy(appScopedObject);
                 }

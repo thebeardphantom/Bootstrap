@@ -53,38 +53,45 @@ namespace BeardPhantom.Bootstrap
             if (TryDetermineSessionEnvironment(out var environmentAssetSource))
             {
                 Logging.Info($"Selected environment {environmentAssetSource}.");
-                SessionEnvironment = environmentAssetSource.StartEnvironment();
+                if (SessionEnvironment.ServiceListAsset.IsNull())
+                {
+                    Logging.Error($"Environment {environmentAssetSource} has no assigned {nameof(ServiceList)}.");
+                }
+                else
+                {
+                    SessionEnvironment = environmentAssetSource.StartEnvironment();
 
-                var context = new BootstrapContext(appInstance.TaskScheduler);
+                    var context = new BootstrapContext(appInstance.TaskScheduler);
 
-                appInstance.BootstrapState = AppBootstrapState.BootstrapHandlerDiscovery;
-                Logging.Info("Bootstrapping application.");
-                AssignBootstrapHandlers();
+                    appInstance.BootstrapState = AppBootstrapState.BootstrapHandlerDiscovery;
+                    Logging.Info("Bootstrapping application.");
+                    AssignBootstrapHandlers();
 
-                appInstance.BootstrapState = AppBootstrapState.PreBootstrap;
-                Logging.Trace("Beginning pre-bootstrapping.");
-                await _preHandler.OnPreBootstrapAsync(context);
-                await Awaitable.NextFrameAsync(cancellationToken);
+                    appInstance.BootstrapState = AppBootstrapState.PreBootstrap;
+                    Logging.Trace("Beginning pre-bootstrapping.");
+                    await _preHandler.OnPreBootstrapAsync(context);
+                    await Awaitable.NextFrameAsync(cancellationToken);
 
-                appInstance.ServiceLocator.Create(context, SessionEnvironment.ServiceListAsset);
-                await Awaitable.NextFrameAsync(cancellationToken);
+                    appInstance.ServiceLocator.Create(context, SessionEnvironment.ServiceListAsset);
+                    await Awaitable.NextFrameAsync(cancellationToken);
 
-                appInstance.BootstrapState = AppBootstrapState.AsyncTaskFlush;
-                FlushTaskSchedulerLoopAsync().Forget();
-                Logging.Trace($"Waiting for idle {nameof(TaskScheduler)}.");
-                await AwaitableUtility.WaitUntil(() => appInstance.TaskScheduler.IsIdle, cancellationToken);
+                    appInstance.BootstrapState = AppBootstrapState.AsyncTaskFlush;
+                    FlushTaskSchedulerLoopAsync().Forget();
+                    Logging.Trace($"Waiting for idle {nameof(TaskScheduler)}.");
+                    await AwaitableUtility.WaitUntil(() => appInstance.TaskScheduler.IsIdle, cancellationToken);
 
-                appInstance.BootstrapState = AppBootstrapState.PostBootstrap;
-                Logging.Trace("Beginning post-bootstrapping.");
-                await _postHandler.OnPostBootstrapAsync(context);
-                await Awaitable.NextFrameAsync(cancellationToken);
-
-                ComponentMessageRelay.Create();
+                    appInstance.BootstrapState = AppBootstrapState.PostBootstrap;
+                    Logging.Trace("Beginning post-bootstrapping.");
+                    await _postHandler.OnPostBootstrapAsync(context);
+                    await Awaitable.NextFrameAsync(cancellationToken);
+                }
             }
             else
             {
                 Logging.Info("No environment selected.");
             }
+            
+            ComponentMessageRelay.Create();
 
             appInstance.BootstrapState = AppBootstrapState.Ready;
             Logging.Info("Bootstrapping complete.");

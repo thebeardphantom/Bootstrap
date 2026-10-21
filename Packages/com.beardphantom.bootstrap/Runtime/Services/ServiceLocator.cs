@@ -72,8 +72,15 @@ namespace BeardPhantom.Bootstrap
              * Service Discovery
              */
             appInstance.BootstrapState = AppBootstrapState.ServiceDiscovery;
-            foreach (var service in serviceList.Services)
+            for (var i = 0; i < serviceList.Services.Length; i++)
             {
+                var service = serviceList.Services[i];
+                if (service.IsNull())
+                {
+                    Logging.Error($"Service at index {i} is null.");
+                    continue;
+                }
+
                 Logging.Debug($"Discovered service {service.GetType()}.");
                 _services.Add(service);
                 ServiceDiscovered?.Invoke(service);

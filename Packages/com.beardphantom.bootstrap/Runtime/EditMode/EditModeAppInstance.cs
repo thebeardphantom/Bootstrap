@@ -36,8 +36,6 @@ namespace BeardPhantom.Bootstrap.EditMode
         public EditModeAppInstance()
         {
             Logging.LogHandler = Logging.DefaultLogHandler;
-            BootstrapEditorProjectSettings.instance.EditModeServices.ValueChanged += OnEditModeServicesChanged;
-            BootstrapEditorUserSettings.instance.EditModeServices.ValueChanged += OnEditModeServicesChanged;
             if (BootstrapEditorSettingsUtility.GetValue(a => a.EditorFlowEnabled))
             {
                 EditorSceneManager.playModeStartScene = null;
@@ -202,6 +200,7 @@ namespace BeardPhantom.Bootstrap.EditMode
                 EditorUtility.DisplayProgressBar("Edit Mode Bootstrapping", description, 1f);
                 ServiceLocator.Create(context, _editModeServiceListInstance);
 
+                BootstrapState = AppBootstrapState.AsyncTaskFlush;
                 Logging.Trace($"Waiting for idle {nameof(TaskScheduler)}.");
                 while (!TaskScheduler.IsIdle)
                 {

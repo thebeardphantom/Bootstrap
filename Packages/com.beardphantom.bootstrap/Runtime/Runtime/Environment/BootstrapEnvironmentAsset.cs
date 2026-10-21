@@ -12,11 +12,6 @@ namespace BeardPhantom.Bootstrap.Environment
     public class BootstrapEnvironmentAsset : ScriptableObject
     {
         /// <summary>
-        /// True if this environment has no <see cref="ServiceListAsset" /> or the asset defines no services.
-        /// </summary>
-        public bool IsNoOp => ServiceListAsset.IsNull() || ServiceListAsset.Services.Length == 0;
-
-        /// <summary>
         /// The handler to run before bootstrapping, or null to use the platform default.
         /// </summary>
         [field: SerializeReference]

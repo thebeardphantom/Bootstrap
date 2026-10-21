@@ -198,7 +198,7 @@ namespace BeardPhantom.Bootstrap
 
         private static IAppStateContainer CreateAppStateContainer()
         {
-#if UNITY_EDITOR
+#if IS_EDITOR
             return new EditorAppStateContainer();
 #else
             return new BuildAppStateContainer();

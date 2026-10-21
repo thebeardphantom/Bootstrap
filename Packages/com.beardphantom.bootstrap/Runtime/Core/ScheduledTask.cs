@@ -45,16 +45,24 @@ namespace BeardPhantom.Bootstrap
         /// Invokes the wrapped task, awaiting it if asynchronous.
         /// </summary>
         /// <param name="cancellationToken"></param>
-        public Awaitable InvokeAsync(CancellationToken cancellationToken = default)
+        public async Awaitable InvokeAsync(CancellationToken cancellationToken = default)
         {
             AssertState();
-            if (_syncTask.IsNull())
+            try
             {
-                return _asyncTask.Invoke(cancellationToken);
+                if (_syncTask.IsNull())
+                {
+                    await _asyncTask.Invoke(cancellationToken);
+                }
+                else
+                {
+                    _syncTask.Invoke();
+                }
             }
-
-            _syncTask.Invoke();
-            return AwaitableUtility.Completed;
+            catch (Exception e)
+            {
+                Logging.Error(e);
+            }
         }
 
         public override string ToString()
