@@ -9,6 +9,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.SceneManagement;
+using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
 namespace BeardPhantom.Bootstrap.EditMode
@@ -222,16 +223,12 @@ namespace BeardPhantom.Bootstrap.EditMode
             {
                 Progress.Report(progressId, 1f, ex.ToString());
                 Progress.Finish(progressId, Progress.Status.Failed);
+                Debug.LogException(ex);
             }
             finally
             {
                 EditorUtility.ClearProgressBar();
             }
-        }
-
-        private void OnEditModeServicesChanged(ServiceList serviceList)
-        {
-            ReinitializeIfNecessary();
         }
     }
 }

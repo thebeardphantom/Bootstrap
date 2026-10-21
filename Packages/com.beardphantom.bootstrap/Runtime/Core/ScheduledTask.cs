@@ -59,6 +59,7 @@ namespace BeardPhantom.Bootstrap
                     _syncTask.Invoke();
                 }
             }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
             catch (Exception e)
             {
                 Logging.Error(e);

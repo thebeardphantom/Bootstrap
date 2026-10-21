@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.Pool;
 
 namespace BeardPhantom.Bootstrap
 {
@@ -11,7 +10,9 @@ namespace BeardPhantom.Bootstrap
     /// </summary>
     public class TaskScheduler
     {
-        private readonly PriorityQueue<ScheduledTask, int> _tasks = new();
+        private readonly PriorityQueue<ScheduledTask, (int Priority, int TaskNumber)> _tasks = new();
+
+        private readonly Stopwatch _flushQueueTimeoutStopwatch = new();
 
         private int _scheduledTaskCount;
 
@@ -60,9 +61,9 @@ namespace BeardPhantom.Bootstrap
         /// <param name="scheduledTask">The task to schedule.</param>
         public void Schedule(in ScheduledTask scheduledTask)
         {
-            var priority = scheduledTask.Priority + _scheduledTaskCount;
+            var taskNumber = _scheduledTaskCount;
             _scheduledTaskCount++;
-            _tasks.Enqueue(scheduledTask, priority);
+            _tasks.Enqueue(scheduledTask, (scheduledTask.Priority, taskNumber));
         }
 
         /// <summary>
@@ -81,9 +82,8 @@ namespace BeardPhantom.Bootstrap
             {
                 _isFlushingQueue = true;
 
-                using var __ = GenericPool<Stopwatch>.Get(out var stopwatch);
-                stopwatch.Restart();
-                while (stopwatch.ElapsedMilliseconds < QueueFlushTimeoutMs && _tasks.TryDequeue(out var task, out _))
+                _flushQueueTimeoutStopwatch.Restart();
+                while (_flushQueueTimeoutStopwatch.ElapsedMilliseconds < QueueFlushTimeoutMs && _tasks.TryDequeue(out var task, out _))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     await ExecuteTaskAsync(task, cancellationToken);

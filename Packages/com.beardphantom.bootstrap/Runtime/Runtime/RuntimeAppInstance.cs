@@ -53,7 +53,7 @@ namespace BeardPhantom.Bootstrap
             if (TryDetermineSessionEnvironment(out var environmentAssetSource))
             {
                 Logging.Info($"Selected environment {environmentAssetSource}.");
-                if (SessionEnvironment.ServiceListAsset.IsNull())
+                if (environmentAssetSource.ServiceListAsset.IsNull())
                 {
                     Logging.Error($"Environment {environmentAssetSource} has no assigned {nameof(ServiceList)}.");
                 }

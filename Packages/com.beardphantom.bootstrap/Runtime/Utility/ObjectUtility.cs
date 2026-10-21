@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using UnityEngine;
 using UnityEngine.Pool;
+using UnityEngine.SceneManagement;
 
 namespace BeardPhantom.Bootstrap
 {
@@ -19,10 +20,16 @@ namespace BeardPhantom.Bootstrap
                     tform = tform.parent;
                 }
 
-                var gameObjectPath = stringBuilder.ToString().Trim();
+                var gameObjectPath = stringBuilder.ToString();
                 stringBuilder.Clear();
                 return gameObjectPath;
             }
+        }
+
+        public static GameObject FindInScene(Scene scene, string path)
+        {
+            // TODO: Manually search through scene specifically
+            return GameObject.Find(path);
         }
     }
 }

@@ -214,6 +214,10 @@ namespace BeardPhantom.Bootstrap
         private static async Awaitable CreateAppInstanceAsync(AppInstance appInstance)
         {
             ThrowIfAppInstanceCreated();
+            
+            State.IsQuitting = false;
+            State.IsResetting = false;
+            
             Logging.Info($"Creating {nameof(AppInstance)} {appInstance}.");
             s_instance = appInstance;
             await appInstance.BootstrapAsync();
@@ -230,8 +234,6 @@ namespace BeardPhantom.Bootstrap
 
         private static void Init()
         {
-            State.IsQuitting = false;
-            State.IsResetting = false;
             s_mainThreadId = Thread.CurrentThread.ManagedThreadId;
             Logging.Trace($"Got main thread ID {s_mainThreadId}.");
             RegisterAllExtensions();

@@ -110,8 +110,8 @@ namespace BeardPhantom.Bootstrap
                         {
                             continue;
                         }
-
-                        var foundObj = GameObject.Find(serializedSelectedObj.ObjectPath);
+                        
+                        var foundObj = ObjectUtility.FindInScene(scene, serializedSelectedObj.ObjectPath);
                         if (!foundObj)
                         {
                             continue;

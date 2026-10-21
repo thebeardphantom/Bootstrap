@@ -39,6 +39,8 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private Label _bootstrapState;
 
+        private bool IsUICreated => _appType != null;
+
         /// <summary>
         /// Opens (or focuses) the Bootstrap Status window.
         /// </summary>
@@ -112,6 +114,11 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private void Update()
         {
+            if (!IsUICreated)
+            {
+                return;
+            }
+
             var state = App.State;
             _isPlaying.SetValueWithoutNotify(state.IsPlaying);
             _isQuitting.SetValueWithoutNotify(state.IsQuitting);
@@ -125,6 +132,11 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private void RefreshUI()
         {
+            if (!IsUICreated)
+            {
+                return;
+            }
+
             _inspectorElement?.RemoveFromHierarchy();
             _serializedObject?.Dispose();
             _inspectorElement = null;

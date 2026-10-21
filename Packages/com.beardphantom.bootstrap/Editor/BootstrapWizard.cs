@@ -101,6 +101,11 @@ namespace BeardPhantom.Bootstrap.Editor
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
             }
+
+            if (App.TryGetInstance<EditModeAppInstance>(out var editModeAppInstance))
+            {
+                editModeAppInstance.ReinitializeIfNecessary();
+            }
         }
 
         private void CreateRuntimeAssets(Scene bootstrapScene)
