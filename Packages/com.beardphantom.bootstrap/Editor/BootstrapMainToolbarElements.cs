@@ -3,8 +3,8 @@ using BeardPhantom.Bootstrap;
 using BeardPhantom.Bootstrap.EditMode;
 using BeardPhantom.Bootstrap.Editor;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEditor.Toolbars;
+using UnityEditor;
 using UnityEngine;
 
 /// <summary>
@@ -20,10 +20,8 @@ public static class BootstrapMainToolbarElements
             rect =>
             {
                 var menu = new GenericMenu();
-                IBootstrapEditorSettingsAsset settingsAsset = BootstrapEditorSettingsUtility.GetWithScope(SettingsScope.User);
-                SettingsProperty<bool> editorFlowEnabled = settingsAsset.EditorFlowEnabled;
-                bool currentValue = editorFlowEnabled.OverrideEnabled && editorFlowEnabled.Value;
-                menu.AddItem(new GUIContent("Flow Enabled"), currentValue, ToggleFlowEnabled);
+                var isEditorFlowEnabled = BootstrapEditorSettingsUtility.GetValue(s => s.EditorFlowEnabled);
+                menu.AddItem(new GUIContent("Flow Enabled"), isEditorFlowEnabled, ToggleFlowEnabled);
 
                 menu.AddSeparator("");
 
@@ -37,12 +35,11 @@ public static class BootstrapMainToolbarElements
                     false,
                     () =>
                     {
-                        const string DecisionStorageKey = "AppResetOptOut";
+                        const string DecisionStorageKey = "com.beardphantom.bootstrap_AppResetOptOut";
                         const string Message = "This will discard active state and restart the bootstrapping process. "
                                                + "Do you want to continue to reset?";
                         const DialogOptOutDecisionType DecisionType = DialogOptOutDecisionType.ForThisSession;
-                        EditorUtility.GetDialogOptOutDecision(DecisionType, DecisionStorageKey);
-                        bool wantsReset = EditorUtility.DisplayDialog(
+                        var wantsReset = EditorUtility.DisplayDialog(
                             "Reset App?",
                             Message,
                             "Yes",
@@ -61,14 +58,16 @@ public static class BootstrapMainToolbarElements
 
     private static void ToggleFlowEnabled()
     {
-        IBootstrapEditorSettingsAsset settingsAsset = BootstrapEditorSettingsUtility.GetWithScope(SettingsScope.User);
-        SettingsProperty<bool> editorFlowEnabled = settingsAsset.EditorFlowEnabled;
+        var isEditorFlowEnabled = BootstrapEditorSettingsUtility.GetValue(s => s.EditorFlowEnabled);
+        var settingsAsset = BootstrapEditorSettingsUtility.GetWithScope(SettingsScope.User);
+        var editorFlowEnabled = settingsAsset.EditorFlowEnabled;
         if (!editorFlowEnabled.OverrideEnabled)
         {
             editorFlowEnabled.OverrideEnabled = true;
         }
 
-        editorFlowEnabled.SetValue(!editorFlowEnabled.Value);
+        editorFlowEnabled.SetValue(!isEditorFlowEnabled);
+        settingsAsset.Save();
     }
 }
 #endif

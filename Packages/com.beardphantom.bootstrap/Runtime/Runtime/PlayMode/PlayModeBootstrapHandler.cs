@@ -1,6 +1,5 @@
 ﻿#if UNITY_EDITOR
 using BeardPhantom.Bootstrap.EditMode;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,21 +60,14 @@ namespace BeardPhantom.Bootstrap
         /// <inheritdoc />
         Awaitable IPreBootstrapHandler.OnPreBootstrapAsync(BootstrapContext context)
         {
-            var editModeStateJson = SessionState.GetString(EditModeAppInstance.EditModeStateSessionStateKey, "");
-            if (string.IsNullOrWhiteSpace(editModeStateJson))
-            {
-                return AwaitableUtility.Completed;
-            }
-
-            context.EditModeState = JsonConvert.DeserializeObject<EditModeState>(editModeStateJson);
-            App.State.IsRunningTests |= context.EditModeState.HasTestRunnerScene;
             return AwaitableUtility.Completed;
         }
 
         /// <inheritdoc />
         async Awaitable IPostBootstrapHandler.OnPostBootstrapAsync(BootstrapContext context)
         {
-            var editModeScenePaths = context.EditModeState.LoadedScenes;
+            var editModeState = App.GetInstance<PlayModeAppInstance>().EditModeState;
+            var editModeScenePaths = editModeState.LoadedScenes;
             if (editModeScenePaths.IsNull() || editModeScenePaths.Count == 0)
             {
                 SceneManager.LoadScene(1);
@@ -85,7 +77,7 @@ namespace BeardPhantom.Bootstrap
                 LoadScenesInPlayMode(editModeScenePaths);
             }
 
-            var serializedSelectedObjs = context.EditModeState.SelectedObjects;
+            var serializedSelectedObjs = editModeState.SelectedObjects;
             if (serializedSelectedObjs.IsNull() || serializedSelectedObjs.Length == 0)
             {
                 return;
@@ -110,7 +102,7 @@ namespace BeardPhantom.Bootstrap
                         {
                             continue;
                         }
-                        
+
                         var foundObj = ObjectUtility.FindInScene(scene, serializedSelectedObj.ObjectPath);
                         if (!foundObj)
                         {

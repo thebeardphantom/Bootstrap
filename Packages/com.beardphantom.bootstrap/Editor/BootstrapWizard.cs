@@ -128,28 +128,25 @@ namespace BeardPhantom.Bootstrap.Editor
                 EditorBuildSettings.scenes = scenesList.ToArray();
             }
 
-            BootstrapEnvironmentAsset environmentAsset = null;
+            ServiceList servicesListAsset = null;
+            if (CreateRuntimeServiceList)
+            {
+                servicesListAsset = CreateInstance<ServiceList>();
+                servicesListAsset.name = ServiceListAssetName;
+                AssetDatabase.CreateAsset(servicesListAsset, ServiceListAssetPath);
+            }
+
             if (CreateDefaultEnvironment)
             {
-                environmentAsset = CreateInstance<BootstrapEnvironmentAsset>();
+                var environmentAsset = CreateInstance<BootstrapEnvironmentAsset>();
                 environmentAsset.name = EnvironmentName;
+                environmentAsset.ServiceListAsset = servicesListAsset;
                 AssetDatabase.CreateAsset(environmentAsset, EnvironmentPath);
 
                 var settings = BootstrapEditorSettingsUtility.GetWithScope(SettingsScope.Project);
                 settings.DefaultPlayModeEnvironment.SetValue(environmentAsset);
                 settings.DefaultBuildEnvironment.SetValue(environmentAsset);
-            }
-
-            if (CreateRuntimeServiceList)
-            {
-                var servicesListAsset = CreateInstance<ServiceList>();
-                servicesListAsset.name = ServiceListAssetName;
-                AssetDatabase.CreateAsset(servicesListAsset, ServiceListAssetPath);
-                if (CreateDefaultEnvironment)
-                {
-                    Assert.IsNotNull(environmentAsset, "environmentAsset == null");
-                    environmentAsset.ServiceListAsset = servicesListAsset;
-                }
+                settings.Save();
             }
         }
 

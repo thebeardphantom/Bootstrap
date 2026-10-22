@@ -20,7 +20,7 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <inheritdoc />
-        protected override bool TryDetermineSessionEnvironment(out BootstrapEnvironmentAsset environment)
+        protected override bool TryLoadEnvironment(out BootstrapEnvironmentAsset environment)
         {
             var bootstrapEnvironmentAssets = Resources.FindObjectsOfTypeAll<BootstrapEnvironmentAsset>();
             if (bootstrapEnvironmentAssets.Length == 0)

@@ -32,7 +32,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
             foreach (var mappedEnvironment in buildProfileEnvironments)
             {
-                if (mappedEnvironment.Key == buildProfile)
+                if (mappedEnvironment.Key == buildProfile && mappedEnvironment.Value.IsNotNull())
                 {
                     Logging.Debug($"Using build environment for build profile {buildProfile.name}.");
                     environment = mappedEnvironment.Value;
@@ -62,7 +62,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
             foreach (var mappedEnvironment in platformEnvironments)
             {
-                if (mappedEnvironment.Key == platformId)
+                if (mappedEnvironment.Key == platformId && mappedEnvironment.Value.IsNotNull())
                 {
                     Logging.Debug($"Using build environment for build target {platformId}.");
                     environment = mappedEnvironment.Value;
@@ -87,10 +87,9 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private static void UnpackEnvironmentAssets()
         {
-            var preloadedAssets = PlayerSettings.GetPreloadedAssets();
             using (ListPool<Object>.Get(out var list))
             {
-                list.AddRange(preloadedAssets);
+                list.AddRange(PlayerSettings.GetPreloadedAssets());
                 list.RemoveAll(i => i is BootstrapEnvironmentAsset);
                 PlayerSettings.SetPreloadedAssets(list.ToArray());
             }
@@ -98,27 +97,18 @@ namespace BeardPhantom.Bootstrap.Editor
 
         void IPreprocessBuildWithReport.OnPreprocessBuild(BuildReport report)
         {
-            if (TryGetEnvironmentForBuildProfile(out var environment))
+            UnpackEnvironmentAssets();
+            if (!TryGetEnvironmentForBuildProfile(out var environment) && !TryGetEnvironmentForBuildTarget(report.summary, out environment))
             {
-                PackEnvironmentAsset(environment);
-                return;
+                environment = BootstrapEditorSettingsUtility.GetValue(t => t.DefaultBuildEnvironment);
+                if (environment.IsNull())
+                {
+                    Logging.Warn("Unable to determine suitable environment for build.");
+                    return;
+                }
             }
 
-            if (TryGetEnvironmentForBuildTarget(report.summary, out environment))
-            {
-                PackEnvironmentAsset(environment);
-                return;
-            }
-
-            var defaultBuildEnvironment =
-                BootstrapEditorSettingsUtility.GetValue(t => t.DefaultBuildEnvironment);
-            if (defaultBuildEnvironment.IsNotNull())
-            {
-                PackEnvironmentAsset(defaultBuildEnvironment);
-                return;
-            }
-
-            Logging.Warn("Unable to determine suitable environment for build.");
+            PackEnvironmentAsset(environment);
         }
 
         void IPostprocessBuildWithReport.OnPostprocessBuild(BuildReport report)

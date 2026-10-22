@@ -41,7 +41,7 @@ namespace BeardPhantom.Bootstrap
         /// </summary>
         /// <param name="environment">The selected environment, or null if none could be determined.</param>
         /// <returns>True if an environment was selected.</returns>
-        protected abstract bool TryDetermineSessionEnvironment(out BootstrapEnvironmentAsset environment);
+        protected abstract bool TryLoadEnvironment(out BootstrapEnvironmentAsset environment);
 
         internal override async Awaitable BootstrapAsync()
         {
@@ -50,7 +50,7 @@ namespace BeardPhantom.Bootstrap
             var appInstance = App.Instance;
             var cancellationToken = Application.exitCancellationToken;
 
-            if (TryDetermineSessionEnvironment(out var environmentAssetSource))
+            if (TryLoadEnvironment(out var environmentAssetSource))
             {
                 Logging.Info($"Selected environment {environmentAssetSource}.");
                 if (environmentAssetSource.ServiceListAsset.IsNull())
@@ -61,14 +61,13 @@ namespace BeardPhantom.Bootstrap
                 {
                     SessionEnvironment = environmentAssetSource.StartEnvironment();
 
-                    var context = new BootstrapContext(appInstance.TaskScheduler);
-
                     appInstance.BootstrapState = AppBootstrapState.BootstrapHandlerDiscovery;
                     Logging.Info("Bootstrapping application.");
                     AssignBootstrapHandlers();
 
                     appInstance.BootstrapState = AppBootstrapState.PreBootstrap;
                     Logging.Trace("Beginning pre-bootstrapping.");
+                    var context = new BootstrapContext(appInstance.TaskScheduler);
                     await _preHandler.OnPreBootstrapAsync(context);
                     await Awaitable.NextFrameAsync(cancellationToken);
 

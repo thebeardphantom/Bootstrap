@@ -57,6 +57,17 @@ namespace BeardPhantom.Bootstrap
         }
 
         /// <summary>
+        /// Gets the current app instance of a specific subtype.
+        /// </summary>
+        /// <exception cref="InvalidCastException">
+        /// Throws if the current <see cref="Instance" /> is not of type <typeparamref name="T" />.
+        /// </exception>
+        public static T GetInstance<T>() where T : AppInstance
+        {
+            return (T)s_instance;
+        }
+
+        /// <summary>
         /// Attempts to get the current app instance.
         /// </summary>
         /// <param name="instance">The current app instance, or null if none is initialized.</param>
@@ -214,10 +225,10 @@ namespace BeardPhantom.Bootstrap
         private static async Awaitable CreateAppInstanceAsync(AppInstance appInstance)
         {
             ThrowIfAppInstanceCreated();
-            
+
             State.IsQuitting = false;
             State.IsResetting = false;
-            
+
             Logging.Info($"Creating {nameof(AppInstance)} {appInstance}.");
             s_instance = appInstance;
             await appInstance.BootstrapAsync();

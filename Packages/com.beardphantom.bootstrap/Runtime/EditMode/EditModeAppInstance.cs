@@ -22,7 +22,7 @@ namespace BeardPhantom.Bootstrap.EditMode
         /// <summary>
         /// <see cref="SessionState" /> key under which the serialized <see cref="EditModeState" /> snapshot is stored.
         /// </summary>
-        public const string EditModeStateSessionStateKey = "EDIT_MODE_STATE";
+        public const string EditModeStateSessionStateKey = "com.beardphantom.bootstrap_EditModeState";
 
         private ServiceList _editModeServiceListInstance;
 
