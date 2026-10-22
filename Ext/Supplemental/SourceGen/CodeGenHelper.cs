@@ -1,6 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -57,7 +56,7 @@ namespace BeardPhantom.Bootstrap.SourceGen
 
         private static BootstrapGeneratorAttribute CreateAttributeInstance(AttributeData attributeData)
         {
-            INamedTypeSymbol attrClass = attributeData.AttributeClass!;
+            var attrClass = attributeData.AttributeClass!;
             var type = Type.GetType(attrClass.ToDisplayString());
             if (type == null)
             {
@@ -65,24 +64,24 @@ namespace BeardPhantom.Bootstrap.SourceGen
             }
 
             // Convert constructor arguments (in declared order) to real CLR values.
-            object?[] ctorArgs = attributeData.ConstructorArguments
+            var ctorArgs = attributeData.ConstructorArguments
                 .Select(TypedConstantToObject)
                 .ToArray();
 
             var instance = (BootstrapGeneratorAttribute)Activator.CreateInstance(type, ctorArgs)!;
 
             // Apply any named arguments (e.g. [MyAttr(Bar = 5)]) to fields/properties.
-            foreach (KeyValuePair<string, TypedConstant> named in attributeData.NamedArguments)
+            foreach (var named in attributeData.NamedArguments)
             {
-                object? value = TypedConstantToObject(named.Value);
-                FieldInfo? field = type.GetField(named.Key, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                var value = TypedConstantToObject(named.Value);
+                var field = type.GetField(named.Key, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 if (field != null)
                 {
                     field.SetValue(instance, value);
                     continue;
                 }
 
-                PropertyInfo? prop = type.GetProperty(named.Key, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                var prop = type.GetProperty(named.Key, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 prop?.SetValue(instance, value);
             }
 
@@ -100,8 +99,8 @@ namespace BeardPhantom.Bootstrap.SourceGen
             {
                 case TypedConstantKind.Array:
                 {
-                    Type elementType = Type.GetType(((IArrayTypeSymbol)constant.Type!).ElementType.ToDisplayString())
-                                       ?? typeof(object);
+                    var elementType = Type.GetType(((IArrayTypeSymbol)constant.Type!).ElementType.ToDisplayString())
+                                      ?? typeof(object);
                     var array = Array.CreateInstance(elementType, constant.Values.Length);
                     for (var i = 0; i < constant.Values.Length; i++)
                     {

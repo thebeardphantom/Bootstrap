@@ -3,7 +3,7 @@ using System;
 namespace BeardPhantom.Bootstrap.SourceGen
 {
     /// <summary>
-    /// Flags controlling which accessors <see cref="GenerateSingletonAttribute"/> generates.
+    /// Flags controlling which accessors <see cref="GenerateSingletonAttribute" /> generates.
     /// </summary>
     [Flags]
     public enum SingletonAccessors
@@ -20,13 +20,13 @@ namespace BeardPhantom.Bootstrap.SourceGen
     }
 
     /// <summary>
-    /// Extension methods for <see cref="SingletonAccessors"/>.
+    /// Extension methods for <see cref="SingletonAccessors" />.
     /// </summary>
     public static class SingletonAccessorsExtensions
     {
         /// <summary>
-        /// Checks whether <paramref name="value"/> has <paramref name="flag"/> set, without the boxing allocation
-        /// of <see cref="Enum.HasFlag"/>.
+        /// Checks whether <paramref name="value" /> has <paramref name="flag" /> set, without the boxing allocation
+        /// of <see cref="Enum.HasFlag" />.
         /// </summary>
         /// <param name="value">The value to check.</param>
         /// <param name="flag">The flag to check for.</param>

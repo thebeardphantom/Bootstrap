@@ -5,7 +5,7 @@ namespace BeardPhantom.Bootstrap.SourceGen
 {
     /// <summary>
     /// Base attribute for marking a partial type to receive generated members from
-    /// <see cref="BootstrapSourceGenerator"/>.
+    /// <see cref="BootstrapSourceGenerator" />.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Struct)]
     public abstract class BootstrapGeneratorAttribute : Attribute

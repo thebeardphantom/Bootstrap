@@ -5,11 +5,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SourceGenAttributes\SourceGenAttributes.csproj" />
+        <ProjectReference Include="..\SourceGenAttributes\SourceGenAttributes.csproj"/>
         <ProjectReference
                 Include="..\SourceGen\SourceGen.csproj"
                 OutputItemType="Analyzer"
-                ReferenceOutputAssembly="false" />
+                ReferenceOutputAssembly="false"/>
     </ItemGroup>
-    
+
 </Project>
