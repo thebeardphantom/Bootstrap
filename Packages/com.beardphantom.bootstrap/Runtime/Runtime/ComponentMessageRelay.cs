@@ -18,17 +18,34 @@ namespace BeardPhantom.Bootstrap
             private set => s_instance = value;
         }
 
-        public static ComponentMessageRelay Create()
+        public static void Create()
         {
-            if (s_instance.IsNull())
+            if (s_instance.IsNotNull())
             {
-                var relayGameObject = new GameObject(nameof(ComponentMessageRelay));
-                s_instance = relayGameObject.AddComponent<ComponentMessageRelay>();
-                DontDestroyOnLoad(relayGameObject);
-                relayGameObject.hideFlags = HideFlags.HideAndDontSave;
+                return;
             }
 
-            return Instance;
+            var relayGameObject = new GameObject(nameof(ComponentMessageRelay));
+            s_instance = relayGameObject.AddComponent<ComponentMessageRelay>();
+            DontDestroyOnLoad(relayGameObject);
+            relayGameObject.hideFlags = HideFlags.HideAndDontSave;
+        }
+
+        private static bool TryGetServiceLocator(out ServiceLocator serviceLocator)
+        {
+            serviceLocator = null;
+            if (!App.TryGetInstance(out var instance))
+            {
+                return false;
+            }
+
+            if (!instance.CanLocateServices)
+            {
+                return false;
+            }
+
+            serviceLocator = instance.ServiceLocator;
+            return true;
         }
 
         private void OnApplicationQuit()
@@ -42,75 +59,51 @@ namespace BeardPhantom.Bootstrap
             Instance = null;
         }
 
+        private void FixedUpdate()
+        {
+            if (!TryGetServiceLocator(out var serviceLocator))
+            {
+                return;
+            }
+
+            var servicesWithFixedUpdateLoop = serviceLocator.ServicesWithFixedUpdateLoop;
+            var deltaTime = Time.deltaTime;
+            for (var i = 0; i < servicesWithFixedUpdateLoop.Count; i++)
+            {
+                var service = servicesWithFixedUpdateLoop[i];
+                service.FixedUpdate(deltaTime);
+            }
+        }
+
         private void Update()
         {
-            if (!App.TryGetInstance(out var appInstance))
+            if (!TryGetServiceLocator(out var serviceLocator))
             {
                 return;
             }
 
-            if (!appInstance.CanLocateServices)
-            {
-                return;
-            }
-
+            var servicesWithUpdateLoop = serviceLocator.ServicesWithUpdateLoop;
             var deltaTime = Time.deltaTime;
-            var serviceLocator = appInstance.ServiceLocator;
-            for (var i = 0; i < serviceLocator.Count; i++)
+            for (var i = 0; i < servicesWithUpdateLoop.Count; i++)
             {
-                var service = serviceLocator[i];
-                if (service is IServiceWithUpdateLoop serviceWithUpdateLoop)
-                {
-                    serviceWithUpdateLoop.Update(deltaTime);
-                }
+                var service = servicesWithUpdateLoop[i];
+                service.Update(deltaTime);
             }
         }
 
         private void LateUpdate()
         {
-            if (!App.TryGetInstance(out var appInstance))
+            if (!TryGetServiceLocator(out var serviceLocator))
             {
                 return;
             }
 
-            if (!appInstance.CanLocateServices)
-            {
-                return;
-            }
-
+            var servicesWithLateUpdateLoop = serviceLocator.ServicesWithLateUpdateLoop;
             var deltaTime = Time.deltaTime;
-            var serviceLocator = appInstance.ServiceLocator;
-            for (var i = 0; i < serviceLocator.Count; i++)
+            for (var i = 0; i < servicesWithLateUpdateLoop.Count; i++)
             {
-                var service = serviceLocator[i];
-                if (service is IServiceWithLateUpdateLoop serviceWithLateUpdateLoop)
-                {
-                    serviceWithLateUpdateLoop.LateUpdate(deltaTime);
-                }
-            }
-        }
-
-        private void FixedUpdate()
-        {
-            if (!App.TryGetInstance(out var appInstance))
-            {
-                return;
-            }
-
-            if (!appInstance.CanLocateServices)
-            {
-                return;
-            }
-
-            var fixedDeltaTime = Time.fixedDeltaTime;
-            var serviceLocator = appInstance.ServiceLocator;
-            for (var i = 0; i < serviceLocator.Count; i++)
-            {
-                var service = serviceLocator[i];
-                if (service is IServiceWithFixedUpdateLoop serviceWithFixedUpdateLoop)
-                {
-                    serviceWithFixedUpdateLoop.FixedUpdate(fixedDeltaTime);
-                }
+                var service = servicesWithLateUpdateLoop[i];
+                service.LateUpdate(deltaTime);
             }
         }
     }

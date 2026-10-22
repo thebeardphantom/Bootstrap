@@ -13,6 +13,8 @@ namespace BeardPhantom.Bootstrap
     /// </summary>
     public class ServiceLocator : IDisposable
     {
+        private readonly AppInstance _appInstance;
+
         /// <summary>
         /// Signature for events raised in response to a service lifecycle change.
         /// </summary>
@@ -33,17 +35,38 @@ namespace BeardPhantom.Bootstrap
 
         private readonly List<IService> _services = new();
 
+        private readonly List<IServiceWithFixedUpdateLoop> _servicesWithFixedUpdateLoop = new();
+
+        private readonly List<IServiceWithUpdateLoop> _servicesWithUpdateLoop = new();
+
+        private readonly List<IServiceWithLateUpdateLoop> _servicesWithLateUpdateLoop = new();
+
         private ServiceList _serviceList;
 
         /// <summary>
         /// Whether services are currently allowed to be located.
         /// </summary>
-        public bool CanLocateServices => App.Instance.BootstrapState > AppBootstrapState.ServiceInit;
+        public bool CanLocateServices => _appInstance.BootstrapState > AppBootstrapState.ServiceInit;
 
         /// <summary>
         /// Gets the number of <see cref="IService">IServices</see> contained in the <see cref="ServiceLocator" />.
         /// </summary>
         public int Count => _services.Count;
+
+        /// <summary>
+        /// All services implementing <see cref="IServiceWithFixedUpdateLoop"/>.
+        /// </summary>
+        public IReadOnlyList<IServiceWithFixedUpdateLoop> ServicesWithFixedUpdateLoop => _servicesWithFixedUpdateLoop;
+
+        /// <summary>
+        /// All services implementing <see cref="IServiceWithUpdateLoop"/>.
+        /// </summary>
+        public IReadOnlyList<IServiceWithUpdateLoop> ServicesWithUpdateLoop => _servicesWithUpdateLoop;
+
+        /// <summary>
+        /// All services implementing <see cref="IServiceWithLateUpdateLoop"/>.
+        /// </summary>
+        public IReadOnlyList<IServiceWithLateUpdateLoop> ServicesWithLateUpdateLoop => _servicesWithLateUpdateLoop;
 
         /// <summary>
         /// Gets the <see cref="IService" /> at the given <paramref name="index" />.
@@ -56,6 +79,11 @@ namespace BeardPhantom.Bootstrap
         private static Exception GetServiceAccessException()
         {
             return new InvalidOperationException("Attempted to access services before services can be located.");
+        }
+
+        public ServiceLocator(AppInstance appInstance)
+        {
+            _appInstance = appInstance;
         }
 
         /// <summary>
@@ -87,6 +115,27 @@ namespace BeardPhantom.Bootstrap
             }
 
             _services.Sort(ServiceInitComparer.Instance);
+
+            /*
+             * Service Special Interface Registration
+             */
+            foreach (var service in _services)
+            {
+                if (service is IServiceWithFixedUpdateLoop serviceWithFixedUpdateLoop)
+                {
+                    _servicesWithFixedUpdateLoop.Add(serviceWithFixedUpdateLoop);
+                }
+
+                if (service is IServiceWithUpdateLoop serviceWithUpdateLoop)
+                {
+                    _servicesWithUpdateLoop.Add(serviceWithUpdateLoop);
+                }
+
+                if (service is IServiceWithLateUpdateLoop serviceWithLateUpdateLoop)
+                {
+                    _servicesWithLateUpdateLoop.Add(serviceWithLateUpdateLoop);
+                }
+            }
 
             /*
              * Service Binding

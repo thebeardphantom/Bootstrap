@@ -200,7 +200,7 @@ namespace BeardPhantom.Bootstrap
             CreateTimestamp = DateTimeOffset.Now;
             _bootstrapState = AppBootstrapState.None;
             SessionGuid = Guid.NewGuid();
-            ServiceLocator = new ServiceLocator();
+            ServiceLocator = new ServiceLocator(this);
             TaskScheduler = new TaskScheduler();
             return AwaitableUtility.Completed;
         }
