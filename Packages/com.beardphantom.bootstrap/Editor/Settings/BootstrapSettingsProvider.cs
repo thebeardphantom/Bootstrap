@@ -16,8 +16,6 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         /// </summary>
         public const string SettingsPath = "Project/Bootstrap";
 
-        private SerializedObject _serializedObject;
-
         private BootstrapSettingsEditor _settingsEditor;
 
         /// <inheritdoc />

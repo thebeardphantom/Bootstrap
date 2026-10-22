@@ -66,7 +66,7 @@ public static class BootstrapMainToolbarElements
             editorFlowEnabled.OverrideEnabled = true;
         }
 
-        editorFlowEnabled.SetValue(!isEditorFlowEnabled);
+        editorFlowEnabled.Value = !isEditorFlowEnabled;
         settingsAsset.Save();
     }
 }

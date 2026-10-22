@@ -27,42 +27,13 @@ namespace BeardPhantom.Bootstrap.Editor
 
         private readonly Dictionary<int, SelectableType> _itemIdToSelectableType = new();
 
-        /// <summary>
-        /// Creates a dropdown listing types derived from <paramref name="baseType" />.
-        /// </summary>
-        /// <param name="baseType">The base type whose derived types are listed.</param>
-        public PolymorphicTypeSelectorDropdown(Type baseType)
-            : this(baseType, Enumerable.Empty<Type>(), new AdvancedDropdownState()) { }
+        public PolymorphicTypeSelectorDropdown(Type baseType, AdvancedDropdownState state)
+            : this(baseType, Enumerable.Empty<Type>(), state) { }
 
-        /// <summary>
-        /// Creates a dropdown listing types derived from <paramref name="baseType" />, with some types shown
-        /// disabled.
-        /// </summary>
-        /// <param name="baseType">The base type whose derived types are listed.</param>
-        /// <param name="disabledTypes">Types to display as disabled/non-selectable.</param>
         public PolymorphicTypeSelectorDropdown(Type baseType, IEnumerable<Type> disabledTypes)
             : this(baseType, disabledTypes, new AdvancedDropdownState()) { }
 
-        /// <summary>
-        /// Creates a dropdown listing types derived from <paramref name="baseType" />, using an existing dropdown
-        /// state.
-        /// </summary>
-        /// <param name="baseType">The base type whose derived types are listed.</param>
-        /// <param name="state">The persisted state to use for the dropdown.</param>
-        public PolymorphicTypeSelectorDropdown(Type baseType, AdvancedDropdownState state) :
-            this(baseType, Enumerable.Empty<Type>(), state) { }
-
-        /// <summary>
-        /// Creates a dropdown listing types derived from <paramref name="baseType" />, with some types shown
-        /// disabled, using an existing dropdown state.
-        /// </summary>
-        /// <param name="baseType">The base type whose derived types are listed.</param>
-        /// <param name="disabledTypes">Types to display as disabled/non-selectable.</param>
-        /// <param name="state">The persisted state to use for the dropdown.</param>
-        public PolymorphicTypeSelectorDropdown(
-            Type baseType,
-            IEnumerable<Type> disabledTypes,
-            AdvancedDropdownState state) : base(state)
+        public PolymorphicTypeSelectorDropdown(Type baseType, IEnumerable<Type> disabledTypes, AdvancedDropdownState state) : base(state)
         {
             _baseType = baseType;
             _disabledTypes = disabledTypes;

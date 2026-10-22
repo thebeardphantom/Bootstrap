@@ -3,7 +3,6 @@ using System;
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEditor.UIElements;
-using UnityEngine;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 
@@ -68,32 +67,6 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
             }
         }
 
-        private static void OnObjectFieldSelectorMouseDown(MouseDownEvent evt, ObjectField objectField)
-        {
-            BootstrapEditorUtility.PickAsset<GameObject>(result =>
-            {
-                objectField.value = result;
-            });
-        }
-
-        private static void FixComponentObjectFields(VisualElement root)
-        {
-            root.Query<ObjectField>()
-                .Where(of => typeof(Component).IsAssignableFrom(of.objectType))
-                .ForEach(FixComponentObjectField);
-        }
-
-        private static void FixComponentObjectField(ObjectField objectField)
-        {
-            var selector = objectField.Q(className: ObjectField.selectorUssClassName);
-            var selectorParent = selector.parent;
-            selector.RemoveFromHierarchy();
-            selector = new VisualElement();
-            selector.AddToClassList(ObjectField.selectorUssClassName);
-            selector.RegisterCallback<MouseDownEvent, ObjectField>(OnObjectFieldSelectorMouseDown, objectField);
-            selectorParent.Add(selector);
-        }
-
         private static void OnReinitializeButtonClicked()
         {
             if (!App.TryGetInstance(out EditModeAppInstance _))
@@ -155,7 +128,6 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
             _tabViewContent.Bind(serializedObject);
             _tabViewContent.TrackSerializedObjectValue(serializedObject, OnSerializedObjectPropertyChanged);
             _tabViewContent.RemoveAt(1);
-            FixComponentObjectFields(_tabViewContent);
 
             if (bindingScope == SettingsScope.Project)
             {

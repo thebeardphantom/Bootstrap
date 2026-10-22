@@ -1,5 +1,4 @@
 ﻿#if UNITY_EDITOR
-using BeardPhantom.Bootstrap.Environment;
 using UnityEditor;
 
 namespace BeardPhantom.Bootstrap.EditMode
@@ -9,12 +8,6 @@ namespace BeardPhantom.Bootstrap.EditMode
     /// and local to the current user's machine.
     /// </summary>
     [FilePath("UserSettings/BootstrapUserSettings.asset", FilePathAttribute.Location.ProjectFolder)]
-    public class BootstrapEditorUserSettings : BootstrapEditorSettingsAsset<BootstrapEditorUserSettings>
-    {
-        /// <summary>
-        /// The environment currently selected by the user for edit mode bootstrapping.
-        /// </summary>
-        public BootstrapEnvironmentAsset SelectedEnvironment { get; set; }
-    }
+    public class BootstrapEditorUserSettings : BootstrapEditorSettingsAsset<BootstrapEditorUserSettings> { }
 }
 #endif

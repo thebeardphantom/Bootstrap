@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -31,7 +33,9 @@ namespace BeardPhantom.Bootstrap.Editor
 
             private readonly Type _baseType;
 
-            private readonly SerializedProperty _property;
+            private readonly SerializedObject _serializedObject;
+
+            private readonly string _propertyPath;
 
             private readonly string _createNewButtonText;
 
@@ -49,8 +53,9 @@ namespace BeardPhantom.Bootstrap.Editor
                 PolymorphicTypeSelectorAttribute attribute,
                 SerializedProperty property)
             {
-                _property = property.Copy();
                 _baseType = attribute.BaseType;
+                _serializedObject = property.serializedObject;
+                _propertyPath = property.propertyPath;
                 name = "root";
                 _createNewButtonText = $"Create new {_baseType.Name}";
                 var styleSheet = AssetDatabase.LoadAssetByGUID<StyleSheet>(s_stylesheetGuid);
@@ -58,17 +63,23 @@ namespace BeardPhantom.Bootstrap.Editor
                 RebuildUI();
             }
 
+            private SerializedProperty GetProperty()
+            {
+                return _serializedObject.FindProperty(_propertyPath);
+            }
+
             private string GetLabel()
             {
-                var managedReferenceValue = _property.managedReferenceValue;
+                var property = GetProperty();
+                var managedReferenceValue = property.managedReferenceValue;
                 if (managedReferenceValue.IsNull())
                 {
-                    return _property.displayName;
+                    return property.displayName;
                 }
 
                 var typeName = managedReferenceValue.GetType().Name;
                 typeName = ObjectNames.NicifyVariableName(typeName);
-                return $"{_property.displayName} ({typeName})";
+                return $"{property.displayName} ({typeName})";
             }
 
             private void RebuildUI()
@@ -76,8 +87,9 @@ namespace BeardPhantom.Bootstrap.Editor
                 Clear();
 
                 var label = GetLabel();
-                var isAsset = EditorUtility.IsPersistent(_property.serializedObject.targetObject);
-                if (_property.managedReferenceValue.IsNull())
+                var property = GetProperty();
+                var isAsset = EditorUtility.IsPersistent(property.serializedObject.targetObject);
+                if (property.managedReferenceValue.IsNull())
                 {
                     UnregisterCallback<MouseEnterEvent>(OnMouseEnterRoot);
                     UnregisterCallback<MouseLeaveEvent>(OnMouseLeaveRoot);
@@ -90,8 +102,8 @@ namespace BeardPhantom.Bootstrap.Editor
                 }
                 else
                 {
-                    var propertyField = new PropertyField(_property, label);
-                    propertyField.TrackPropertyValue(_property, OnSerializedPropertyValueChanged);
+                    var propertyField = new PropertyField(property, label);
+                    propertyField.TrackPropertyValue(property, OnSerializedPropertyValueChanged);
                     Add(propertyField);
 
                     _deleteButton = new Button
@@ -117,7 +129,7 @@ namespace BeardPhantom.Bootstrap.Editor
                     }
                 }
 
-                this.Bind(_property.serializedObject);
+                this.Bind(property.serializedObject);
             }
 
             private void OnDrawCreateNewButtonIMGUI()
@@ -135,9 +147,20 @@ namespace BeardPhantom.Bootstrap.Editor
                 }
 
                 var dropdownRect = _createNewButtonRepaintRect;
-                var dropdown = new PolymorphicTypeSelectorDropdown(_baseType);
+                var disabledTypes = GetDisabledTypes();
+                var dropdown = new PolymorphicTypeSelectorDropdown(_baseType, disabledTypes);
                 dropdown.ComponentTypeSelected += OnComponentTypeSelected;
                 dropdown.Show(dropdownRect);
+            }
+
+            private IEnumerable<Type> GetDisabledTypes()
+            {
+                if (_serializedObject.targetObject is ServiceList serviceList)
+                {
+                    return serviceList.Services.Where(s => s.IsNotNull()).Select(s => s.GetType()).ToArray();
+                }
+
+                return Enumerable.Empty<Type>();
             }
 
             private void OnMouseEnterRoot(MouseEnterEvent _)
@@ -158,8 +181,9 @@ namespace BeardPhantom.Bootstrap.Editor
 
             private void OnDeleteButtonClicked(EventBase obj)
             {
-                _property.managedReferenceValue = null;
-                _property.serializedObject.ApplyModifiedProperties();
+                var property = GetProperty();
+                property.managedReferenceValue = null;
+                property.serializedObject.ApplyModifiedProperties();
             }
 
             private void OnSerializedPropertyValueChanged(SerializedProperty obj)
@@ -170,8 +194,9 @@ namespace BeardPhantom.Bootstrap.Editor
             private void OnComponentTypeSelected(Type type)
             {
                 var instance = Activator.CreateInstance(type);
-                _property.managedReferenceValue = instance;
-                _property.serializedObject.ApplyModifiedProperties();
+                var property = GetProperty();
+                property.managedReferenceValue = instance;
+                property.serializedObject.ApplyModifiedProperties();
                 RebuildUI();
             }
 

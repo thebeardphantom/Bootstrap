@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
-#pragma warning disable CS0067 // Event is never used
-
 namespace BeardPhantom.Bootstrap
 {
     /// <summary>
@@ -178,6 +176,7 @@ namespace BeardPhantom.Bootstrap
             {
                 Logging.Debug($"InitService on {service.GetType()}.");
                 service.InitService(context);
+                ServiceInitialized?.Invoke(service);
             }
         }
 

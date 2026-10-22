@@ -13,11 +13,6 @@ namespace BeardPhantom.Bootstrap.EditMode
     public class SettingsProperty<T>
     {
         /// <summary>
-        /// Raised after <see cref="Value" /> changes via <see cref="SetValue" />.
-        /// </summary>
-        public event Action<T> ValueChanged;
-
-        /// <summary>
         /// Whether this property's own <see cref="Value" /> should be used instead of a fallback scope's value.
         /// </summary>
         [field: SerializeField]
@@ -29,7 +24,7 @@ namespace BeardPhantom.Bootstrap.EditMode
         /// </summary>
         [field: SerializeField]
         [field: Tooltip("The current value of this property.")]
-        public T Value { get; private set; }
+        public T Value { get; set; }
 
         /// <summary>
         /// Creates a property with the default value of <typeparamref name="T" />.
@@ -43,16 +38,6 @@ namespace BeardPhantom.Bootstrap.EditMode
         public SettingsProperty(T defaultValue = default)
         {
             Value = defaultValue;
-        }
-
-        /// <summary>
-        /// Sets <see cref="Value" /> and raises <see cref="ValueChanged" />.
-        /// </summary>
-        /// <param name="newValue">The new value to assign.</param>
-        public void SetValue(T newValue)
-        {
-            Value = newValue;
-            ValueChanged?.Invoke(newValue);
         }
     }
 }

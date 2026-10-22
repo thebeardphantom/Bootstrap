@@ -196,7 +196,7 @@ namespace BeardPhantom.Bootstrap.EditMode
                 _editModeServiceListInstance = serviceListSource.CreateClone();
 
                 var context = new BootstrapContext(TaskScheduler);
-                var description = $"Creating edit mode services from prefab '{serviceListSource.name}' from {definedScope} scope.";
+                var description = $"Creating edit mode services from '{serviceListSource.name}' from {definedScope} scope.";
                 Progress.Report(progressId, 1f, description);
                 EditorUtility.DisplayProgressBar("Edit Mode Bootstrapping", description, 1f);
                 ServiceLocator.Create(context, _editModeServiceListInstance);

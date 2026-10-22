@@ -67,18 +67,4 @@ namespace BeardPhantom.Bootstrap
             }
         }
     }
-
-    internal static class AwaitableUtility<T>
-    {
-        public static Awaitable<T> Completed => FromResult();
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [SuppressMessage("ReSharper", "AsyncMethodWithoutAwait")]
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public static async Awaitable<T> FromResult(T result = default)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-        {
-            return result;
-        }
-    }
 }

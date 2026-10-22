@@ -77,6 +77,7 @@ namespace BeardPhantom.Bootstrap.Editor
         {
             Scene bootstrapScene = default;
             var activeScene = SceneManager.GetActiveScene();
+            var settings = BootstrapEditorSettingsUtility.GetWithScope(SettingsScope.Project);
             try
             {
                 Directory.CreateDirectory(OutputDirectory);
@@ -87,11 +88,12 @@ namespace BeardPhantom.Bootstrap.Editor
                     SceneManager.SetActiveScene(bootstrapScene);
                 }
 
-                CreateRuntimeAssets(bootstrapScene);
-                CreateEditModeAssets();
+                CreateRuntimeAssets(settings, bootstrapScene);
+                CreateEditModeAssets(settings);
             }
             finally
             {
+                settings.Save();
                 SceneManager.SetActiveScene(activeScene);
                 if (bootstrapScene.IsValid() && bootstrapScene.isLoaded)
                 {
@@ -108,7 +110,7 @@ namespace BeardPhantom.Bootstrap.Editor
             }
         }
 
-        private void CreateRuntimeAssets(Scene bootstrapScene)
+        private void CreateRuntimeAssets(IBootstrapEditorSettingsAsset settings, Scene bootstrapScene)
         {
             if (CreateBootstrapScene)
             {
@@ -143,14 +145,12 @@ namespace BeardPhantom.Bootstrap.Editor
                 environmentAsset.ServiceListAsset = servicesListAsset;
                 AssetDatabase.CreateAsset(environmentAsset, EnvironmentPath);
 
-                var settings = BootstrapEditorSettingsUtility.GetWithScope(SettingsScope.Project);
-                settings.DefaultPlayModeEnvironment.SetValue(environmentAsset);
-                settings.DefaultBuildEnvironment.SetValue(environmentAsset);
-                settings.Save();
+                settings.DefaultPlayModeEnvironment.Value = environmentAsset;
+                settings.DefaultBuildEnvironment.Value = environmentAsset;
             }
         }
 
-        private void CreateEditModeAssets()
+        private void CreateEditModeAssets(IBootstrapEditorSettingsAsset settings)
         {
             if (!CreateEditModeServiceList)
             {
@@ -159,8 +159,7 @@ namespace BeardPhantom.Bootstrap.Editor
 
             var servicesListAsset = CreateInstance<ServiceList>();
             AssetDatabase.CreateAsset(servicesListAsset, EditModeServiceListAssetPath);
-            var settings = BootstrapEditorSettingsUtility.GetWithScope(SettingsScope.Project);
-            settings.EditModeServices.SetValue(servicesListAsset);
+            settings.EditModeServices.Value = servicesListAsset;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using BeardPhantom.Bootstrap.EditMode;
+using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
@@ -19,11 +20,6 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         /// The field displaying and editing the property's value.
         /// </summary>
         public PropertyField PropertyField { get; }
-
-        /// <summary>
-        /// Parameterless constructor required for UXML instantiation.
-        /// </summary>
-        public SettingsPropertyField() { }
 
         /// <summary>
         /// Creates a field for <paramref name="property" />, wiring up the override toggle and value field.
