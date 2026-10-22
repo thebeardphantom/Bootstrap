@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -7,6 +8,14 @@ namespace BeardPhantom.Bootstrap.SourceGen
 {
     internal static class CodeGenHelper
     {
+        private const string KeywordInterface = "interface";
+
+        private const string KeywordClass = "class";
+
+        private const string KeywordStruct = "struct";
+
+        private const string KeywordRecord = "record";
+
         public static bool TryGetParentSyntax<T>(this SyntaxNode? syntaxNode, out T? result) where T : SyntaxNode
         {
             result = null;
@@ -39,22 +48,18 @@ namespace BeardPhantom.Bootstrap.SourceGen
             }
         }
 
-        public static bool IsType<T>(this INamedTypeSymbol namedTypeSymbol)
+        public static Type[] GetAttributeTypes()
         {
-            return namedTypeSymbol.Name == typeof(T).Name || namedTypeSymbol.ToDisplayString() == typeof(T).FullName;
+            return
+            [
+                .. typeof(BootstrapGeneratorAttribute)
+                    .Assembly
+                    .GetTypes()
+                    .Where(t => !t.IsAbstract && typeof(BootstrapGeneratorAttribute).IsAssignableFrom(t)),
+            ];
         }
 
-        public static BootstrapGeneratorAttribute[] GetAttributeInstances(INamedTypeSymbol symbol)
-        {
-            return symbol
-                .GetAttributes()
-                .Where(attribute => attribute.AttributeClass is { BaseType: not null, } attrClass
-                                    && attrClass.BaseType.IsType<BootstrapGeneratorAttribute>())
-                .Select(CreateAttributeInstance)
-                .ToArray();
-        }
-
-        private static BootstrapGeneratorAttribute CreateAttributeInstance(AttributeData attributeData)
+        public static BootstrapGeneratorAttribute CreateAttributeInstance(AttributeData attributeData)
         {
             var attrClass = attributeData.AttributeClass!;
             var type = Type.GetType(attrClass.ToDisplayString());
@@ -86,6 +91,18 @@ namespace BeardPhantom.Bootstrap.SourceGen
             }
 
             return instance;
+        }
+
+        public static string GetKeywordForType(TypeDeclarationSyntax typeDeclarationSyntax)
+        {
+            return typeDeclarationSyntax switch
+            {
+                InterfaceDeclarationSyntax => KeywordInterface,
+                ClassDeclarationSyntax => KeywordClass,
+                StructDeclarationSyntax => KeywordStruct,
+                RecordDeclarationSyntax => KeywordRecord,
+                _ => throw new ArgumentException($"Unknown type {typeDeclarationSyntax}."),
+            };
         }
 
         private static object? TypedConstantToObject(TypedConstant constant)
