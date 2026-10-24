@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 using ZLogger;
 
 [Serializable]
-[GenerateLogger]
+[GenerateLogger(LogCategory.TestCategory)]
 public partial class TestService : IServiceWithUpdateLoop
 {
     [field: SerializeField]

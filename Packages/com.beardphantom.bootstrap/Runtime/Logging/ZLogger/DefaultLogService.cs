@@ -57,6 +57,7 @@ namespace BeardPhantom.Bootstrap.ZLogger
         /// <param name="category">The logger category name.</param>
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
         public ILogger GetLogger(string category)
+        public ILogger GetLogger(string category, string group = null)
         {
             return _loggerFactory.CreateLogger(category);
         }
