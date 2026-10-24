@@ -8,7 +8,6 @@ namespace BeardPhantom.Bootstrap.EditMode
     /// A serializable settings value that can be toggled between using its own <see cref="Value" /> and deferring
     /// to a fallback (e.g. a lower-priority settings scope), and that notifies listeners when its value changes.
     /// </summary>
-    /// <typeparam name="T">The type of the settings value.</typeparam>
     [Serializable]
     public class SettingsProperty<T>
     {
@@ -34,7 +33,6 @@ namespace BeardPhantom.Bootstrap.EditMode
         /// <summary>
         /// Creates a property with the given initial value.
         /// </summary>
-        /// <param name="defaultValue">The initial value of the property.</param>
         public SettingsProperty(T defaultValue = default)
         {
             Value = defaultValue;

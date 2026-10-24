@@ -28,7 +28,6 @@ namespace BeardPhantom.Bootstrap.ZLogger
         /// <summary>
         /// Always returns true.
         /// </summary>
-        /// <param name="logLevel">The level to check.</param>
         public bool IsEnabled(LogLevel logLevel)
         {
             return true;
@@ -37,8 +36,6 @@ namespace BeardPhantom.Bootstrap.ZLogger
         /// <summary>
         /// Returns this instance; no scope tracking is performed.
         /// </summary>
-        /// <typeparam name="TState">The type of the state object.</typeparam>
-        /// <param name="state">The identifier for the scope.</param>
         public IDisposable BeginScope<TState>(TState state) where TState : notnull
         {
             return this;

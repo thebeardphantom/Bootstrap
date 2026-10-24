@@ -24,11 +24,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Creates a <see cref="SelectedObjectPath" /> for a <see cref="GameObject" /> or <see cref="Component" />.
         /// </summary>
-        /// <param name="obj">The <see cref="GameObject" /> or <see cref="Component" /> to reference.</param>
-        /// <exception cref="System.ArgumentException">
-        /// <paramref name="obj" /> is not a <see cref="GameObject" /> or
-        /// <see cref="Component" />.
-        /// </exception>
         public static SelectedObjectPath CreateInstance(Object obj)
         {
             return obj switch

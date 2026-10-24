@@ -14,7 +14,6 @@
         /// <summary>
         /// Creates a new bootstrap context.
         /// </summary>
-        /// <param name="scheduler">The task scheduler to associate with the app instance being bootstrapped.</param>
         public BootstrapContext(TaskScheduler scheduler)
         {
             Scheduler = scheduler;

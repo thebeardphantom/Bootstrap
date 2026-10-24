@@ -15,8 +15,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Invoked when <see cref="BootstrapState" /> changes.
         /// </summary>
-        /// <param name="previousState">The state being transitioned away from.</param>
-        /// <param name="newState">The state being transitioned to.</param>
         public delegate void OnAppBootstrapStateChanged(in AppBootstrapState previousState, in AppBootstrapState newState);
 
         /// <summary>
@@ -109,9 +107,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Attempts to locate a service of type <typeparamref name="T" /> via <see cref="ServiceLocator" />.
         /// </summary>
-        /// <typeparam name="T">The service type to locate.</typeparam>
-        /// <param name="service">The located service, or null if not found.</param>
-        /// <returns>True if the service was located.</returns>
         public bool TryLocate<T>(out T service) where T : class
         {
             return ServiceLocator.TryLocateService(out service);
@@ -120,7 +115,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Locates a service of type <typeparamref name="T" /> via <see cref="ServiceLocator" />.
         /// </summary>
-        /// <typeparam name="T">The service type to locate.</typeparam>
         public T Locate<T>() where T : class
         {
             return ServiceLocator.LocateService<T>();
@@ -130,10 +124,6 @@ namespace BeardPhantom.Bootstrap
         /// Marks <paramref name="obj" /> as scoped to this app instance: it is preserved across scene loads via
         /// <see cref="Object.DontDestroyOnLoad" /> and destroyed when this app instance resets.
         /// </summary>
-        /// <typeparam name="T">The type of <paramref name="obj" />.</typeparam>
-        /// <param name="obj">The object to scope to this app instance.</param>
-        /// <returns><paramref name="obj" />, for chaining.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="obj" /> is null.</exception>
         public T ScopeToApp<T>(T obj) where T : Object
         {
             if (obj.IsNull())
@@ -150,10 +140,6 @@ namespace BeardPhantom.Bootstrap
         /// Instantiates a clone of <paramref name="original" /> and scopes it to the current app instance.
         /// See <see cref="ScopeToApp{T}" />.
         /// </summary>
-        /// <typeparam name="T">The type of object to instantiate.</typeparam>
-        /// <param name="original">The object to clone.</param>
-        /// <returns>The cloned instance of <paramref name="original" />.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="original" /> is null.</exception>
         public T InstantiateAndScopeToApp<T>(T original) where T : Object
         {
             if (original.IsNull())

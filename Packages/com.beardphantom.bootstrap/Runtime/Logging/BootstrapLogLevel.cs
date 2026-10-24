@@ -52,7 +52,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Converts a <see cref="BootstrapLogLevel" /> to the equivalent Unity <see cref="LogType" />.
         /// </summary>
-        /// <param name="logLevel">The log level to convert.</param>
         public static LogType GetUnityLogType(this BootstrapLogLevel logLevel)
         {
             return logLevel switch

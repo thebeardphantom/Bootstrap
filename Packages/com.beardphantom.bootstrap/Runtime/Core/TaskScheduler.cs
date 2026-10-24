@@ -38,8 +38,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Queues an asynchronous task for later execution.
         /// </summary>
-        /// <param name="asyncTask">The asynchronous work to schedule.</param>
-        /// <param name="priority">The priority used to order this task relative to others.</param>
         public void Schedule(in AsyncTask asyncTask, int priority = 0)
         {
             Schedule(new ScheduledTask(asyncTask, priority));
@@ -48,8 +46,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Queues a synchronous task for later execution.
         /// </summary>
-        /// <param name="syncTask">The synchronous work to schedule.</param>
-        /// <param name="priority">The priority used to order this task relative to others.</param>
         public void Schedule(in Action syncTask, int priority = 0)
         {
             Schedule(new ScheduledTask(syncTask, priority));
@@ -58,7 +54,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Queues an already-constructed <see cref="ScheduledTask" /> for later execution.
         /// </summary>
-        /// <param name="scheduledTask">The task to schedule.</param>
         public void Schedule(in ScheduledTask scheduledTask)
         {
             var taskNumber = _scheduledTaskCount;
@@ -70,7 +65,6 @@ namespace BeardPhantom.Bootstrap
         /// Dequeues and executes queued tasks in priority order until the queue is empty or
         /// <see cref="QueueFlushTimeoutMs" /> elapses. Does nothing if a flush is already in progress.
         /// </summary>
-        /// <param name="cancellationToken">A token used to cancel the flush.</param>
         public async Awaitable FlushQueueAsync(CancellationToken cancellationToken = default)
         {
             if (_isFlushingQueue)

@@ -42,7 +42,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// The current app instance.
         /// </summary>
-        /// <exception cref="InvalidOperationException">No app instance is currently initialized.</exception>
         public static AppInstance Instance
         {
             get
@@ -59,9 +58,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Gets the current app instance of a specific subtype.
         /// </summary>
-        /// <exception cref="InvalidCastException">
-        /// Throws if the current <see cref="Instance" /> is not of type <typeparamref name="T" />.
-        /// </exception>
         public static T GetInstance<T>() where T : AppInstance
         {
             return (T)s_instance;
@@ -70,8 +66,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Attempts to get the current app instance.
         /// </summary>
-        /// <param name="instance">The current app instance, or null if none is initialized.</param>
-        /// <returns>True if an app instance is currently initialized.</returns>
         public static bool TryGetInstance(out AppInstance instance)
         {
             instance = s_instance;
@@ -81,12 +75,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Attempts to get the current app instance as type <typeparamref name="T" />.
         /// </summary>
-        /// <typeparam name="T">The expected app instance type.</typeparam>
-        /// <param name="instance">
-        /// The current app instance cast to <typeparamref name="T" />, or null if none is
-        /// initialized or the current instance is not of type <typeparamref name="T" />.
-        /// </param>
-        /// <returns>True if an app instance of type <typeparamref name="T" /> is currently initialized.</returns>
         public static bool TryGetInstance<T>(out T instance) where T : AppInstance
         {
             if (TryGetInstance(out var untypedInstance) && untypedInstance is T typedInstance)
@@ -102,9 +90,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Attempts to locate a service of type <typeparamref name="T" /> via the current app instance.
         /// </summary>
-        /// <typeparam name="T">The service type to locate.</typeparam>
-        /// <param name="service">The located service, or null if not found or no app instance is initialized.</param>
-        /// <returns>True if the service was located.</returns>
         public static bool TryLocate<T>(out T service) where T : class
         {
             if (TryGetInstance(out var appInstance))
@@ -119,7 +104,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Locates a service of type <typeparamref name="T" /> via <see cref="Instance" />.
         /// </summary>
-        /// <typeparam name="T">The service type to locate.</typeparam>
         public static T Locate<T>() where T : class
         {
             return Instance.Locate<T>();
@@ -128,8 +112,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Gets the registered <see cref="IAppExtension" /> instance of type <typeparamref name="T" />.
         /// </summary>
-        /// <typeparam name="T">The extension type to get.</typeparam>
-        /// <exception cref="Exception">No extension of type <typeparamref name="T" /> is registered.</exception>
         public static T GetExtension<T>() where T : IAppExtension
         {
             if (s_typeToAppExtensions.TryGetValue(typeof(T), out var extension))

@@ -9,11 +9,6 @@ namespace BeardPhantom.Bootstrap
 {
     public static partial class App
     {
-        /// <remarks>
-        /// <c>EditorApplication.update</c> is used instead of <c>EditorApplication.delayCall</c> to work better with the
-        /// Multiplayer Play Mode package, as <c>EditorApplication.delayCall</c> doesn't get called on unfocused editor
-        /// applications.
-        /// </remarks>
         [Conditional("UNITY_EDITOR")]
         internal static void CreateAppInstanceDelayed<T>() where T : AppInstance, new()
         {

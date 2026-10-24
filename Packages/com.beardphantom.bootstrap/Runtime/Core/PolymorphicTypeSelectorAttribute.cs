@@ -17,7 +17,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Creates a new polymorphic type selector attribute.
         /// </summary>
-        /// <param name="baseType">The base type that selectable types must derive from or implement.</param>
         public PolymorphicTypeSelectorAttribute(Type baseType)
         {
             BaseType = baseType;

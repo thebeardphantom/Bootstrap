@@ -24,7 +24,6 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         /// <summary>
         /// Creates a field for <paramref name="property" />, wiring up the override toggle and value field.
         /// </summary>
-        /// <param name="property">The serialized <see cref="SettingsProperty{T}" /> to build UI for.</param>
         public SettingsPropertyField(SerializedProperty property)
         {
             style.flexDirection = FlexDirection.Row;
@@ -68,10 +67,6 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         /// <summary>
         /// Enables or disables the always-override behavior for this field.
         /// </summary>
-        /// <param name="alwaysOverride">
-        /// If true, hides the override toggle and always enables the value field.
-        /// If false, shows the toggle and enables the value field based on its state.
-        /// </param>
         public void SetAlwaysOverride(bool alwaysOverride)
         {
             if (alwaysOverride)

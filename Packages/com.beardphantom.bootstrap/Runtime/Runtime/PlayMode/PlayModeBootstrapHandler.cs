@@ -29,7 +29,6 @@ namespace BeardPhantom.Bootstrap
         /// Loads the given scene paths in play mode. The first path replaces the currently loaded scene if only
         /// the initial bootstrap scene is loaded; otherwise all paths are loaded additively.
         /// </summary>
-        /// <param name="scenePaths">The asset paths of the scenes to load.</param>
         public static void LoadScenesInPlayMode(IReadOnlyList<string> scenePaths)
         {
             Assert.IsNotNull(scenePaths, "scenePaths.IsNotNull()");

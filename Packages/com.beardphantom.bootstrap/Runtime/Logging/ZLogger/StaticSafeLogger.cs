@@ -20,7 +20,6 @@ namespace BeardPhantom.Bootstrap.ZLogger
         /// <summary>
         /// Creates a new <see cref="StaticSafeLogger" /> for the given <paramref name="category" />.
         /// </summary>
-        /// <param name="category">The logger category name.</param>
         public StaticSafeLogger(string category)
         {
             _loggerCategory = category;
@@ -31,15 +30,6 @@ namespace BeardPhantom.Bootstrap.ZLogger
         /// Logs the entry via the underlying logger if one is available; otherwise queues it as a
         /// <see cref="StartupLog" /> to be replayed later.
         /// </summary>
-        /// <typeparam name="TState">The type of the object to be logged.</typeparam>
-        /// <param name="logLevel">The severity of the log entry.</param>
-        /// <param name="eventId">The event id associated with the log entry.</param>
-        /// <param name="state">The entry to be logged.</param>
-        /// <param name="exception">The exception related to the entry, if any.</param>
-        /// <param name="formatter">
-        /// The function used to format <paramref name="state" /> and <paramref name="exception" /> into a
-        /// message.
-        /// </param>
         public void Log<TState>(
             LogLevel logLevel,
             EventId eventId,
@@ -64,7 +54,6 @@ namespace BeardPhantom.Bootstrap.ZLogger
         /// <summary>
         /// Checks whether the underlying logger is enabled for <paramref name="logLevel" />.
         /// </summary>
-        /// <param name="logLevel">The level to check.</param>
         public bool IsEnabled(LogLevel logLevel)
         {
             ReacquireLogger();
@@ -74,9 +63,6 @@ namespace BeardPhantom.Bootstrap.ZLogger
         /// <summary>
         /// Begins a logging scope on the underlying logger.
         /// </summary>
-        /// <typeparam name="TState">The type of the state object.</typeparam>
-        /// <param name="state">The identifier for the scope.</param>
-        /// <returns>A disposable that ends the scope when disposed.</returns>
         public IDisposable BeginScope<TState>(TState state) where TState : notnull
         {
             ReacquireLogger();

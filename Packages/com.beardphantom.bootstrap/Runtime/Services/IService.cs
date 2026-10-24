@@ -8,7 +8,6 @@
         /// <summary>
         /// Called to initialize the service during bootstrap.
         /// </summary>
-        /// <param name="context">The bootstrap context for the current initialization.</param>
         void InitService(BootstrapContext context);
     }
 }

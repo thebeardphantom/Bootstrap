@@ -17,9 +17,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Creates a new app extension type attribute.
         /// </summary>
-        /// <param name="extensionType">
-        /// The <see cref="IAppExtension" /> implementation to register. Must have a public parameterless constructor.
-        /// </param>
         public AppExtensionTypeAttribute(Type extensionType)
         {
             if (extensionType.IsNull())

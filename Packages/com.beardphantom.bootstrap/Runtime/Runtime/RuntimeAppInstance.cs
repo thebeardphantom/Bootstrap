@@ -30,8 +30,6 @@ namespace BeardPhantom.Bootstrap
         /// Gets the default pre/post bootstrap handlers to use when <see cref="SessionEnvironment" /> doesn't
         /// specify its own.
         /// </summary>
-        /// <param name="preBootstrapHandler">The default pre-bootstrap handler.</param>
-        /// <param name="postBootstrapHandler">The default post-bootstrap handler.</param>
         public abstract void GetDefaultBootstrapHandlers(
             out IPreBootstrapHandler preBootstrapHandler,
             out IPostBootstrapHandler postBootstrapHandler);
@@ -39,8 +37,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Determines the <see cref="BootstrapEnvironmentAsset" /> to use for this session.
         /// </summary>
-        /// <param name="environment">The selected environment, or null if none could be determined.</param>
-        /// <returns>True if an environment was selected.</returns>
         protected abstract bool TryLoadEnvironment(out BootstrapEnvironmentAsset environment);
 
         internal override async Awaitable BootstrapAsync()

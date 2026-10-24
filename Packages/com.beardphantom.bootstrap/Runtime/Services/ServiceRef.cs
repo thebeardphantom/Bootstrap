@@ -4,7 +4,6 @@
     /// Caches a lazily-located service of type <typeparamref name="T" />, clearing the cache when the app
     /// deinitializes.
     /// </summary>
-    /// <typeparam name="T">The type of service to cache.</typeparam>
     public static class ServiceRef<T> where T : class
     {
         private static T s_instance;
@@ -32,8 +31,6 @@
         /// <summary>
         /// Attempts to get the cached service instance, locating it if not already cached.
         /// </summary>
-        /// <param name="instance">The located service, or null if not found.</param>
-        /// <returns>True if the service was located; otherwise false.</returns>
         public static bool TryGetInstance(out T instance)
         {
             if (s_instance.IsNull())

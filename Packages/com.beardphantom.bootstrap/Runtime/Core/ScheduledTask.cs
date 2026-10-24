@@ -22,15 +22,11 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Creates a scheduled task wrapping an asynchronous unit of work.
         /// </summary>
-        /// <param name="asyncTask">The asynchronous work to invoke.</param>
-        /// <param name="priority">The priority used to order this task relative to others.</param>
         public ScheduledTask(AsyncTask asyncTask, int priority = 0) : this(null, asyncTask, priority) { }
 
         /// <summary>
         /// Creates a scheduled task wrapping a synchronous unit of work.
         /// </summary>
-        /// <param name="syncTask">The synchronous work to invoke.</param>
-        /// <param name="priority">The priority used to order this task relative to others.</param>
         public ScheduledTask(Action syncTask, int priority = 0) : this(syncTask, null, priority) { }
 
         private ScheduledTask(Action syncTask, AsyncTask asyncTask, int priority)
@@ -44,7 +40,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Invokes the wrapped task, awaiting it if asynchronous.
         /// </summary>
-        /// <param name="cancellationToken"></param>
         public async Awaitable InvokeAsync(CancellationToken cancellationToken = default)
         {
             AssertState();

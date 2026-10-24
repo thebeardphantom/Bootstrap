@@ -8,7 +8,6 @@
         /// <summary>
         /// Called on Unity's fixed update loop.
         /// </summary>
-        /// <param name="fixedDeltaTime">The fixed timestep duration, in seconds.</param>
         void FixedUpdate(float fixedDeltaTime);
     }
 }

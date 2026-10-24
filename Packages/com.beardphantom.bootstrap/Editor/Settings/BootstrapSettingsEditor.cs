@@ -32,7 +32,6 @@ namespace BeardPhantom.Bootstrap.Editor.Settings
         /// <summary>
         /// Creates the settings editor UI and attaches it under <paramref name="rootElement" />.
         /// </summary>
-        /// <param name="rootElement">The root visual element to build the settings UI into.</param>
         public BootstrapSettingsEditor(VisualElement rootElement)
         {
             _rootElement = rootElement;

@@ -11,7 +11,6 @@ namespace BeardPhantom.Bootstrap.EditMode
     /// A serializable mapping from keys of type <typeparamref name="T" /> to <see cref="BootstrapEnvironmentAsset" />
     /// values.
     /// </summary>
-    /// <typeparam name="T">The type of the mapping's keys.</typeparam>
     [Serializable]
     public class MappedEnvironmentCollection<T> : IReadOnlyCollection<KeyValuePair<T, BootstrapEnvironmentAsset>>
     {
@@ -44,8 +43,6 @@ namespace BeardPhantom.Bootstrap.EditMode
         /// Sets the environment mapped to <paramref name="key" />, or removes the mapping if
         /// <paramref name="environment" /> is null.
         /// </summary>
-        /// <param name="key">The key to map. Must not be null.</param>
-        /// <param name="environment">The environment to map to <paramref name="key" />, or null to remove the mapping.</param>
         public void AddOrReplace(T key, BootstrapEnvironmentAsset environment)
         {
             if (key.IsNull())
@@ -75,9 +72,6 @@ namespace BeardPhantom.Bootstrap.EditMode
         /// <summary>
         /// Attempts to find the environment mapped to <paramref name="key" />.
         /// </summary>
-        /// <param name="key">The key to look up.</param>
-        /// <param name="environment">The mapped environment, if found.</param>
-        /// <returns>True if an environment is mapped to <paramref name="key" />; otherwise false.</returns>
         public bool TryFindEnvironmentForKey(T key, out BootstrapEnvironmentAsset environment)
         {
             return Maps.TryGetValue(key, out environment);

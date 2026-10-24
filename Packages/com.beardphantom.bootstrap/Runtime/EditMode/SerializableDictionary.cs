@@ -9,8 +9,6 @@ namespace BeardPhantom.Bootstrap.EditMode
     /// A <see cref="Dictionary{TKey,TValue}" /> that Unity can serialize, by mirroring its contents into a
     /// serialized list of key/value pairs before and after serialization.
     /// </summary>
-    /// <typeparam name="TKey">The type of the dictionary keys.</typeparam>
-    /// <typeparam name="TValue">The type of the dictionary values.</typeparam>
     [Serializable]
     public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
     {
@@ -24,7 +22,6 @@ namespace BeardPhantom.Bootstrap.EditMode
         /// <summary>
         /// Removes all key/value pairs that match <paramref name="predicate" />.
         /// </summary>
-        /// <param name="predicate">The predicate used to test each pair for removal.</param>
         public void RemoveAll(Predicate<KeyValuePair<TKey, TValue>> predicate)
         {
             CopyToSerializedList();

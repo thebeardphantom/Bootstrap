@@ -10,7 +10,6 @@ namespace BeardPhantom.Bootstrap
         /// <summary>
         /// Creates a new exception for a service that could not be located.
         /// </summary>
-        /// <param name="serviceType">The type of service that could not be found.</param>
         public ServiceNotFoundException(Type serviceType) : base($"Service of type {serviceType} not found.") { }
     }
 }

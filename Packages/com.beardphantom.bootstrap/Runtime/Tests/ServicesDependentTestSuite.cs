@@ -14,7 +14,6 @@ namespace BeardPhantom.Bootstrap.Tests
         /// Waits for the app instance to exist and for bootstrap to reach <see cref="AppBootstrapState.Ready" />,
         /// loading the bootstrap scene additively if needed.
         /// </summary>
-        /// <returns>An enumerator suitable for use as a Unity test coroutine.</returns>
         [UnitySetUp]
         public IEnumerator SetUp()
         {

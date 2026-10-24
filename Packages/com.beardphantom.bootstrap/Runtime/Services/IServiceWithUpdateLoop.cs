@@ -8,7 +8,6 @@
         /// <summary>
         /// Called on Unity's update loop.
         /// </summary>
-        /// <param name="deltaTime">The time, in seconds, since the last frame.</param>
         void Update(float deltaTime);
     }
 }

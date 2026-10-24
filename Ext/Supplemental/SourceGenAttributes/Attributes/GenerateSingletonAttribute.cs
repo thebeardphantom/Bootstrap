@@ -46,7 +46,6 @@ namespace BeardPhantom.Bootstrap.SourceGen
         /// <summary>
         /// Generates the accessors specified by <paramref name="accessors" />.
         /// </summary>
-        /// <param name="accessors">The set of accessors to generate.</param>
         public GenerateSingletonAttribute(SingletonAccessors accessors)
         {
             Accessors = accessors;

@@ -14,8 +14,6 @@ namespace BeardPhantom.Bootstrap.EditMode
         /// Resolves a settings value, preferring the user-scoped override when enabled and falling back to the
         /// project-scoped value otherwise.
         /// </summary>
-        /// <typeparam name="T">The type of the settings value.</typeparam>
-        /// <param name="valueSelector">Selects the <see cref="SettingsProperty{T}" /> to read from a settings asset.</param>
         public static T GetValue<T>(Func<IBootstrapEditorSettingsAsset, SettingsProperty<T>> valueSelector)
         {
             return GetValue(valueSelector, out _);
@@ -25,9 +23,6 @@ namespace BeardPhantom.Bootstrap.EditMode
         /// Resolves a settings value, preferring the user-scoped override when enabled and falling back to the
         /// project-scoped value otherwise.
         /// </summary>
-        /// <typeparam name="T">The type of the settings value.</typeparam>
-        /// <param name="valueSelector">Selects the <see cref="SettingsProperty{T}" /> to read from a settings asset.</param>
-        /// <param name="definedScope">The scope the returned value was resolved from.</param>
         public static T GetValue<T>(
             Func<IBootstrapEditorSettingsAsset, SettingsProperty<T>> valueSelector,
             out SettingsScope definedScope)
@@ -47,7 +42,6 @@ namespace BeardPhantom.Bootstrap.EditMode
         /// <summary>
         /// Gets the settings asset for the given scope.
         /// </summary>
-        /// <param name="scope">The settings scope to get the asset for.</param>
         public static IBootstrapEditorSettingsAsset GetWithScope(in SettingsScope scope)
         {
             return scope switch

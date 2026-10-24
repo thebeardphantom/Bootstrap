@@ -47,8 +47,6 @@ namespace BeardPhantom.Bootstrap.Editor
             /// Creates the stateful element for <paramref name="property" />, using <paramref name="attribute" />
             /// to determine the selectable base type.
             /// </summary>
-            /// <param name="attribute">The attribute specifying the base type to select from.</param>
-            /// <param name="property">The serialized property backing this element.</param>
             public StatefulElement(
                 PolymorphicTypeSelectorAttribute attribute,
                 SerializedProperty property)
