@@ -14,6 +14,16 @@ namespace BeardPhantom.Bootstrap.ZLogger
         /// Attempts to get a logger for the given <paramref name="category" />.
         /// </summary>
         bool TryGetLogger(string category, out ILogger logger);
+
+        /// <summary>
+        /// Sets a given log group to be enabled or disabled.
+        /// </summary>
+        void SetGroupEnabled(string group, bool enabled);
+
+        /// <summary>
+        /// Returns true if the given logger group is enabled, otherwise returns false.
+        /// </summary>
+        bool IsGroupEnabled(string group);
     }
 }
 #endif

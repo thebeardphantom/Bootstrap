@@ -20,18 +20,13 @@ namespace BeardPhantom.Bootstrap.SourceGen
 
         public GenerateLoggerAttribute(string group = null)
         {
-            _group = group;
+            _group = string.IsNullOrWhiteSpace(group) ? "" : group;
         }
 
         internal override void Generate(StringBuilder featuresStringBuilder, string className)
         {
-            featuresStringBuilder.AppendLine(
-                string.IsNullOrWhiteSpace(_group)
-                    ? "\t\tpublic static readonly string LoggerGroup = null;"
-                    : $"\t\tpublic static readonly string LoggerGroup = \"{_group}\";");
-
-            featuresStringBuilder.AppendLine(
-                $"\t\tprivate static readonly Microsoft.Extensions.Logging.ILogger s_logger = LogUtility.GetStaticLogger(nameof({className}));");
+            featuresStringBuilder.AppendLine($"\t\tpublic static readonly string LoggerGroup = \"{_group}\";");
+            featuresStringBuilder.AppendLine($"\t\tprivate static readonly Microsoft.Extensions.Logging.ILogger s_logger = LogUtility.GetStaticLogger(nameof({className}));");
         }
     }
 }

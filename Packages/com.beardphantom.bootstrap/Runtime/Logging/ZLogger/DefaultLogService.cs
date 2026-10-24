@@ -23,7 +23,13 @@ namespace BeardPhantom.Bootstrap.ZLogger
     [SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
     public partial class DefaultLogService : IServiceWithCustomBindings, IServiceWithInitPriority, ILogService, IDisposable
     {
+        public const string DefaultGroup = "";
+
         public const int ServiceInitPriority = -1000;
+
+        private readonly Dictionary<string, string> _categoryToGroup = new();
+
+        private readonly HashSet<string> _disabledGroups = new();
 
         private ILoggerFactory _loggerFactory;
 
@@ -51,12 +57,37 @@ namespace BeardPhantom.Bootstrap.ZLogger
         [field: Tooltip("The path the file provider writes logs to.")]
         private string FilePath { get; set; } = "Logs/App.log";
 
+        /// <inheritdoc />
+        public void SetGroupEnabled(string group, bool enabled)
+        {
+            if (enabled)
+            {
+                _disabledGroups.Remove(group);
+            }
+            else
+            {
+                _disabledGroups.Add(group);
+            }
+        }
+
+        /// <inheritdoc />
+        public bool IsGroupEnabled(string group)
+        {
+            return !_disabledGroups.Contains(group);
+        }
+
         /// <summary>
         /// Gets a logger for the given <paramref name="category" />.
         /// </summary>
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
         public ILogger GetLogger(string category, string group = null)
         {
+            if (string.IsNullOrWhiteSpace(group))
+            {
+                group = DefaultGroup;
+            }
+
+            _categoryToGroup[category] = group;
             return _loggerFactory.CreateLogger(category);
         }
 
@@ -92,17 +123,31 @@ namespace BeardPhantom.Bootstrap.ZLogger
         /// <summary>
         /// Determines whether a message at <paramref name="level" /> should be written to the console provider.
         /// </summary>
-        protected virtual bool ShouldLogToConsole(LogLevel level)
+        protected virtual bool ShouldLogToConsole(string category, LogLevel level)
         {
-            return level >= ConsoleMinLogLevel;
+            return CheckFilters(category, level, ConsoleMinLogLevel);
         }
 
         /// <summary>
         /// Determines whether a message at <paramref name="level" /> should be written to the file provider.
         /// </summary>
-        protected virtual bool ShouldLogToFile(LogLevel level)
+        protected virtual bool ShouldLogToFile(string category, LogLevel level)
         {
-            return level >= FileMinLogLevel;
+            return CheckFilters(category, level, FileMinLogLevel);
+        }
+
+        /// <summary>
+        /// Checks if a log with the given parameters should be processed.
+        /// </summary>
+        protected virtual bool CheckFilters(string category, LogLevel level, LogLevel minLogLevel)
+        {
+            if (level < ConsoleMinLogLevel)
+            {
+                return false;
+            }
+
+            var group = _categoryToGroup[category];
+            return IsGroupEnabled(group);
         }
 
         /// <summary>
