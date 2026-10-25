@@ -37,7 +37,7 @@ namespace BeardPhantom.Bootstrap.SourceGen
             var category = GetEffectiveCategory(className);
             var categoryLiteral = SymbolDisplay.FormatLiteral(category, true);
             featuresStringBuilder.AppendLine(
-                $"\t\tprivate static readonly Microsoft.Extensions.Logging.ILogger s_logger = LogUtility.GetStaticLogger(\"{categoryLiteral}\");");
+                $"\t\tprivate static readonly Microsoft.Extensions.Logging.ILogger s_logger = LogUtility.GetStaticLogger({categoryLiteral});");
         }
 
         private string GetEffectiveCategory(string className)
