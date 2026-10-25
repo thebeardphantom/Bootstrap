@@ -1,4 +1,4 @@
 ﻿public static class LogCategory
 {
-    public const string TestCategory = nameof(TestCategory);
+    public const string TestCategory = nameof(TestCategory) + ".";
 }

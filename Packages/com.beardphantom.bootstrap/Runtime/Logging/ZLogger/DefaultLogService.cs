@@ -19,19 +19,16 @@ namespace BeardPhantom.Bootstrap.ZLogger
     /// and installs <see cref="BootstrapZLogHandler" /> as the active <see cref="ILogHandler" />.
     /// </summary>
     [Serializable]
-    [GenerateLogger]
+    [GenerateLogger("Services.")]
     [SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
     public partial class DefaultLogService : IServiceWithCustomBindings, IServiceWithInitPriority, ILogService, IDisposable
     {
-        public const string DefaultGroup = "";
-
         public const int ServiceInitPriority = -1000;
 
-        private readonly Dictionary<string, string> _categoryToGroup = new();
-
-        private readonly HashSet<string> _disabledGroups = new();
-
         private ILoggerFactory _loggerFactory;
+
+        /// <inheritdoc />
+        public CategoryFilterCollection FilterCollection { get; private set; }
 
         /// <inheritdoc />
         int IServiceWithInitPriority.InitPriority => ServiceInitPriority;
@@ -57,37 +54,13 @@ namespace BeardPhantom.Bootstrap.ZLogger
         [field: Tooltip("The path the file provider writes logs to.")]
         private string FilePath { get; set; } = "Logs/App.log";
 
-        /// <inheritdoc />
-        public void SetGroupEnabled(string group, bool enabled)
-        {
-            if (enabled)
-            {
-                _disabledGroups.Remove(group);
-            }
-            else
-            {
-                _disabledGroups.Add(group);
-            }
-        }
-
-        /// <inheritdoc />
-        public bool IsGroupEnabled(string group)
-        {
-            return !_disabledGroups.Contains(group);
-        }
-
         /// <summary>
         /// Gets a logger for the given <paramref name="category" />.
         /// </summary>
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-        public ILogger GetLogger(string category, string group = null)
+        public ILogger GetLogger(string category)
         {
-            if (string.IsNullOrWhiteSpace(group))
-            {
-                group = DefaultGroup;
-            }
-
-            _categoryToGroup[category] = group;
+            FilterCollection.AddCategory(category);
             return _loggerFactory.CreateLogger(category);
         }
 
@@ -141,13 +114,12 @@ namespace BeardPhantom.Bootstrap.ZLogger
         /// </summary>
         protected virtual bool CheckFilters(string category, LogLevel level, LogLevel minLogLevel)
         {
-            if (level < ConsoleMinLogLevel)
+            if (level < minLogLevel)
             {
                 return false;
             }
 
-            var group = _categoryToGroup[category];
-            return IsGroupEnabled(group);
+            return !FilterCollection.IsExcluded(category);
         }
 
         /// <summary>
@@ -249,6 +221,8 @@ namespace BeardPhantom.Bootstrap.ZLogger
         /// </summary>
         void IService.InitService(BootstrapContext context)
         {
+            FilterCollection = new CategoryFilterCollection();
+            
             s_logger.ZLogTrace($"Test startup log.");
             _loggerFactory = CreateLoggerFactory();
             s_logger.ZLogInformation($"Log system setup complete.");
