@@ -1,4 +1,3 @@
-using Microsoft.CodeAnalysis.CSharp;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
@@ -35,7 +34,7 @@ namespace BeardPhantom.Bootstrap.SourceGen
         internal override void Generate(StringBuilder featuresStringBuilder, string className)
         {
             var category = GetEffectiveCategory(className);
-            var categoryLiteral = SymbolDisplay.FormatLiteral(category, true);
+            var categoryLiteral = $"@\"{category.Replace("\"", "\"\"")}\"";
             featuresStringBuilder.AppendLine(
                 $"\t\tprivate static readonly Microsoft.Extensions.Logging.ILogger s_logger = LogUtility.GetStaticLogger({categoryLiteral});");
         }
